@@ -1,0 +1,29 @@
+{
+  "name": "qbx_db_backup",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "FiveM server resource: local MySQL/MariaDB backups for the QBox dashboard",
+  "packageManager": "pnpm@10.15.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "esbuild src/server.ts --bundle --platform=node --target=node22 --format=cjs --outfile=dist/server.js && esbuild src/cli.ts --bundle --platform=node --target=node22 --format=cjs --outfile=dist/cli.js && node -e \"require('fs').writeFileSync('dist/package.json', JSON.stringify({type:'commonjs'}))\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "biome check .",
+    "format": "biome format --write ."
+  },
+  "dependencies": {
+    "archiver": "^8.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.9",
+    "@types/archiver": "^8.0.0",
+    "@types/node": "^26.2.0",
+    "esbuild": "^0.28.2",
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.11"
+  }
+}

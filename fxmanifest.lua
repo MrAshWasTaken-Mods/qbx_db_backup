@@ -1,0 +1,8 @@
+fx_version 'cerulean'
+game 'common'
+name 'qbx_db_backup'
+author 'QBox'
+description 'Local database backups for the QBox dashboard'
+version '0.1.0'
+server_only 'yes'
+server_script 'dist/server.js'

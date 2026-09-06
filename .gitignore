@@ -1,0 +1,6 @@
+node_modules/
+backups/
+.tmp/
+*.part
+*.log
+coverage/
