@@ -1,5 +1,5 @@
+import { describe, expect, it } from "bun:test";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
 import type { ConnectionTarget } from "./connection-string";
 import {
   buildDumpArgs,

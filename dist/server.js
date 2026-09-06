@@ -12958,11 +12958,11 @@ var AgentApi = class {
       body: body === void 0 ? void 0 : JSON.stringify(body),
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
     });
-    if (response.status === 401) throw new Error("Agent token rejected by the QBox API");
+    if (response.status === 401) throw new Error("Agent token rejected by the Qbox API");
     if (!response.ok && !expected.includes(response.status)) {
       const text = (await response.text().catch(() => "")).slice(0, 300);
       throw new Error(
-        `QBox API ${method} ${route} failed with HTTP ${response.status}${text ? `: ${text}` : ""}`
+        `Qbox API ${method} ${route} failed with HTTP ${response.status}${text ? `: ${text}` : ""}`
       );
     }
     return response;
@@ -13307,15 +13307,14 @@ function listDir(dir) {
 }
 
 // src/log.ts
-var PREFIX = "[qbx_db_backup]";
 function info(...parts) {
-  console.log(PREFIX, ...parts);
+  console.log(...parts);
 }
 function warn(...parts) {
-  console.warn(PREFIX, "WARNING:", ...parts);
+  console.warn("WARNING:", ...parts);
 }
 function error(...parts) {
-  console.error(PREFIX, "ERROR:", ...parts);
+  console.error("ERROR:", ...parts);
 }
 function errorMessage(value) {
   return value instanceof Error ? value.message : String(value);
@@ -13439,11 +13438,11 @@ function delay(ms) {
 }
 
 // src/config.ts
-var RESOURCE_VERSION = "0.3.0";
+var RESOURCE_VERSION = "1.0.0";
 var DEFAULT_API_BASE = "https://dashboard.qbox.re";
 var MIN_POLL_SECONDS = 60;
 var DEFAULT_POLL_SECONDS = 300;
-var DEFAULT_INTERVAL_HOURS = 24;
+var DEFAULT_INTERVAL_HOURS = 1;
 var DEFAULT_LOCAL_KEEP = 7;
 function loadConfig(source, defaults2) {
   const shared = source("mysql_connection_string", "").trim();

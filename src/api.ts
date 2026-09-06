@@ -129,11 +129,11 @@ export class AgentApi {
       body: body === undefined ? undefined : JSON.stringify(body),
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
-    if (response.status === 401) throw new Error("Agent token rejected by the QBox API");
+    if (response.status === 401) throw new Error("Agent token rejected by the Qbox API");
     if (!response.ok && !expected.includes(response.status)) {
       const text = (await response.text().catch(() => "")).slice(0, 300);
       throw new Error(
-        `QBox API ${method} ${route} failed with HTTP ${response.status}${text ? `: ${text}` : ""}`,
+        `Qbox API ${method} ${route} failed with HTTP ${response.status}${text ? `: ${text}` : ""}`,
       );
     }
     return response;

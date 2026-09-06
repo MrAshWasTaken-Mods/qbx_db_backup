@@ -1,0 +1,11 @@
+name: release-action
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release-action:
+    uses: Qbox-project/.github/.github/workflows/release-action.yml@main
+    secrets: inherit

@@ -1,0 +1,11 @@
+name: Issues Project Management
+
+on:
+  issues:
+    types:
+      - opened
+
+jobs:
+  add-to-project:
+    uses: Qbox-project/.github/.github/workflows/issues-project.yml@main
+    secrets: inherit

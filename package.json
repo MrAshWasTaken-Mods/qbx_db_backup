@@ -1,19 +1,23 @@
 {
   "name": "qbx_db_backup",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "Local database backups for the Qbox dashboard",
+  "license": "MIT",
   "type": "module",
-  "description": "FiveM server resource: local MySQL/MariaDB backups for the QBox dashboard",
-  "packageManager": "pnpm@10.15.1",
-  "engines": {
-    "node": ">=22"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Qbox-project/qbx_db_backup.git"
   },
+  "bugs": "https://github.com/Qbox-project/qbx_db_backup/issues",
+  "homepage": "https://github.com/Qbox-project/qbx_db_backup",
   "scripts": {
     "build": "esbuild src/server.ts --bundle --platform=node --target=node22 --format=cjs --outfile=dist/server.js && esbuild src/cli.ts --bundle --platform=node --target=node22 --format=cjs --outfile=dist/cli.js && node -e \"require('fs').writeFileSync('dist/package.json', JSON.stringify({type:'commonjs'}))\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
+    "test": "bun test",
     "lint": "biome check .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "version:set": "node scripts/set-version.mjs"
   },
   "dependencies": {
     "archiver": "^8.0.0"
@@ -24,6 +28,6 @@
     "@types/node": "^26.2.0",
     "esbuild": "^0.28.2",
     "typescript": "~6.0.3",
-    "vitest": "^4.1.11"
+    "@types/bun": "1.3.14"
   }
 }

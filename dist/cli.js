@@ -13346,11 +13346,11 @@ function delay(ms) {
 }
 
 // src/config.ts
-var RESOURCE_VERSION = "0.3.0";
+var RESOURCE_VERSION = "1.0.0";
 var DEFAULT_API_BASE = "https://dashboard.qbox.re";
 var MIN_POLL_SECONDS = 60;
 var DEFAULT_POLL_SECONDS = 300;
-var DEFAULT_INTERVAL_HOURS = 24;
+var DEFAULT_INTERVAL_HOURS = 1;
 var DEFAULT_LOCAL_KEEP = 7;
 function loadConfig(source, defaults2) {
   const shared = source("mysql_connection_string", "").trim();

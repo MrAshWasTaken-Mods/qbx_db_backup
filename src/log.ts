@@ -1,15 +1,13 @@
-const PREFIX = "[qbx_db_backup]";
-
 export function info(...parts: unknown[]): void {
-  console.log(PREFIX, ...parts);
+  console.log(...parts);
 }
 
 export function warn(...parts: unknown[]): void {
-  console.warn(PREFIX, "WARNING:", ...parts);
+  console.warn("WARNING:", ...parts);
 }
 
 export function error(...parts: unknown[]): void {
-  console.error(PREFIX, "ERROR:", ...parts);
+  console.error("ERROR:", ...parts);
 }
 
 export function errorMessage(value: unknown): string {

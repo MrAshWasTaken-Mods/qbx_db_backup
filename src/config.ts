@@ -1,8 +1,8 @@
-export const RESOURCE_VERSION = "0.3.0";
+export const RESOURCE_VERSION = "1.0.0";
 export const DEFAULT_API_BASE = "https://dashboard.qbox.re";
 export const MIN_POLL_SECONDS = 60;
 export const DEFAULT_POLL_SECONDS = 300;
-export const DEFAULT_INTERVAL_HOURS = 24;
+export const DEFAULT_INTERVAL_HOURS = 1;
 export const DEFAULT_LOCAL_KEEP = 7;
 
 export type ConfigSource = (name: string, fallback: string) => string;

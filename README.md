@@ -5,12 +5,13 @@ machine itself, so the database never has to be reachable from the internet and 
 never leave it.
 
 - **Standalone**: run a backup from the console and the zip lands next to the resource.
-- **With the QBox dashboard**: the same backups, sent off-site, with history and alerts.
+- **With the Qbox dashboard**: the same backups, sent off-site, with history and alerts.
 - **Nothing to install**: `mariadb-dump` is bundled for Windows and Linux (x64).
 
 ## Install
 
-1. Clone or download this repository into `resources/qbx_db_backup`.
+1. Download the latest release from GitHub Releases and extract it into `resources/`, or clone this
+   repository as `resources/qbx_db_backup`.
 2. Add to `server.cfg`, after your `mysql_connection_string`:
 
 ```cfg
@@ -34,7 +35,7 @@ From the server console:
 | `qbx_db_backup test` | Checks the configuration without touching the database. |
 | `qbx_db_backup version` | Prints the version. |
 
-To connect the resource to the QBox dashboard, paste the token from your organisation's backup
+To connect the resource to the Qbox dashboard, paste the token from your organisation's backup
 settings:
 
 ```cfg
@@ -44,7 +45,7 @@ set qbx_db_backup_token "your-token"
 Backups then show up in the dashboard with their history and alerts. Use `set`, never `setr`:
 `setr` would send the value to every connected player.
 
-In both modes a backup runs automatically every `qbx_db_backup_interval_hours` hours (daily by
+In both modes a backup runs automatically every `qbx_db_backup_interval_hours` hours (hourly by
 default), and `qbx_db_backup run` in the server console is how you start one by hand. Backups are
 always started on the server itself, never from the dashboard. When connected to the dashboard, at
 most one backup per hour is accepted and the dashboard keeps as many backups as your plan's storage
@@ -59,7 +60,7 @@ Everything has a working default. The resource reads the database credentials fr
 | --- | --- | --- |
 | `qbx_db_backup_token` | (empty) | Dashboard token. Leave empty to run standalone. |
 | `qbx_db_backup_connection_string` | (empty) | Use different credentials than the server does. Same formats as oxmysql. |
-| `qbx_db_backup_interval_hours` | `24` | How often to back up, in hours. Minimum 1, 0 disables the schedule. Manual runs always work. |
+| `qbx_db_backup_interval_hours` | `1` | How often to back up, in hours. Minimum 1, 0 disables the schedule. Manual runs always work. |
 | `qbx_db_backup_local_keep` | `7` | How many zips to keep in the local folder (standalone, or connected with `keep_local`). |
 | `qbx_db_backup_keep_local` | `0` | When connected, also keep a copy of each zip in the local folder. |
 | `qbx_db_backup_zip_level` | `6` | Compression level, 1 (fastest) to 9 (smallest). |
@@ -82,12 +83,16 @@ Everything has a working default. The resource reads the database credentials fr
 GNU GPL v2. See [`bin/UPSTREAM.md`](bin/UPSTREAM.md) for where it came from and
 [`bin/LICENSE.GPLv2`](bin/LICENSE.GPLv2) for the license.
 
+## License
+
+MIT. The bundled `mariadb-dump` is GPLv2 (see above).
+
 ## Building from source
 
 `dist/` is committed, so a clone runs as is. To rebuild after changing `src/`:
 
 ```sh
-pnpm install
-pnpm build
-pnpm test
+bun install
+bun run build
+bun test
 ```
