@@ -1,6 +1,8 @@
-export const RESOURCE_VERSION = "0.1.0";
+export const RESOURCE_VERSION = "0.2.0";
 export const DEFAULT_API_BASE = "https://dashboard.qbox.re";
 export const MIN_POLL_SECONDS = 15;
+export const DEFAULT_INTERVAL_HOURS = 24;
+export const DEFAULT_LOCAL_KEEP = 7;
 
 export type ConfigSource = (name: string, fallback: string) => string;
 export type BackupMode = "local" | "upload";
@@ -12,7 +14,10 @@ export type Config = {
   localDir: string;
   resourceDir: string;
   keepLocal: boolean;
+  localKeep: number;
   pollSeconds: number;
+  intervalHours: number;
+  intervalClamped: boolean;
   dumpBin: string;
   zipLevel: number;
   timeoutMinutes: number;
@@ -28,6 +33,10 @@ export function loadConfig(
   const token = source("qbx_db_backup_token", "").trim();
   const apiBase = source("qbx_db_backup_api", DEFAULT_API_BASE).trim();
   const localDir = source("qbx_db_backup_local_dir", defaults.localDir).trim();
+  const interval = toInt(
+    source("qbx_db_backup_interval_hours", String(DEFAULT_INTERVAL_HOURS)),
+    DEFAULT_INTERVAL_HOURS,
+  );
   return {
     connectionString: override.length > 0 ? override : shared,
     token,
@@ -35,7 +44,13 @@ export function loadConfig(
     localDir: localDir.length > 0 ? localDir : defaults.localDir,
     resourceDir: defaults.resourceDir,
     keepLocal: source("qbx_db_backup_keep_local", "0").trim() === "1",
+    localKeep: Math.max(
+      1,
+      toInt(source("qbx_db_backup_local_keep", String(DEFAULT_LOCAL_KEEP)), DEFAULT_LOCAL_KEEP),
+    ),
     pollSeconds: Math.max(MIN_POLL_SECONDS, toInt(source("qbx_db_backup_poll_seconds", "60"), 60)),
+    intervalHours: interval === 0 ? 0 : Math.max(1, interval),
+    intervalClamped: interval !== 0 && interval < 1,
     dumpBin: source("qbx_db_backup_dump_bin", "").trim(),
     zipLevel: clamp(toInt(source("qbx_db_backup_zip_level", "6"), 6), 1, 9),
     timeoutMinutes: Math.max(1, toInt(source("qbx_db_backup_timeout_minutes", "120"), 120)),

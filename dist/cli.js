@@ -13346,15 +13346,21 @@ function delay(ms) {
 }
 
 // src/config.ts
-var RESOURCE_VERSION = "0.1.0";
+var RESOURCE_VERSION = "0.2.0";
 var DEFAULT_API_BASE = "https://dashboard.qbox.re";
 var MIN_POLL_SECONDS = 15;
+var DEFAULT_INTERVAL_HOURS = 24;
+var DEFAULT_LOCAL_KEEP = 7;
 function loadConfig(source, defaults2) {
   const shared = source("mysql_connection_string", "").trim();
   const override = source("qbx_db_backup_connection_string", "").trim();
   const token = source("qbx_db_backup_token", "").trim();
   const apiBase = source("qbx_db_backup_api", DEFAULT_API_BASE).trim();
   const localDir = source("qbx_db_backup_local_dir", defaults2.localDir).trim();
+  const interval = toInt(
+    source("qbx_db_backup_interval_hours", String(DEFAULT_INTERVAL_HOURS)),
+    DEFAULT_INTERVAL_HOURS
+  );
   return {
     connectionString: override.length > 0 ? override : shared,
     token,
@@ -13362,7 +13368,13 @@ function loadConfig(source, defaults2) {
     localDir: localDir.length > 0 ? localDir : defaults2.localDir,
     resourceDir: defaults2.resourceDir,
     keepLocal: source("qbx_db_backup_keep_local", "0").trim() === "1",
+    localKeep: Math.max(
+      1,
+      toInt(source("qbx_db_backup_local_keep", String(DEFAULT_LOCAL_KEEP)), DEFAULT_LOCAL_KEEP)
+    ),
     pollSeconds: Math.max(MIN_POLL_SECONDS, toInt(source("qbx_db_backup_poll_seconds", "60"), 60)),
+    intervalHours: interval === 0 ? 0 : Math.max(1, interval),
+    intervalClamped: interval !== 0 && interval < 1,
     dumpBin: source("qbx_db_backup_dump_bin", "").trim(),
     zipLevel: clamp(toInt(source("qbx_db_backup_zip_level", "6"), 6), 1, 9),
     timeoutMinutes: Math.max(1, toInt(source("qbx_db_backup_timeout_minutes", "120"), 120)),

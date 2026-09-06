@@ -3,7 +3,6 @@ import { createReadStream, createWriteStream } from "node:fs";
 import { copyFile, mkdir, mkdtemp, rename, rm } from "node:fs/promises";
 import { request as httpRequest } from "node:http";
 import { request as httpsRequest } from "node:https";
-import { tmpdir } from "node:os";
 import path from "node:path";
 import { type Readable, Transform } from "node:stream";
 import { ZipArchive } from "archiver";
@@ -31,11 +30,20 @@ export type BackupSink = {
   open: (options: SinkOpenOptions) => Promise<OpenSink>;
 };
 
-export type UploadSinkOptions = {
+export type UploadInfo = {
+  sizeBytes: number;
+  sha256: string;
+};
+
+export type UploadTarget = {
   url: string;
   headers?: Record<string, string>;
-  maxBytes: number;
-  tmpDir?: string;
+};
+
+export type UploadSinkOptions = {
+  resolveUpload: (info: UploadInfo) => Promise<UploadTarget>;
+  maxBytes?: number;
+  tmpDir: string;
   keepLocalPath?: string;
 };
 
@@ -64,7 +72,7 @@ export class UploadSink implements BackupSink {
   constructor(private readonly options: UploadSinkOptions) {}
 
   async open(options: SinkOpenOptions): Promise<OpenSink> {
-    const root = this.options.tmpDir ?? tmpdir();
+    const root = this.options.tmpDir;
     await mkdir(root, { recursive: true });
     const dir = await mkdtemp(path.join(root, "qbx-db-backup-"));
     const spoolPath = path.join(dir, "backup.zip");
@@ -76,12 +84,16 @@ export class UploadSink implements BackupSink {
       finish: async () => {
         try {
           const result = await spool.finish();
-          if (result.bytesZip > upload.maxBytes) {
+          if (upload.maxBytes !== undefined && result.bytesZip > upload.maxBytes) {
             throw new Error(
               `Backup zip is ${result.bytesZip} bytes, over the ${upload.maxBytes} byte limit for this job`,
             );
           }
-          await putFile(upload.url, spoolPath, result.bytesZip, upload.headers ?? {});
+          const target = await upload.resolveUpload({
+            sizeBytes: result.bytesZip,
+            sha256: result.sha256,
+          });
+          await putFile(target.url, spoolPath, result.bytesZip, target.headers ?? {});
           const location = await keepLocalCopy(spoolPath, upload.keepLocalPath);
           return location === null ? result : { ...result, location };
         } finally {
@@ -191,8 +203,8 @@ function putFile(
       {
         method: "PUT",
         headers: {
-          ...headers,
           "Content-Type": "application/zip",
+          ...headers,
           "Content-Length": String(size),
         },
       },

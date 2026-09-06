@@ -1,5 +1,5 @@
 import path from "node:path";
-import { AgentApi, type BackupJob } from "./api";
+import { AgentApi, type BackupJob, type HeartbeatResult, type JobTrigger } from "./api";
 import {
   type BackupOutcome,
   buildBackupNames,
@@ -11,14 +11,20 @@ import { type Config, loadConfig, RESOURCE_VERSION, redactConnectionString } fro
 import { describeTarget, parseConnectionString } from "./connection-string";
 import { type DumpBinary, detectDumpBinary } from "./dump";
 import { error, errorMessage, info, warn } from "./log";
+import { HOUR_MS, nextRunAt, pruneLocalBackups, readLastRunAt, writeLastRunAt } from "./schedule";
 import { LocalFileSink, UploadSink } from "./zip-sink";
 
 const PROGRESS_INTERVAL_MS = 10_000;
+const MAX_TIMER_MS = 2_147_483_000;
+const SIZE_UNITS = ["B", "KB", "MB", "GB", "TB"];
 
 let config: Config;
 let api: AgentApi | null = null;
 let dumpBinary: DumpBinary | null = null;
 let pollTimer: NodeJS.Timeout | null = null;
+let scheduleTimer: NodeJS.Timeout | null = null;
+let scheduledAt: number | null = null;
+let lastHeartbeat: HeartbeatResult | null = null;
 let lastOutcome = "no backup has run yet";
 
 function resourceDirectory(): string {
@@ -49,6 +55,26 @@ function describeBinary(binary: DumpBinary): string {
   return `${binary.command} (${binary.version}) [${binary.source}]`;
 }
 
+function formatLocalTime(at: number): string {
+  return new Date(at).toLocaleString();
+}
+
+function formatBytes(value: number): string {
+  let size = Math.max(0, value);
+  let unit = 0;
+  while (size >= 1024 && unit < SIZE_UNITS.length - 1) {
+    size /= 1024;
+    unit += 1;
+  }
+  return `${unit === 0 ? size : size.toFixed(1)} ${SIZE_UNITS[unit] ?? "B"}`;
+}
+
+function parseTimestamp(value: string | null): number | null {
+  if (value === null || value.length === 0) return null;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 function detect(): Promise<DumpBinary> {
   return detectDumpBinary({
     explicitPath: config.dumpBin.length > 0 ? config.dumpBin : undefined,
@@ -72,6 +98,24 @@ function describeOutcome(outcome: BackupOutcome): string {
   return `ok zip=${outcome.sizeBytes}B sql=${outcome.rawBytes}B in ${Math.round(outcome.durationMs / 1000)}s${outcome.location ? ` -> ${outcome.location}` : ""}${warnings}`;
 }
 
+function describeSchedule(): string {
+  if (config.intervalHours <= 0) return "disabled";
+  const next = scheduledAt === null ? "not scheduled" : formatLocalTime(scheduledAt);
+  return `every ${config.intervalHours} h, next at ${next}`;
+}
+
+async function pruneLocal(): Promise<void> {
+  const removed = await pruneLocalBackups(config.localDir, config.localKeep).catch(
+    (failure: unknown) => {
+      warn(errorMessage(failure));
+      return [] as string[];
+    },
+  );
+  if (removed.length > 0) {
+    info(`removed ${removed.length} old backup(s), keeping the newest ${config.localKeep}`);
+  }
+}
+
 async function runLocalBackup(): Promise<void> {
   const target = parseConnectionString(config.connectionString);
   const names = buildBackupNames(target.database, new Date());
@@ -79,15 +123,17 @@ async function runLocalBackup(): Promise<void> {
   const outcome = await runBackup({ config, sink, entryName: names.entryName });
   lastOutcome = describeOutcome(outcome);
   info(lastOutcome);
+  if (!outcome.busy) await pruneLocal();
 }
 
 async function runJob(job: BackupJob): Promise<void> {
   if (api === null) return;
   const client = api;
   const sink = new UploadSink({
-    url: job.uploadUrl,
-    headers: job.uploadHeaders,
-    maxBytes: job.maxBytes,
+    resolveUpload: async (upload) => {
+      const ticket = await client.requestUpload(job.jobId, upload);
+      return { url: ticket.uploadUrl, headers: ticket.uploadHeaders };
+    },
     tmpDir: path.join(config.localDir, ".tmp"),
     keepLocalPath: config.keepLocal ? path.join(config.localDir, job.fileName) : undefined,
   });
@@ -109,7 +155,8 @@ async function runJob(job: BackupJob): Promise<void> {
     lastOutcome = describeOutcome(outcome);
     info(lastOutcome);
     if (outcome.busy) return;
-    await client.complete(job.jobId, {
+    if (config.keepLocal) await pruneLocal();
+    const result = await client.complete(job.jobId, {
       ok: true,
       sizeBytes: outcome.sizeBytes,
       rawBytes: outcome.rawBytes,
@@ -117,6 +164,11 @@ async function runJob(job: BackupJob): Promise<void> {
       durationMs: outcome.durationMs,
       warnings: outcome.warnings,
     });
+    info(`job ${job.jobId}: ${result.status}`);
+    if (result.status === "failed" && result.error) {
+      lastOutcome = `failed: ${result.error}`;
+      error(result.error);
+    }
   } catch (failure) {
     lastOutcome = `failed: ${errorMessage(failure)}`;
     error(lastOutcome);
@@ -126,13 +178,74 @@ async function runJob(job: BackupJob): Promise<void> {
   }
 }
 
+async function requestJob(trigger: JobTrigger): Promise<number | null> {
+  if (api === null) return null;
+  const created = await api.createJob(trigger);
+  if (created.status === "throttled") {
+    const allowedAt = parseTimestamp(created.nextAllowedAt);
+    info(
+      `next backup allowed at ${allowedAt === null ? "a later time" : formatLocalTime(allowedAt)}`,
+    );
+    return allowedAt;
+  }
+  if (created.status === "busy") {
+    info(`the dashboard is already running backup job ${created.jobId}, skipping this run`);
+    return null;
+  }
+  await runJob(created.job);
+  return null;
+}
+
+function armSchedule(at: number): void {
+  if (scheduleTimer !== null) clearTimeout(scheduleTimer);
+  scheduledAt = at;
+  const delay = Math.max(0, at - Date.now());
+  scheduleTimer = setTimeout(
+    delay > MAX_TIMER_MS ? () => armSchedule(at) : () => void runScheduled(),
+    Math.min(delay, MAX_TIMER_MS),
+  );
+}
+
+async function runScheduled(): Promise<void> {
+  scheduleTimer = null;
+  const startedAt = Date.now();
+  let nextAt = startedAt + config.intervalHours * HOUR_MS;
+  if (isBackupRunning()) {
+    info("a backup is already running, skipping this scheduled run");
+    armSchedule(nextAt);
+    return;
+  }
+  await writeLastRunAt(config.localDir, startedAt).catch((failure: unknown) => {
+    warn(errorMessage(failure));
+  });
+  try {
+    if (config.mode === "local") {
+      await runLocalBackup();
+    } else {
+      const allowedAt = await requestJob("scheduled");
+      if (allowedAt !== null) nextAt = allowedAt;
+    }
+  } catch (failure) {
+    lastOutcome = `failed: ${errorMessage(failure)}`;
+    error(lastOutcome);
+  }
+  armSchedule(nextAt);
+}
+
+async function startSchedule(): Promise<void> {
+  const lastRunAt = await readLastRunAt(config.localDir);
+  armSchedule(nextRunAt(lastRunAt, config.intervalHours, Date.now()));
+  info(`scheduled backups: ${describeSchedule()}`);
+}
+
 async function pollOnce(): Promise<void> {
   if (api === null) return;
-  await api.heartbeat({
+  lastHeartbeat = await api.heartbeat({
     version: RESOURCE_VERSION,
     platform: `${process.platform}-${process.arch}`,
     dumpBinary,
     database: databaseName(),
+    intervalHours: config.intervalHours,
   });
   if (isBackupRunning()) return;
   const job = await api.next();
@@ -148,6 +261,12 @@ function commandStatus(): void {
   info(`target: ${targetLabel()}`);
   info(`state: ${isBackupRunning() ? "busy" : "idle"}`);
   info(`dump binary: ${dumpBinary ? describeBinary(dumpBinary) : "not found"}`);
+  info(`schedule: ${describeSchedule()}`);
+  if (lastHeartbeat !== null) {
+    info(
+      `plan ${lastHeartbeat.plan}: ${formatBytes(lastHeartbeat.usedBytes)} / ${formatBytes(lastHeartbeat.poolBytes)} used`,
+    );
+  }
   info(`last result: ${lastOutcome}`);
 }
 
@@ -173,8 +292,7 @@ async function commandRun(): Promise<void> {
       await runLocalBackup();
       return;
     }
-    if (api === null) return;
-    await runJob(await api.createJob());
+    await requestJob("manual");
   } catch (failure) {
     lastOutcome = `failed: ${errorMessage(failure)}`;
     error(lastOutcome);
@@ -193,6 +311,9 @@ function start(): void {
   if (config.connectionString.length === 0) {
     warn("no connection string: set mysql_connection_string or qbx_db_backup_connection_string");
   }
+  if (config.intervalClamped) {
+    warn("qbx_db_backup_interval_hours below 1 was raised to 1; use 0 to disable the schedule");
+  }
   void refreshDumpBinary();
 
   if (config.mode === "upload") {
@@ -207,6 +328,12 @@ function start(): void {
     };
     setTimeout(poll, 5_000);
     pollTimer = setInterval(poll, config.pollSeconds * 1000);
+  }
+
+  if (config.intervalHours > 0) {
+    void startSchedule().catch((failure: unknown) => error(errorMessage(failure)));
+  } else {
+    info("scheduled backups: disabled");
   }
 
   RegisterCommand(
@@ -236,6 +363,9 @@ function start(): void {
     if (name !== GetCurrentResourceName()) return;
     if (pollTimer !== null) clearInterval(pollTimer);
     pollTimer = null;
+    if (scheduleTimer !== null) clearTimeout(scheduleTimer);
+    scheduleTimer = null;
+    scheduledAt = null;
     cancelRunningBackup("Resource stopped");
   });
 }

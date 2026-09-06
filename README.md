@@ -30,7 +30,7 @@ From the server console:
 | Command | What it does |
 | --- | --- |
 | `qbx_db_backup run` | Back up now. Standalone: writes the zip to `resources/qbx_db_backup/backups/`. Connected: uploads it to the dashboard. |
-| `qbx_db_backup status` | Shows the current mode, target database, and the last result. |
+| `qbx_db_backup status` | Shows the current mode, target database, schedule, and the last result. |
 | `qbx_db_backup test` | Checks the configuration without touching the database. |
 | `qbx_db_backup version` | Prints the version. |
 
@@ -41,8 +41,13 @@ settings:
 set qbx_db_backup_token "your-token"
 ```
 
-Backups are then scheduled from the dashboard; `qbx_db_backup run` still works for an immediate
-one. Use `set`, never `setr`: `setr` would send the value to every connected player.
+Backups then show up in the dashboard with their history and alerts; `qbx_db_backup run` still
+works for an immediate one. Use `set`, never `setr`: `setr` would send the value to every
+connected player.
+
+In both modes a backup runs automatically every `qbx_db_backup_interval_hours` hours (daily by
+default). When connected to the dashboard, at most one backup per hour is accepted and the
+dashboard keeps as many backups as your plan's storage allows, deleting the oldest automatically.
 
 ## Configuration
 
@@ -53,6 +58,8 @@ Everything has a working default. The resource reads the database credentials fr
 | --- | --- | --- |
 | `qbx_db_backup_token` | (empty) | Dashboard token. Leave empty to run standalone. |
 | `qbx_db_backup_connection_string` | (empty) | Use different credentials than the server does. Same formats as oxmysql. |
+| `qbx_db_backup_interval_hours` | `24` | How often to back up, in hours. Minimum 1, 0 disables the schedule. Manual runs always work. |
+| `qbx_db_backup_local_keep` | `7` | How many zips to keep in the local folder (standalone, or connected with `keep_local`). |
 | `qbx_db_backup_keep_local` | `0` | When connected, also keep a copy of each zip in the local folder. |
 | `qbx_db_backup_zip_level` | `6` | Compression level, 1 (fastest) to 9 (smallest). |
 | `qbx_db_backup_timeout_minutes` | `120` | Give up on a backup after this long. |

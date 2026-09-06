@@ -10352,22 +10352,22 @@ var require_ours = __commonJS({
 // node_modules/.pnpm/normalize-path@3.0.0/node_modules/normalize-path/index.js
 var require_normalize_path = __commonJS({
   "node_modules/.pnpm/normalize-path@3.0.0/node_modules/normalize-path/index.js"(exports2, module2) {
-    module2.exports = function(path5, stripTrailing) {
-      if (typeof path5 !== "string") {
+    module2.exports = function(path6, stripTrailing) {
+      if (typeof path6 !== "string") {
         throw new TypeError("expected path to be a string");
       }
-      if (path5 === "\\" || path5 === "/") return "/";
-      var len = path5.length;
-      if (len <= 1) return path5;
+      if (path6 === "\\" || path6 === "/") return "/";
+      var len = path6.length;
+      if (len <= 1) return path6;
       var prefix = "";
-      if (len > 4 && path5[3] === "\\") {
-        var ch = path5[2];
-        if ((ch === "?" || ch === ".") && path5.slice(0, 2) === "\\\\") {
-          path5 = path5.slice(2);
+      if (len > 4 && path6[3] === "\\") {
+        var ch = path6[2];
+        if ((ch === "?" || ch === ".") && path6.slice(0, 2) === "\\\\") {
+          path6 = path6.slice(2);
           prefix = "//";
         }
       }
-      var segs = path5.split(/[/\\]+/);
+      var segs = path6.split(/[/\\]+/);
       if (stripTrailing !== false && segs[segs.length - 1] === "") {
         segs.pop();
       }
@@ -12897,34 +12897,62 @@ var require_tar_stream = __commonJS({
 });
 
 // src/server.ts
-var import_node_path3 = __toESM(require("node:path"), 1);
+var import_node_path4 = __toESM(require("node:path"), 1);
 
 // src/api.ts
 var REQUEST_TIMEOUT_MS = 3e4;
+var POOL_EXCEEDED_FALLBACK = "Backup is larger than the storage pool for this plan";
 var AgentApi = class {
   constructor(options) {
     this.options = options;
   }
   options;
   async heartbeat(payload) {
-    await this.send("POST", "/api/agent/backups/heartbeat", payload);
+    const response = await this.send("POST", "/api/agent/backups/heartbeat", payload);
+    return await response.json();
   }
   async next() {
     const response = await this.send("GET", "/api/agent/backups/next");
     if (response.status === 204) return null;
     return await response.json();
   }
-  async createJob() {
-    const response = await this.send("POST", "/api/agent/backups/jobs", { trigger: "manual" });
+  async createJob(trigger) {
+    const response = await this.send("POST", "/api/agent/backups/jobs", { trigger }, [409, 429]);
+    if (response.status === 429) {
+      const body = await readBody(response);
+      return { status: "throttled", nextAllowedAt: body.nextAllowedAt ?? null };
+    }
+    if (response.status === 409) {
+      const body = await readBody(response);
+      return { status: "busy", jobId: body.jobId ?? "unknown" };
+    }
+    return { status: "created", job: await response.json() };
+  }
+  async requestUpload(jobId, payload) {
+    const response = await this.send(
+      "POST",
+      `/api/agent/backups/${encodeURIComponent(jobId)}/upload`,
+      payload,
+      [413]
+    );
+    if (response.status === 413) {
+      const body = await readBody(response);
+      throw new Error(body.error ?? POOL_EXCEEDED_FALLBACK);
+    }
     return await response.json();
   }
   async progress(jobId, payload) {
     await this.send("POST", `/api/agent/backups/${encodeURIComponent(jobId)}/progress`, payload);
   }
   async complete(jobId, payload) {
-    await this.send("POST", `/api/agent/backups/${encodeURIComponent(jobId)}/complete`, payload);
+    const response = await this.send(
+      "POST",
+      `/api/agent/backups/${encodeURIComponent(jobId)}/complete`,
+      payload
+    );
+    return await response.json();
   }
-  async send(method, route, body) {
+  async send(method, route, body, expected = []) {
     const response = await fetch(`${this.options.baseUrl}${route}`, {
       method,
       headers: {
@@ -12936,7 +12964,7 @@ var AgentApi = class {
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
     });
     if (response.status === 401) throw new Error("Agent token rejected by the QBox API");
-    if (!response.ok) {
+    if (!response.ok && !expected.includes(response.status)) {
       const text = (await response.text().catch(() => "")).slice(0, 300);
       throw new Error(
         `QBox API ${method} ${route} failed with HTTP ${response.status}${text ? `: ${text}` : ""}`
@@ -12945,6 +12973,13 @@ var AgentApi = class {
     return response;
   }
 };
+async function readBody(response) {
+  try {
+    return await response.json();
+  } catch {
+    return {};
+  }
+}
 
 // src/backup.ts
 var import_node_stream = require("node:stream");
@@ -13409,15 +13444,21 @@ function delay(ms) {
 }
 
 // src/config.ts
-var RESOURCE_VERSION = "0.1.0";
+var RESOURCE_VERSION = "0.2.0";
 var DEFAULT_API_BASE = "https://dashboard.qbox.re";
 var MIN_POLL_SECONDS = 15;
+var DEFAULT_INTERVAL_HOURS = 24;
+var DEFAULT_LOCAL_KEEP = 7;
 function loadConfig(source, defaults2) {
   const shared = source("mysql_connection_string", "").trim();
   const override = source("qbx_db_backup_connection_string", "").trim();
   const token = source("qbx_db_backup_token", "").trim();
   const apiBase = source("qbx_db_backup_api", DEFAULT_API_BASE).trim();
   const localDir = source("qbx_db_backup_local_dir", defaults2.localDir).trim();
+  const interval = toInt(
+    source("qbx_db_backup_interval_hours", String(DEFAULT_INTERVAL_HOURS)),
+    DEFAULT_INTERVAL_HOURS
+  );
   return {
     connectionString: override.length > 0 ? override : shared,
     token,
@@ -13425,7 +13466,13 @@ function loadConfig(source, defaults2) {
     localDir: localDir.length > 0 ? localDir : defaults2.localDir,
     resourceDir: defaults2.resourceDir,
     keepLocal: source("qbx_db_backup_keep_local", "0").trim() === "1",
+    localKeep: Math.max(
+      1,
+      toInt(source("qbx_db_backup_local_keep", String(DEFAULT_LOCAL_KEEP)), DEFAULT_LOCAL_KEEP)
+    ),
     pollSeconds: Math.max(MIN_POLL_SECONDS, toInt(source("qbx_db_backup_poll_seconds", "60"), 60)),
+    intervalHours: interval === 0 ? 0 : Math.max(1, interval),
+    intervalClamped: interval !== 0 && interval < 1,
     dumpBin: source("qbx_db_backup_dump_bin", "").trim(),
     zipLevel: clamp(toInt(source("qbx_db_backup_zip_level", "6"), 6), 1, 9),
     timeoutMinutes: Math.max(1, toInt(source("qbx_db_backup_timeout_minutes", "120"), 120)),
@@ -13448,14 +13495,68 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+// src/schedule.ts
+var import_promises2 = require("node:fs/promises");
+var import_node_path2 = __toESM(require("node:path"), 1);
+var STARTUP_GRACE_MS = 6e4;
+var STATE_FILE_NAME = ".state.json";
+var HOUR_MS = 36e5;
+var BACKUP_NAME_PATTERN = /^[A-Za-z0-9._-]+-(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})Z\.zip$/;
+function isOwnBackupFile(name) {
+  return BACKUP_NAME_PATTERN.test(name);
+}
+function nextRunAt(lastRunAt, intervalHours, now) {
+  if (lastRunAt !== null) {
+    const due = lastRunAt + intervalHours * HOUR_MS;
+    if (due > now) return due;
+  }
+  return now + STARTUP_GRACE_MS;
+}
+function selectPrunableBackups(names, keep) {
+  const owned = names.filter(isOwnBackupFile).sort(compareByStamp);
+  return owned.slice(0, Math.max(0, owned.length - Math.max(1, keep)));
+}
+async function readLastRunAt(dir) {
+  try {
+    const raw = await (0, import_promises2.readFile)(import_node_path2.default.join(dir, STATE_FILE_NAME), "utf8");
+    const parsed = JSON.parse(raw);
+    const value = parsed?.lastRunAt;
+    return typeof value === "number" && Number.isFinite(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+async function writeLastRunAt(dir, lastRunAt) {
+  await (0, import_promises2.mkdir)(dir, { recursive: true });
+  await (0, import_promises2.writeFile)(import_node_path2.default.join(dir, STATE_FILE_NAME), `${JSON.stringify({ lastRunAt })}
+`, "utf8");
+}
+async function pruneLocalBackups(dir, keep) {
+  const names = await (0, import_promises2.readdir)(dir).catch(() => []);
+  const prunable = selectPrunableBackups(names, keep);
+  for (const name of prunable) {
+    await (0, import_promises2.rm)(import_node_path2.default.join(dir, name), { force: true });
+  }
+  return prunable;
+}
+function stampOf(name) {
+  return BACKUP_NAME_PATTERN.exec(name)?.[1] ?? "";
+}
+function compareByStamp(left, right) {
+  const a = stampOf(left);
+  const b = stampOf(right);
+  if (a !== b) return a < b ? -1 : 1;
+  if (left === right) return 0;
+  return left < right ? -1 : 1;
+}
+
 // src/zip-sink.ts
 var import_node_crypto = require("node:crypto");
 var import_node_fs2 = require("node:fs");
-var import_promises2 = require("node:fs/promises");
+var import_promises3 = require("node:fs/promises");
 var import_node_http = require("node:http");
 var import_node_https = require("node:https");
-var import_node_os = require("node:os");
-var import_node_path2 = __toESM(require("node:path"), 1);
+var import_node_path3 = __toESM(require("node:path"), 1);
 var import_node_stream2 = require("node:stream");
 
 // node_modules/.pnpm/archiver@8.0.0/node_modules/archiver/lib/core.js
@@ -14575,11 +14676,11 @@ var qmarksTestNoExtDot = ([$0]) => {
   return (f) => f.length === len && f !== "." && f !== "..";
 };
 var defaultPlatform = typeof process === "object" && process ? typeof process.env === "object" && process.env && process.env.__MINIMATCH_TESTING_PLATFORM__ || process.platform : "posix";
-var path2 = {
+var path3 = {
   win32: { sep: "\\" },
   posix: { sep: "/" }
 };
-var sep = defaultPlatform === "win32" ? path2.win32.sep : path2.posix.sep;
+var sep = defaultPlatform === "win32" ? path3.win32.sep : path3.posix.sep;
 minimatch.sep = sep;
 var GLOBSTAR = /* @__PURE__ */ Symbol("globstar **");
 minimatch.GLOBSTAR = GLOBSTAR;
@@ -15327,7 +15428,7 @@ minimatch.unescape = unescape;
 
 // node_modules/.pnpm/readdir-glob@3.0.0/node_modules/readdir-glob/dist/index.mjs
 var import_path = require("path");
-function readdir2(dir, strict) {
+function readdir3(dir, strict) {
   return new Promise((resolve$1, reject) => {
     fs.readdir(dir, { withFileTypes: true }, (err, files) => {
       if (err) switch (err.code) {
@@ -15367,13 +15468,13 @@ function getStat(file, followSymlinks) {
     });
   });
 }
-async function* exploreWalkAsync(dir, path5, followSymlinks, useStat, shouldSkip, strict) {
-  let files = await readdir2(path5 + dir, strict);
+async function* exploreWalkAsync(dir, path6, followSymlinks, useStat, shouldSkip, strict) {
+  let files = await readdir3(path6 + dir, strict);
   for (const file of files) {
     let name = file.name;
     const filename = dir + "/" + name;
     const relative = filename.slice(1);
-    const absolute = path5 + "/" + relative;
+    const absolute = path6 + "/" + relative;
     let stat2 = file;
     if (useStat || followSymlinks) stat2 = await getStat(absolute, followSymlinks) ?? stat2;
     if (stat2.isDirectory()) {
@@ -15383,7 +15484,7 @@ async function* exploreWalkAsync(dir, path5, followSymlinks, useStat, shouldSkip
           absolute,
           stat: stat2
         };
-        yield* exploreWalkAsync(filename, path5, followSymlinks, useStat, shouldSkip, false);
+        yield* exploreWalkAsync(filename, path6, followSymlinks, useStat, shouldSkip, false);
       }
     } else yield {
       relative,
@@ -15392,8 +15493,8 @@ async function* exploreWalkAsync(dir, path5, followSymlinks, useStat, shouldSkip
     };
   }
 }
-async function* explore(path5, followSymlinks, useStat, shouldSkip) {
-  yield* exploreWalkAsync("", path5, followSymlinks, useStat, shouldSkip, true);
+async function* explore(path6, followSymlinks, useStat, shouldSkip) {
+  yield* exploreWalkAsync("", path6, followSymlinks, useStat, shouldSkip, true);
 }
 function readOptions(options) {
   return {
@@ -17828,7 +17929,7 @@ var LocalFileSink = class {
   }
   filePath;
   async open(options) {
-    await (0, import_promises2.mkdir)(import_node_path2.default.dirname(this.filePath), { recursive: true });
+    await (0, import_promises3.mkdir)(import_node_path3.default.dirname(this.filePath), { recursive: true });
     const partPath = `${this.filePath}.part`;
     const spool = createSpool(partPath, options);
     const filePath = this.filePath;
@@ -17837,7 +17938,7 @@ var LocalFileSink = class {
       failed: spool.failed,
       finish: async () => {
         const result = await spool.finish();
-        await (0, import_promises2.rename)(partPath, filePath);
+        await (0, import_promises3.rename)(partPath, filePath);
         return { ...result, location: filePath };
       },
       abort: spool.abort
@@ -17850,10 +17951,10 @@ var UploadSink = class {
   }
   options;
   async open(options) {
-    const root = this.options.tmpDir ?? (0, import_node_os.tmpdir)();
-    await (0, import_promises2.mkdir)(root, { recursive: true });
-    const dir = await (0, import_promises2.mkdtemp)(import_node_path2.default.join(root, "qbx-db-backup-"));
-    const spoolPath = import_node_path2.default.join(dir, "backup.zip");
+    const root = this.options.tmpDir;
+    await (0, import_promises3.mkdir)(root, { recursive: true });
+    const dir = await (0, import_promises3.mkdtemp)(import_node_path3.default.join(root, "qbx-db-backup-"));
+    const spoolPath = import_node_path3.default.join(dir, "backup.zip");
     const spool = createSpool(spoolPath, options, this.options.maxBytes);
     const upload = this.options;
     return {
@@ -17862,21 +17963,25 @@ var UploadSink = class {
       finish: async () => {
         try {
           const result = await spool.finish();
-          if (result.bytesZip > upload.maxBytes) {
+          if (upload.maxBytes !== void 0 && result.bytesZip > upload.maxBytes) {
             throw new Error(
               `Backup zip is ${result.bytesZip} bytes, over the ${upload.maxBytes} byte limit for this job`
             );
           }
-          await putFile(upload.url, spoolPath, result.bytesZip, upload.headers ?? {});
+          const target = await upload.resolveUpload({
+            sizeBytes: result.bytesZip,
+            sha256: result.sha256
+          });
+          await putFile(target.url, spoolPath, result.bytesZip, target.headers ?? {});
           const location = await keepLocalCopy(spoolPath, upload.keepLocalPath);
           return location === null ? result : { ...result, location };
         } finally {
-          await (0, import_promises2.rm)(dir, { recursive: true, force: true });
+          await (0, import_promises3.rm)(dir, { recursive: true, force: true });
         }
       },
       abort: async () => {
         await spool.abort();
-        await (0, import_promises2.rm)(dir, { recursive: true, force: true });
+        await (0, import_promises3.rm)(dir, { recursive: true, force: true });
       }
     };
   }
@@ -17918,7 +18023,7 @@ function createSpool(target, options, maxBytes) {
       zip.abort();
       counter.transform.destroy();
       file.destroy();
-      await (0, import_promises2.rm)(target, { force: true });
+      await (0, import_promises3.rm)(target, { force: true });
     },
     failed
   };
@@ -17942,10 +18047,10 @@ function createCounter(onBytes, maxBytes) {
 }
 async function keepLocalCopy(spoolPath, destination) {
   if (destination === void 0 || destination.length === 0) return null;
-  await (0, import_promises2.mkdir)(import_node_path2.default.dirname(destination), { recursive: true });
+  await (0, import_promises3.mkdir)(import_node_path3.default.dirname(destination), { recursive: true });
   const partPath = `${destination}.part`;
-  await (0, import_promises2.copyFile)(spoolPath, partPath);
-  await (0, import_promises2.rename)(partPath, destination);
+  await (0, import_promises3.copyFile)(spoolPath, partPath);
+  await (0, import_promises3.rename)(partPath, destination);
   return destination;
 }
 function putFile(url, filePath, size, headers) {
@@ -17957,8 +18062,8 @@ function putFile(url, filePath, size, headers) {
       {
         method: "PUT",
         headers: {
-          ...headers,
           "Content-Type": "application/zip",
+          ...headers,
           "Content-Length": String(size)
         }
       },
@@ -17988,10 +18093,15 @@ function putFile(url, filePath, size, headers) {
 
 // src/server.ts
 var PROGRESS_INTERVAL_MS = 1e4;
+var MAX_TIMER_MS = 2147483e3;
+var SIZE_UNITS = ["B", "KB", "MB", "GB", "TB"];
 var config;
 var api = null;
 var dumpBinary = null;
 var pollTimer = null;
+var scheduleTimer = null;
+var scheduledAt = null;
+var lastHeartbeat = null;
 var lastOutcome = "no backup has run yet";
 function resourceDirectory() {
   try {
@@ -18017,6 +18127,23 @@ function databaseName() {
 function describeBinary(binary) {
   return `${binary.command} (${binary.version}) [${binary.source}]`;
 }
+function formatLocalTime(at) {
+  return new Date(at).toLocaleString();
+}
+function formatBytes(value) {
+  let size = Math.max(0, value);
+  let unit = 0;
+  while (size >= 1024 && unit < SIZE_UNITS.length - 1) {
+    size /= 1024;
+    unit += 1;
+  }
+  return `${unit === 0 ? size : size.toFixed(1)} ${SIZE_UNITS[unit] ?? "B"}`;
+}
+function parseTimestamp(value) {
+  if (value === null || value.length === 0) return null;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
 function detect() {
   return detectDumpBinary({
     explicitPath: config.dumpBin.length > 0 ? config.dumpBin : void 0,
@@ -18037,23 +18164,41 @@ function describeOutcome(outcome) {
   const warnings = outcome.warnings.length > 0 ? ` warnings=${outcome.warnings.join("; ")}` : "";
   return `ok zip=${outcome.sizeBytes}B sql=${outcome.rawBytes}B in ${Math.round(outcome.durationMs / 1e3)}s${outcome.location ? ` -> ${outcome.location}` : ""}${warnings}`;
 }
+function describeSchedule() {
+  if (config.intervalHours <= 0) return "disabled";
+  const next = scheduledAt === null ? "not scheduled" : formatLocalTime(scheduledAt);
+  return `every ${config.intervalHours} h, next at ${next}`;
+}
+async function pruneLocal() {
+  const removed = await pruneLocalBackups(config.localDir, config.localKeep).catch(
+    (failure) => {
+      warn(errorMessage(failure));
+      return [];
+    }
+  );
+  if (removed.length > 0) {
+    info(`removed ${removed.length} old backup(s), keeping the newest ${config.localKeep}`);
+  }
+}
 async function runLocalBackup() {
   const target = parseConnectionString(config.connectionString);
   const names = buildBackupNames(target.database, /* @__PURE__ */ new Date());
-  const sink = new LocalFileSink(import_node_path3.default.join(config.localDir, names.zipName));
+  const sink = new LocalFileSink(import_node_path4.default.join(config.localDir, names.zipName));
   const outcome = await runBackup({ config, sink, entryName: names.entryName });
   lastOutcome = describeOutcome(outcome);
   info(lastOutcome);
+  if (!outcome.busy) await pruneLocal();
 }
 async function runJob(job) {
   if (api === null) return;
   const client = api;
   const sink = new UploadSink({
-    url: job.uploadUrl,
-    headers: job.uploadHeaders,
-    maxBytes: job.maxBytes,
-    tmpDir: import_node_path3.default.join(config.localDir, ".tmp"),
-    keepLocalPath: config.keepLocal ? import_node_path3.default.join(config.localDir, job.fileName) : void 0
+    resolveUpload: async (upload) => {
+      const ticket = await client.requestUpload(job.jobId, upload);
+      return { url: ticket.uploadUrl, headers: ticket.uploadHeaders };
+    },
+    tmpDir: import_node_path4.default.join(config.localDir, ".tmp"),
+    keepLocalPath: config.keepLocal ? import_node_path4.default.join(config.localDir, job.fileName) : void 0
   });
   let lastPost = 0;
   info(`starting backup job ${job.jobId} -> ${job.fileName}`);
@@ -18074,7 +18219,8 @@ async function runJob(job) {
     lastOutcome = describeOutcome(outcome);
     info(lastOutcome);
     if (outcome.busy) return;
-    await client.complete(job.jobId, {
+    if (config.keepLocal) await pruneLocal();
+    const result = await client.complete(job.jobId, {
       ok: true,
       sizeBytes: outcome.sizeBytes,
       rawBytes: outcome.rawBytes,
@@ -18082,19 +18228,81 @@ async function runJob(job) {
       durationMs: outcome.durationMs,
       warnings: outcome.warnings
     });
+    info(`job ${job.jobId}: ${result.status}`);
+    if (result.status === "failed" && result.error) {
+      lastOutcome = `failed: ${result.error}`;
+      error(result.error);
+    }
   } catch (failure) {
     lastOutcome = `failed: ${errorMessage(failure)}`;
     error(lastOutcome);
     await client.complete(job.jobId, { ok: false, error: errorMessage(failure) }).catch((reportFailure) => error(errorMessage(reportFailure)));
   }
 }
+async function requestJob(trigger) {
+  if (api === null) return null;
+  const created = await api.createJob(trigger);
+  if (created.status === "throttled") {
+    const allowedAt = parseTimestamp(created.nextAllowedAt);
+    info(
+      `next backup allowed at ${allowedAt === null ? "a later time" : formatLocalTime(allowedAt)}`
+    );
+    return allowedAt;
+  }
+  if (created.status === "busy") {
+    info(`the dashboard is already running backup job ${created.jobId}, skipping this run`);
+    return null;
+  }
+  await runJob(created.job);
+  return null;
+}
+function armSchedule(at) {
+  if (scheduleTimer !== null) clearTimeout(scheduleTimer);
+  scheduledAt = at;
+  const delay2 = Math.max(0, at - Date.now());
+  scheduleTimer = setTimeout(
+    delay2 > MAX_TIMER_MS ? () => armSchedule(at) : () => void runScheduled(),
+    Math.min(delay2, MAX_TIMER_MS)
+  );
+}
+async function runScheduled() {
+  scheduleTimer = null;
+  const startedAt = Date.now();
+  let nextAt = startedAt + config.intervalHours * HOUR_MS;
+  if (isBackupRunning()) {
+    info("a backup is already running, skipping this scheduled run");
+    armSchedule(nextAt);
+    return;
+  }
+  await writeLastRunAt(config.localDir, startedAt).catch((failure) => {
+    warn(errorMessage(failure));
+  });
+  try {
+    if (config.mode === "local") {
+      await runLocalBackup();
+    } else {
+      const allowedAt = await requestJob("scheduled");
+      if (allowedAt !== null) nextAt = allowedAt;
+    }
+  } catch (failure) {
+    lastOutcome = `failed: ${errorMessage(failure)}`;
+    error(lastOutcome);
+  }
+  armSchedule(nextAt);
+}
+async function startSchedule() {
+  const lastRunAt = await readLastRunAt(config.localDir);
+  armSchedule(nextRunAt(lastRunAt, config.intervalHours, Date.now()));
+  info(`scheduled backups: ${describeSchedule()}`);
+}
 async function pollOnce() {
   if (api === null) return;
-  await api.heartbeat({
+  lastHeartbeat = await api.heartbeat({
     version: RESOURCE_VERSION,
     platform: `${process.platform}-${process.arch}`,
     dumpBinary,
-    database: databaseName()
+    database: databaseName(),
+    intervalHours: config.intervalHours
   });
   if (isBackupRunning()) return;
   const job = await api.next();
@@ -18108,6 +18316,12 @@ function commandStatus() {
   info(`target: ${targetLabel()}`);
   info(`state: ${isBackupRunning() ? "busy" : "idle"}`);
   info(`dump binary: ${dumpBinary ? describeBinary(dumpBinary) : "not found"}`);
+  info(`schedule: ${describeSchedule()}`);
+  if (lastHeartbeat !== null) {
+    info(
+      `plan ${lastHeartbeat.plan}: ${formatBytes(lastHeartbeat.usedBytes)} / ${formatBytes(lastHeartbeat.poolBytes)} used`
+    );
+  }
   info(`last result: ${lastOutcome}`);
 }
 async function commandTest() {
@@ -18131,8 +18345,7 @@ async function commandRun() {
       await runLocalBackup();
       return;
     }
-    if (api === null) return;
-    await runJob(await api.createJob());
+    await requestJob("manual");
   } catch (failure) {
     lastOutcome = `failed: ${errorMessage(failure)}`;
     error(lastOutcome);
@@ -18141,7 +18354,7 @@ async function commandRun() {
 function start() {
   const resourceDir = resourceDirectory();
   config = loadConfig((name, fallback) => GetConvar(name, fallback), {
-    localDir: import_node_path3.default.join(resourceDir, "backups"),
+    localDir: import_node_path4.default.join(resourceDir, "backups"),
     resourceDir
   });
   info(
@@ -18149,6 +18362,9 @@ function start() {
   );
   if (config.connectionString.length === 0) {
     warn("no connection string: set mysql_connection_string or qbx_db_backup_connection_string");
+  }
+  if (config.intervalClamped) {
+    warn("qbx_db_backup_interval_hours below 1 was raised to 1; use 0 to disable the schedule");
   }
   void refreshDumpBinary();
   if (config.mode === "upload") {
@@ -18163,6 +18379,11 @@ function start() {
     };
     setTimeout(poll, 5e3);
     pollTimer = setInterval(poll, config.pollSeconds * 1e3);
+  }
+  if (config.intervalHours > 0) {
+    void startSchedule().catch((failure) => error(errorMessage(failure)));
+  } else {
+    info("scheduled backups: disabled");
   }
   RegisterCommand(
     "qbx_db_backup",
@@ -18190,6 +18411,9 @@ function start() {
     if (name !== GetCurrentResourceName()) return;
     if (pollTimer !== null) clearInterval(pollTimer);
     pollTimer = null;
+    if (scheduleTimer !== null) clearTimeout(scheduleTimer);
+    scheduleTimer = null;
+    scheduledAt = null;
     cancelRunningBackup("Resource stopped");
   });
 }
