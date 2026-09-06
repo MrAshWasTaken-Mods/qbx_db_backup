@@ -29,9 +29,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// node_modules/.pnpm/process-nextick-args@2.0.1/node_modules/process-nextick-args/index.js
+// node_modules/process-nextick-args/index.js
 var require_process_nextick_args = __commonJS({
-  "node_modules/.pnpm/process-nextick-args@2.0.1/node_modules/process-nextick-args/index.js"(exports2, module2) {
+  "node_modules/process-nextick-args/index.js"(exports2, module2) {
     "use strict";
     if (typeof process === "undefined" || !process.version || process.version.indexOf("v0.") === 0 || process.version.indexOf("v1.") === 0 && process.version.indexOf("v1.8.") !== 0) {
       module2.exports = { nextTick };
@@ -74,9 +74,9 @@ var require_process_nextick_args = __commonJS({
   }
 });
 
-// node_modules/.pnpm/isarray@1.0.0/node_modules/isarray/index.js
+// node_modules/isarray/index.js
 var require_isarray = __commonJS({
-  "node_modules/.pnpm/isarray@1.0.0/node_modules/isarray/index.js"(exports2, module2) {
+  "node_modules/isarray/index.js"(exports2, module2) {
     var toString = {}.toString;
     module2.exports = Array.isArray || function(arr) {
       return toString.call(arr) == "[object Array]";
@@ -84,16 +84,16 @@ var require_isarray = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/internal/streams/stream.js
+// node_modules/lazystream/node_modules/readable-stream/lib/internal/streams/stream.js
 var require_stream = __commonJS({
-  "node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/internal/streams/stream.js"(exports2, module2) {
+  "node_modules/lazystream/node_modules/readable-stream/lib/internal/streams/stream.js"(exports2, module2) {
     module2.exports = require("stream");
   }
 });
 
-// node_modules/.pnpm/safe-buffer@5.1.2/node_modules/safe-buffer/index.js
+// node_modules/safe-buffer/index.js
 var require_safe_buffer = __commonJS({
-  "node_modules/.pnpm/safe-buffer@5.1.2/node_modules/safe-buffer/index.js"(exports2, module2) {
+  "node_modules/safe-buffer/index.js"(exports2, module2) {
     var buffer = require("buffer");
     var Buffer2 = buffer.Buffer;
     function copyProps(src, dst) {
@@ -148,9 +148,9 @@ var require_safe_buffer = __commonJS({
   }
 });
 
-// node_modules/.pnpm/core-util-is@1.0.3/node_modules/core-util-is/lib/util.js
+// node_modules/core-util-is/lib/util.js
 var require_util = __commonJS({
-  "node_modules/.pnpm/core-util-is@1.0.3/node_modules/core-util-is/lib/util.js"(exports2) {
+  "node_modules/core-util-is/lib/util.js"(exports2) {
     function isArray(arg) {
       if (Array.isArray) {
         return Array.isArray(arg);
@@ -218,9 +218,9 @@ var require_util = __commonJS({
   }
 });
 
-// node_modules/.pnpm/inherits@2.0.4/node_modules/inherits/inherits_browser.js
+// node_modules/inherits/inherits_browser.js
 var require_inherits_browser = __commonJS({
-  "node_modules/.pnpm/inherits@2.0.4/node_modules/inherits/inherits_browser.js"(exports2, module2) {
+  "node_modules/inherits/inherits_browser.js"(exports2, module2) {
     if (typeof Object.create === "function") {
       module2.exports = function inherits(ctor, superCtor) {
         if (superCtor) {
@@ -250,9 +250,9 @@ var require_inherits_browser = __commonJS({
   }
 });
 
-// node_modules/.pnpm/inherits@2.0.4/node_modules/inherits/inherits.js
+// node_modules/inherits/inherits.js
 var require_inherits = __commonJS({
-  "node_modules/.pnpm/inherits@2.0.4/node_modules/inherits/inherits.js"(exports2, module2) {
+  "node_modules/inherits/inherits.js"(exports2, module2) {
     try {
       util3 = require("util");
       if (typeof util3.inherits !== "function") throw "";
@@ -264,9 +264,9 @@ var require_inherits = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/internal/streams/BufferList.js
+// node_modules/lazystream/node_modules/readable-stream/lib/internal/streams/BufferList.js
 var require_BufferList = __commonJS({
-  "node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/internal/streams/BufferList.js"(exports2, module2) {
+  "node_modules/lazystream/node_modules/readable-stream/lib/internal/streams/BufferList.js"(exports2, module2) {
     "use strict";
     function _classCallCheck(instance, Constructor) {
       if (!(instance instanceof Constructor)) {
@@ -342,9 +342,9 @@ var require_BufferList = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/internal/streams/destroy.js
+// node_modules/lazystream/node_modules/readable-stream/lib/internal/streams/destroy.js
 var require_destroy = __commonJS({
-  "node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/internal/streams/destroy.js"(exports2, module2) {
+  "node_modules/lazystream/node_modules/readable-stream/lib/internal/streams/destroy.js"(exports2, module2) {
     "use strict";
     var pna = require_process_nextick_args();
     function destroy(err, cb) {
@@ -411,16 +411,16 @@ var require_destroy = __commonJS({
   }
 });
 
-// node_modules/.pnpm/util-deprecate@1.0.2/node_modules/util-deprecate/node.js
+// node_modules/util-deprecate/node.js
 var require_node = __commonJS({
-  "node_modules/.pnpm/util-deprecate@1.0.2/node_modules/util-deprecate/node.js"(exports2, module2) {
+  "node_modules/util-deprecate/node.js"(exports2, module2) {
     module2.exports = require("util").deprecate;
   }
 });
 
-// node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/_stream_writable.js
+// node_modules/lazystream/node_modules/readable-stream/lib/_stream_writable.js
 var require_stream_writable = __commonJS({
-  "node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/_stream_writable.js"(exports2, module2) {
+  "node_modules/lazystream/node_modules/readable-stream/lib/_stream_writable.js"(exports2, module2) {
     "use strict";
     var pna = require_process_nextick_args();
     module2.exports = Writable;
@@ -858,9 +858,9 @@ var require_stream_writable = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/_stream_duplex.js
+// node_modules/lazystream/node_modules/readable-stream/lib/_stream_duplex.js
 var require_stream_duplex = __commonJS({
-  "node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/_stream_duplex.js"(exports2, module2) {
+  "node_modules/lazystream/node_modules/readable-stream/lib/_stream_duplex.js"(exports2, module2) {
     "use strict";
     var pna = require_process_nextick_args();
     var objectKeys = Object.keys || function(obj) {
@@ -935,9 +935,9 @@ var require_stream_duplex = __commonJS({
   }
 });
 
-// node_modules/.pnpm/string_decoder@1.1.1/node_modules/string_decoder/lib/string_decoder.js
+// node_modules/lazystream/node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js
 var require_string_decoder = __commonJS({
-  "node_modules/.pnpm/string_decoder@1.1.1/node_modules/string_decoder/lib/string_decoder.js"(exports2) {
+  "node_modules/lazystream/node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js"(exports2) {
     "use strict";
     var Buffer2 = require_safe_buffer().Buffer;
     var isEncoding = Buffer2.isEncoding || function(encoding) {
@@ -1173,9 +1173,9 @@ var require_string_decoder = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/_stream_readable.js
+// node_modules/lazystream/node_modules/readable-stream/lib/_stream_readable.js
 var require_stream_readable = __commonJS({
-  "node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/_stream_readable.js"(exports2, module2) {
+  "node_modules/lazystream/node_modules/readable-stream/lib/_stream_readable.js"(exports2, module2) {
     "use strict";
     var pna = require_process_nextick_args();
     module2.exports = Readable2;
@@ -1859,9 +1859,9 @@ var require_stream_readable = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/_stream_transform.js
+// node_modules/lazystream/node_modules/readable-stream/lib/_stream_transform.js
 var require_stream_transform = __commonJS({
-  "node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/_stream_transform.js"(exports2, module2) {
+  "node_modules/lazystream/node_modules/readable-stream/lib/_stream_transform.js"(exports2, module2) {
     "use strict";
     module2.exports = Transform6;
     var Duplex = require_stream_duplex();
@@ -1959,9 +1959,9 @@ var require_stream_transform = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/_stream_passthrough.js
+// node_modules/lazystream/node_modules/readable-stream/lib/_stream_passthrough.js
 var require_stream_passthrough = __commonJS({
-  "node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/_stream_passthrough.js"(exports2, module2) {
+  "node_modules/lazystream/node_modules/readable-stream/lib/_stream_passthrough.js"(exports2, module2) {
     "use strict";
     module2.exports = PassThrough4;
     var Transform6 = require_stream_transform();
@@ -1978,9 +1978,9 @@ var require_stream_passthrough = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/readable.js
+// node_modules/lazystream/node_modules/readable-stream/readable.js
 var require_readable = __commonJS({
-  "node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/readable.js"(exports2, module2) {
+  "node_modules/lazystream/node_modules/readable-stream/readable.js"(exports2, module2) {
     var Stream = require("stream");
     if (process.env.READABLE_STREAM === "disable" && Stream) {
       module2.exports = Stream;
@@ -2003,16 +2003,16 @@ var require_readable = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/passthrough.js
+// node_modules/lazystream/node_modules/readable-stream/passthrough.js
 var require_passthrough = __commonJS({
-  "node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/passthrough.js"(exports2, module2) {
+  "node_modules/lazystream/node_modules/readable-stream/passthrough.js"(exports2, module2) {
     module2.exports = require_readable().PassThrough;
   }
 });
 
-// node_modules/.pnpm/lazystream@1.0.1/node_modules/lazystream/lib/lazystream.js
+// node_modules/lazystream/lib/lazystream.js
 var require_lazystream = __commonJS({
-  "node_modules/.pnpm/lazystream@1.0.1/node_modules/lazystream/lib/lazystream.js"(exports2, module2) {
+  "node_modules/lazystream/lib/lazystream.js"(exports2, module2) {
     var util3 = require("util");
     var PassThrough4 = require_passthrough();
     module2.exports = {
@@ -2055,9 +2055,9 @@ var require_lazystream = __commonJS({
   }
 });
 
-// node_modules/.pnpm/async@3.2.6/node_modules/async/dist/async.js
+// node_modules/async/dist/async.js
 var require_async = __commonJS({
-  "node_modules/.pnpm/async@3.2.6/node_modules/async/dist/async.js"(exports2, module2) {
+  "node_modules/async/dist/async.js"(exports2, module2) {
     (function(global2, factory) {
       typeof exports2 === "object" && typeof module2 !== "undefined" ? factory(exports2) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.async = {}));
     })(exports2, (function(exports3) {
@@ -3915,9 +3915,9 @@ var require_async = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/ours/primordials.js
+// node_modules/readable-stream/lib/ours/primordials.js
 var require_primordials = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/ours/primordials.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/ours/primordials.js"(exports2, module2) {
     "use strict";
     var AggregateError = class extends Error {
       constructor(errors) {
@@ -4036,9 +4036,9 @@ var require_primordials = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/ours/util/inspect.js
+// node_modules/readable-stream/lib/ours/util/inspect.js
 var require_inspect = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/ours/util/inspect.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/ours/util/inspect.js"(exports2, module2) {
     "use strict";
     module2.exports = {
       format(format, ...args) {
@@ -4087,9 +4087,9 @@ var require_inspect = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/ours/errors.js
+// node_modules/readable-stream/lib/ours/errors.js
 var require_errors = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/ours/errors.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/ours/errors.js"(exports2, module2) {
     "use strict";
     var { format, inspect } = require_inspect();
     var { AggregateError: CustomAggregateError } = require_primordials();
@@ -4405,9 +4405,9 @@ var require_errors = __commonJS({
   }
 });
 
-// node_modules/.pnpm/event-target-shim@5.0.1/node_modules/event-target-shim/dist/event-target-shim.js
+// node_modules/event-target-shim/dist/event-target-shim.js
 var require_event_target_shim = __commonJS({
-  "node_modules/.pnpm/event-target-shim@5.0.1/node_modules/event-target-shim/dist/event-target-shim.js"(exports2, module2) {
+  "node_modules/event-target-shim/dist/event-target-shim.js"(exports2, module2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var privateData = /* @__PURE__ */ new WeakMap();
@@ -4977,9 +4977,9 @@ var require_event_target_shim = __commonJS({
   }
 });
 
-// node_modules/.pnpm/abort-controller@3.0.0/node_modules/abort-controller/dist/abort-controller.js
+// node_modules/abort-controller/dist/abort-controller.js
 var require_abort_controller = __commonJS({
-  "node_modules/.pnpm/abort-controller@3.0.0/node_modules/abort-controller/dist/abort-controller.js"(exports2, module2) {
+  "node_modules/abort-controller/dist/abort-controller.js"(exports2, module2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var eventTargetShim = require_event_target_shim();
@@ -5073,9 +5073,9 @@ var require_abort_controller = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/ours/util.js
+// node_modules/readable-stream/lib/ours/util.js
 var require_util2 = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/ours/util.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/ours/util.js"(exports2, module2) {
     "use strict";
     var bufferModule = require("buffer");
     var { format, inspect } = require_inspect();
@@ -5212,9 +5212,9 @@ var require_util2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/validators.js
+// node_modules/readable-stream/lib/internal/validators.js
 var require_validators = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/validators.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/validators.js"(exports2, module2) {
     "use strict";
     var {
       ArrayIsArray,
@@ -5476,16 +5476,16 @@ var require_validators = __commonJS({
   }
 });
 
-// node_modules/.pnpm/process@0.11.10/node_modules/process/index.js
+// node_modules/process/index.js
 var require_process = __commonJS({
-  "node_modules/.pnpm/process@0.11.10/node_modules/process/index.js"(exports2, module2) {
+  "node_modules/process/index.js"(exports2, module2) {
     module2.exports = global.process;
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/utils.js
+// node_modules/readable-stream/lib/internal/streams/utils.js
 var require_utils = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/utils.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/utils.js"(exports2, module2) {
     "use strict";
     var { SymbolAsyncIterator, SymbolIterator, SymbolFor } = require_primordials();
     var kIsDestroyed = SymbolFor("nodejs.stream.destroyed");
@@ -5692,9 +5692,9 @@ var require_utils = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/end-of-stream.js
+// node_modules/readable-stream/lib/internal/streams/end-of-stream.js
 var require_end_of_stream = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/end-of-stream.js"(exports2, module2) {
     "use strict";
     var process2 = require_process();
     var { AbortError, codes } = require_errors();
@@ -5944,9 +5944,9 @@ var require_end_of_stream = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/destroy.js
+// node_modules/readable-stream/lib/internal/streams/destroy.js
 var require_destroy2 = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/destroy.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/destroy.js"(exports2, module2) {
     "use strict";
     var process2 = require_process();
     var {
@@ -6209,9 +6209,9 @@ var require_destroy2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/legacy.js
+// node_modules/readable-stream/lib/internal/streams/legacy.js
 var require_legacy = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/legacy.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/legacy.js"(exports2, module2) {
     "use strict";
     var { ArrayIsArray, ObjectSetPrototypeOf } = require_primordials();
     var { EventEmitter: EE } = require("events");
@@ -6287,9 +6287,9 @@ var require_legacy = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/add-abort-signal.js
+// node_modules/readable-stream/lib/internal/streams/add-abort-signal.js
 var require_add_abort_signal = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/add-abort-signal.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/add-abort-signal.js"(exports2, module2) {
     "use strict";
     var { SymbolDispose } = require_primordials();
     var { AbortError, codes } = require_errors();
@@ -6338,9 +6338,9 @@ var require_add_abort_signal = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/buffer_list.js
+// node_modules/readable-stream/lib/internal/streams/buffer_list.js
 var require_buffer_list = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/buffer_list.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/buffer_list.js"(exports2, module2) {
     "use strict";
     var { StringPrototypeSlice, SymbolIterator, TypedArrayPrototypeSet, Uint8Array: Uint8Array2 } = require_primordials();
     var { Buffer: Buffer2 } = require("buffer");
@@ -6493,9 +6493,9 @@ var require_buffer_list = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/state.js
+// node_modules/readable-stream/lib/internal/streams/state.js
 var require_state = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/state.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/state.js"(exports2, module2) {
     "use strict";
     var { MathFloor, NumberIsInteger } = require_primordials();
     var { validateInteger } = require_validators();
@@ -6535,9 +6535,9 @@ var require_state = __commonJS({
   }
 });
 
-// node_modules/.pnpm/safe-buffer@5.2.1/node_modules/safe-buffer/index.js
+// node_modules/string_decoder/node_modules/safe-buffer/index.js
 var require_safe_buffer2 = __commonJS({
-  "node_modules/.pnpm/safe-buffer@5.2.1/node_modules/safe-buffer/index.js"(exports2, module2) {
+  "node_modules/string_decoder/node_modules/safe-buffer/index.js"(exports2, module2) {
     var buffer = require("buffer");
     var Buffer2 = buffer.Buffer;
     function copyProps(src, dst) {
@@ -6593,9 +6593,9 @@ var require_safe_buffer2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/string_decoder@1.3.0/node_modules/string_decoder/lib/string_decoder.js
+// node_modules/string_decoder/lib/string_decoder.js
 var require_string_decoder2 = __commonJS({
-  "node_modules/.pnpm/string_decoder@1.3.0/node_modules/string_decoder/lib/string_decoder.js"(exports2) {
+  "node_modules/string_decoder/lib/string_decoder.js"(exports2) {
     "use strict";
     var Buffer2 = require_safe_buffer2().Buffer;
     var isEncoding = Buffer2.isEncoding || function(encoding) {
@@ -6831,9 +6831,9 @@ var require_string_decoder2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/from.js
+// node_modules/readable-stream/lib/internal/streams/from.js
 var require_from = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/from.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/from.js"(exports2, module2) {
     "use strict";
     var process2 = require_process();
     var { PromisePrototypeThen, SymbolAsyncIterator, SymbolIterator } = require_primordials();
@@ -6926,9 +6926,9 @@ var require_from = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/readable.js
+// node_modules/readable-stream/lib/internal/streams/readable.js
 var require_readable2 = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/readable.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/readable.js"(exports2, module2) {
     "use strict";
     var process2 = require_process();
     var {
@@ -7892,9 +7892,9 @@ var require_readable2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/writable.js
+// node_modules/readable-stream/lib/internal/streams/writable.js
 var require_writable = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/writable.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/writable.js"(exports2, module2) {
     "use strict";
     var process2 = require_process();
     var {
@@ -8513,9 +8513,9 @@ var require_writable = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/duplexify.js
+// node_modules/readable-stream/lib/internal/streams/duplexify.js
 var require_duplexify = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/duplexify.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/duplexify.js"(exports2, module2) {
     var process2 = require_process();
     var bufferModule = require("buffer");
     var {
@@ -8860,9 +8860,9 @@ var require_duplexify = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/duplex.js
+// node_modules/readable-stream/lib/internal/streams/duplex.js
 var require_duplex = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/duplex.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/duplex.js"(exports2, module2) {
     "use strict";
     var {
       ObjectDefineProperties,
@@ -8977,9 +8977,9 @@ var require_duplex = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/transform.js
+// node_modules/readable-stream/lib/internal/streams/transform.js
 var require_transform = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/transform.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/transform.js"(exports2, module2) {
     "use strict";
     var { ObjectSetPrototypeOf, Symbol: Symbol2 } = require_primordials();
     module2.exports = Transform6;
@@ -9079,9 +9079,9 @@ var require_transform = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/passthrough.js
+// node_modules/readable-stream/lib/internal/streams/passthrough.js
 var require_passthrough2 = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/passthrough.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/passthrough.js"(exports2, module2) {
     "use strict";
     var { ObjectSetPrototypeOf } = require_primordials();
     module2.exports = PassThrough4;
@@ -9098,9 +9098,9 @@ var require_passthrough2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/pipeline.js
+// node_modules/readable-stream/lib/internal/streams/pipeline.js
 var require_pipeline = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/pipeline.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/pipeline.js"(exports2, module2) {
     var process2 = require_process();
     var { ArrayIsArray, Promise: Promise2, SymbolAsyncIterator, SymbolDispose } = require_primordials();
     var eos = require_end_of_stream();
@@ -9526,9 +9526,9 @@ var require_pipeline = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/compose.js
+// node_modules/readable-stream/lib/internal/streams/compose.js
 var require_compose = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/compose.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/compose.js"(exports2, module2) {
     "use strict";
     var { pipeline } = require_pipeline();
     var Duplex = require_duplex();
@@ -9719,9 +9719,9 @@ var require_compose = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/operators.js
+// node_modules/readable-stream/lib/internal/streams/operators.js
 var require_operators = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/internal/streams/operators.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/internal/streams/operators.js"(exports2, module2) {
     "use strict";
     var AbortController = globalThis.AbortController || require_abort_controller().AbortController;
     var {
@@ -10124,9 +10124,9 @@ var require_operators = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/stream/promises.js
+// node_modules/readable-stream/lib/stream/promises.js
 var require_promises = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/stream/promises.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/stream/promises.js"(exports2, module2) {
     "use strict";
     var { ArrayPrototypePop, Promise: Promise2 } = require_primordials();
     var { isIterable, isNodeStream, isWebStream } = require_utils();
@@ -10166,9 +10166,9 @@ var require_promises = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/stream.js
+// node_modules/readable-stream/lib/stream.js
 var require_stream2 = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/stream.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/stream.js"(exports2, module2) {
     "use strict";
     var { Buffer: Buffer2 } = require("buffer");
     var { ObjectDefineProperty, ObjectKeys, ReflectApply } = require_primordials();
@@ -10285,9 +10285,9 @@ var require_stream2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/ours/index.js
+// node_modules/readable-stream/lib/ours/index.js
 var require_ours = __commonJS({
-  "node_modules/.pnpm/readable-stream@4.7.0/node_modules/readable-stream/lib/ours/index.js"(exports2, module2) {
+  "node_modules/readable-stream/lib/ours/index.js"(exports2, module2) {
     "use strict";
     var Stream = require("stream");
     if (Stream && process.env.READABLE_STREAM === "disable") {
@@ -10349,9 +10349,9 @@ var require_ours = __commonJS({
   }
 });
 
-// node_modules/.pnpm/normalize-path@3.0.0/node_modules/normalize-path/index.js
+// node_modules/normalize-path/index.js
 var require_normalize_path = __commonJS({
-  "node_modules/.pnpm/normalize-path@3.0.0/node_modules/normalize-path/index.js"(exports2, module2) {
+  "node_modules/normalize-path/index.js"(exports2, module2) {
     module2.exports = function(path6, stripTrailing) {
       if (typeof path6 !== "string") {
         throw new TypeError("expected path to be a string");
@@ -10376,9 +10376,9 @@ var require_normalize_path = __commonJS({
   }
 });
 
-// node_modules/.pnpm/crc-32@1.2.2/node_modules/crc-32/crc32.js
+// node_modules/crc-32/crc32.js
 var require_crc32 = __commonJS({
-  "node_modules/.pnpm/crc-32@1.2.2/node_modules/crc-32/crc32.js"(exports2) {
+  "node_modules/crc-32/crc32.js"(exports2) {
     var CRC32;
     (function(factory) {
       if (typeof DO_NOT_EXPORT_CRC === "undefined") {
@@ -10474,16 +10474,16 @@ var require_crc32 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/events-universal@1.0.1/node_modules/events-universal/default.js
+// node_modules/events-universal/default.js
 var require_default = __commonJS({
-  "node_modules/.pnpm/events-universal@1.0.1/node_modules/events-universal/default.js"(exports2, module2) {
+  "node_modules/events-universal/default.js"(exports2, module2) {
     module2.exports = require("events");
   }
 });
 
-// node_modules/.pnpm/fast-fifo@1.3.2/node_modules/fast-fifo/fixed-size.js
+// node_modules/fast-fifo/fixed-size.js
 var require_fixed_size = __commonJS({
-  "node_modules/.pnpm/fast-fifo@1.3.2/node_modules/fast-fifo/fixed-size.js"(exports2, module2) {
+  "node_modules/fast-fifo/fixed-size.js"(exports2, module2) {
     module2.exports = class FixedFIFO {
       constructor(hwm) {
         if (!(hwm > 0) || (hwm - 1 & hwm) !== 0) throw new Error("Max size for a FixedFIFO should be a power of two");
@@ -10521,9 +10521,9 @@ var require_fixed_size = __commonJS({
   }
 });
 
-// node_modules/.pnpm/fast-fifo@1.3.2/node_modules/fast-fifo/index.js
+// node_modules/fast-fifo/index.js
 var require_fast_fifo = __commonJS({
-  "node_modules/.pnpm/fast-fifo@1.3.2/node_modules/fast-fifo/index.js"(exports2, module2) {
+  "node_modules/fast-fifo/index.js"(exports2, module2) {
     var FixedFIFO = require_fixed_size();
     module2.exports = class FastFIFO {
       constructor(hwm) {
@@ -10568,9 +10568,9 @@ var require_fast_fifo = __commonJS({
   }
 });
 
-// node_modules/.pnpm/b4a@1.8.1/node_modules/b4a/index.js
+// node_modules/b4a/index.js
 var require_b4a = __commonJS({
-  "node_modules/.pnpm/b4a@1.8.1/node_modules/b4a/index.js"(exports2, module2) {
+  "node_modules/b4a/index.js"(exports2, module2) {
     function isBuffer(value) {
       return Buffer.isBuffer(value) || value instanceof Uint8Array;
     }
@@ -10725,9 +10725,9 @@ var require_b4a = __commonJS({
   }
 });
 
-// node_modules/.pnpm/text-decoder@1.2.7/node_modules/text-decoder/lib/pass-through-decoder.js
+// node_modules/text-decoder/lib/pass-through-decoder.js
 var require_pass_through_decoder = __commonJS({
-  "node_modules/.pnpm/text-decoder@1.2.7/node_modules/text-decoder/lib/pass-through-decoder.js"(exports2, module2) {
+  "node_modules/text-decoder/lib/pass-through-decoder.js"(exports2, module2) {
     var b4a = require_b4a();
     module2.exports = class PassThroughDecoder {
       constructor(encoding) {
@@ -10746,9 +10746,9 @@ var require_pass_through_decoder = __commonJS({
   }
 });
 
-// node_modules/.pnpm/text-decoder@1.2.7/node_modules/text-decoder/lib/utf8-decoder.js
+// node_modules/text-decoder/lib/utf8-decoder.js
 var require_utf8_decoder = __commonJS({
-  "node_modules/.pnpm/text-decoder@1.2.7/node_modules/text-decoder/lib/utf8-decoder.js"(exports2, module2) {
+  "node_modules/text-decoder/lib/utf8-decoder.js"(exports2, module2) {
     var b4a = require_b4a();
     module2.exports = class UTF8Decoder {
       constructor() {
@@ -10893,9 +10893,9 @@ var require_utf8_decoder = __commonJS({
   }
 });
 
-// node_modules/.pnpm/text-decoder@1.2.7/node_modules/text-decoder/index.js
+// node_modules/text-decoder/index.js
 var require_text_decoder = __commonJS({
-  "node_modules/.pnpm/text-decoder@1.2.7/node_modules/text-decoder/index.js"(exports2, module2) {
+  "node_modules/text-decoder/index.js"(exports2, module2) {
     var PassThroughDecoder = require_pass_through_decoder();
     var UTF8Decoder = require_utf8_decoder();
     module2.exports = class TextDecoder {
@@ -10955,9 +10955,9 @@ var require_text_decoder = __commonJS({
   }
 });
 
-// node_modules/.pnpm/streamx@2.28.1/node_modules/streamx/lib/errors.js
+// node_modules/streamx/lib/errors.js
 var require_errors2 = __commonJS({
-  "node_modules/.pnpm/streamx@2.28.1/node_modules/streamx/lib/errors.js"(exports2, module2) {
+  "node_modules/streamx/lib/errors.js"(exports2, module2) {
     module2.exports = class StreamError extends Error {
       constructor(msg, code, fn = StreamError) {
         super(msg);
@@ -10997,9 +10997,9 @@ var require_errors2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/streamx@2.28.1/node_modules/streamx/index.js
+// node_modules/streamx/index.js
 var require_streamx = __commonJS({
-  "node_modules/.pnpm/streamx@2.28.1/node_modules/streamx/index.js"(exports2, module2) {
+  "node_modules/streamx/index.js"(exports2, module2) {
     var { EventEmitter: EventEmitter2 } = require_default();
     var FIFO = require_fast_fifo();
     var TextDecoder = require_text_decoder();
@@ -12028,9 +12028,9 @@ var require_streamx = __commonJS({
   }
 });
 
-// node_modules/.pnpm/tar-stream@3.2.1/node_modules/tar-stream/headers.js
+// node_modules/tar-stream/headers.js
 var require_headers = __commonJS({
-  "node_modules/.pnpm/tar-stream@3.2.1/node_modules/tar-stream/headers.js"(exports2) {
+  "node_modules/tar-stream/headers.js"(exports2) {
     var b4a = require_b4a();
     var ZEROS = "0000000000000000000";
     var SEVENS = "7777777777777777777";
@@ -12290,9 +12290,9 @@ var require_headers = __commonJS({
   }
 });
 
-// node_modules/.pnpm/tar-stream@3.2.1/node_modules/tar-stream/extract.js
+// node_modules/tar-stream/extract.js
 var require_extract = __commonJS({
-  "node_modules/.pnpm/tar-stream@3.2.1/node_modules/tar-stream/extract.js"(exports2, module2) {
+  "node_modules/tar-stream/extract.js"(exports2, module2) {
     var { Writable, Readable: Readable2, getStreamError } = require_streamx();
     var FIFO = require_fast_fifo();
     var b4a = require_b4a();
@@ -12634,9 +12634,9 @@ var require_extract = __commonJS({
   }
 });
 
-// node_modules/.pnpm/tar-stream@3.2.1/node_modules/tar-stream/constants.js
+// node_modules/tar-stream/constants.js
 var require_constants = __commonJS({
-  "node_modules/.pnpm/tar-stream@3.2.1/node_modules/tar-stream/constants.js"(exports2, module2) {
+  "node_modules/tar-stream/constants.js"(exports2, module2) {
     var constants = {
       // just for envs without fs
       S_IFMT: 61440,
@@ -12654,9 +12654,9 @@ var require_constants = __commonJS({
   }
 });
 
-// node_modules/.pnpm/tar-stream@3.2.1/node_modules/tar-stream/pack.js
+// node_modules/tar-stream/pack.js
 var require_pack = __commonJS({
-  "node_modules/.pnpm/tar-stream@3.2.1/node_modules/tar-stream/pack.js"(exports2, module2) {
+  "node_modules/tar-stream/pack.js"(exports2, module2) {
     var { Readable: Readable2, Writable, getStreamError } = require_streamx();
     var b4a = require_b4a();
     var constants = require_constants();
@@ -12888,9 +12888,9 @@ var require_pack = __commonJS({
   }
 });
 
-// node_modules/.pnpm/tar-stream@3.2.1/node_modules/tar-stream/index.js
+// node_modules/tar-stream/index.js
 var require_tar_stream = __commonJS({
-  "node_modules/.pnpm/tar-stream@3.2.1/node_modules/tar-stream/index.js"(exports2) {
+  "node_modules/tar-stream/index.js"(exports2) {
     exports2.extract = require_extract();
     exports2.pack = require_pack();
   }
@@ -13560,19 +13560,19 @@ var import_node_https = require("node:https");
 var import_node_path3 = __toESM(require("node:path"), 1);
 var import_node_stream2 = require("node:stream");
 
-// node_modules/.pnpm/archiver@8.0.0/node_modules/archiver/lib/core.js
+// node_modules/archiver/lib/core.js
 var import_fs = require("fs");
 
-// node_modules/.pnpm/is-stream@4.0.1/node_modules/is-stream/index.js
+// node_modules/is-stream/index.js
 function isStream(stream, { checkOpen = true } = {}) {
   return stream !== null && typeof stream === "object" && (stream.writable || stream.readable || !checkOpen || stream.writable === void 0 && stream.readable === void 0) && typeof stream.pipe === "function";
 }
 
-// node_modules/.pnpm/readdir-glob@3.0.0/node_modules/readdir-glob/dist/index.mjs
+// node_modules/readdir-glob/dist/index.mjs
 var fs = __toESM(require("fs"), 1);
 var import_events = require("events");
 
-// node_modules/.pnpm/balanced-match@4.0.4/node_modules/balanced-match/dist/esm/index.js
+// node_modules/balanced-match/dist/esm/index.js
 var balanced = (a, b, str) => {
   const ma = a instanceof RegExp ? maybeMatch(a, str) : a;
   const mb = b instanceof RegExp ? maybeMatch(b, str) : b;
@@ -13625,7 +13625,7 @@ var range = (a, b, str) => {
   return result;
 };
 
-// node_modules/.pnpm/brace-expansion@5.0.9/node_modules/brace-expansion/dist/esm/index.js
+// node_modules/brace-expansion/dist/esm/index.js
 var escSlash = "\0SLASH" + Math.random() + "\0";
 var escOpen = "\0OPEN" + Math.random() + "\0";
 var escClose = "\0CLOSE" + Math.random() + "\0";
@@ -13838,7 +13838,7 @@ function expand_(str, max, maxLength, isTop) {
   return acc;
 }
 
-// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/assert-valid-pattern.js
+// node_modules/minimatch/dist/esm/assert-valid-pattern.js
 var MAX_PATTERN_LENGTH = 1024 * 64;
 var assertValidPattern = (pattern) => {
   if (typeof pattern !== "string") {
@@ -13849,7 +13849,7 @@ var assertValidPattern = (pattern) => {
   }
 };
 
-// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/brace-expressions.js
+// node_modules/minimatch/dist/esm/brace-expressions.js
 var posixClasses = {
   "[:alnum:]": ["\\p{L}\\p{Nl}\\p{Nd}", true],
   "[:alpha:]": ["\\p{L}\\p{Nl}", true],
@@ -13958,7 +13958,7 @@ var parseClass = (glob, position) => {
   return [comb, uflag, endPos - pos, true];
 };
 
-// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/unescape.js
+// node_modules/minimatch/dist/esm/unescape.js
 var unescape = (s, { windowsPathsNoEscape = false, magicalBraces = true } = {}) => {
   if (magicalBraces) {
     return windowsPathsNoEscape ? s.replace(/\[([^/\\])\]/g, "$1") : s.replace(/((?!\\).|^)\[([^/\\])\]/g, "$1$2").replace(/\\([^/])/g, "$1");
@@ -13966,7 +13966,7 @@ var unescape = (s, { windowsPathsNoEscape = false, magicalBraces = true } = {}) 
   return windowsPathsNoEscape ? s.replace(/\[([^/\\{}])\]/g, "$1") : s.replace(/((?!\\).|^)\[([^/\\{}])\]/g, "$1$2").replace(/\\([^/{}])/g, "$1");
 };
 
-// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/ast.js
+// node_modules/minimatch/dist/esm/ast.js
 var _a;
 var types = /* @__PURE__ */ new Set(["!", "?", "+", "*", "@"]);
 var isExtglobType = (c) => types.has(c);
@@ -14610,7 +14610,7 @@ var AST = class {
 };
 _a = AST;
 
-// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/escape.js
+// node_modules/minimatch/dist/esm/escape.js
 var escape = (s, { windowsPathsNoEscape = false, magicalBraces = false } = {}) => {
   if (magicalBraces) {
     return windowsPathsNoEscape ? s.replace(/[?*()[\]{}]/g, "[$&]") : s.replace(/[?*()[\]\\{}]/g, "\\$&");
@@ -14618,7 +14618,7 @@ var escape = (s, { windowsPathsNoEscape = false, magicalBraces = false } = {}) =
   return windowsPathsNoEscape ? s.replace(/[?*()[\]]/g, "[$&]") : s.replace(/[?*()[\]\\]/g, "\\$&");
 };
 
-// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/index.js
+// node_modules/minimatch/dist/esm/index.js
 var minimatch = (p, pattern, options = {}) => {
   assertValidPattern(pattern);
   if (!options.nocomment && pattern.charAt(0) === "#") {
@@ -15427,7 +15427,7 @@ minimatch.Minimatch = Minimatch;
 minimatch.escape = escape;
 minimatch.unescape = unescape;
 
-// node_modules/.pnpm/readdir-glob@3.0.0/node_modules/readdir-glob/dist/index.mjs
+// node_modules/readdir-glob/dist/index.mjs
 var import_path = require("path");
 function readdir3(dir, strict) {
   return new Promise((resolve$1, reject) => {
@@ -15618,12 +15618,12 @@ var readdirGlob = (pattern, options, cb) => new ReaddirGlob(pattern, options, cb
 readdirGlob.ReaddirGlob = ReaddirGlob;
 var src_default = readdirGlob;
 
-// node_modules/.pnpm/archiver@8.0.0/node_modules/archiver/lib/core.js
+// node_modules/archiver/lib/core.js
 var import_lazystream = __toESM(require_lazystream(), 1);
 var import_async = __toESM(require_async(), 1);
 var import_path2 = require("path");
 
-// node_modules/.pnpm/archiver@8.0.0/node_modules/archiver/lib/error.js
+// node_modules/archiver/lib/error.js
 var import_util = __toESM(require("util"), 1);
 var ERROR_CODES = {
   ABORTED: "archive was aborted",
@@ -15651,10 +15651,10 @@ function ArchiverError(code, data) {
 }
 import_util.default.inherits(ArchiverError, Error);
 
-// node_modules/.pnpm/archiver@8.0.0/node_modules/archiver/lib/core.js
+// node_modules/archiver/lib/core.js
 var import_readable_stream2 = __toESM(require_ours(), 1);
 
-// node_modules/.pnpm/archiver@8.0.0/node_modules/archiver/lib/utils.js
+// node_modules/archiver/lib/utils.js
 var import_normalize_path = __toESM(require_normalize_path(), 1);
 var import_readable_stream = __toESM(require_ours(), 1);
 function dateify(dateish) {
@@ -15685,7 +15685,7 @@ function trailingSlashIt(str) {
   return str.slice(-1) !== "/" ? str + "/" : str;
 }
 
-// node_modules/.pnpm/archiver@8.0.0/node_modules/archiver/lib/core.js
+// node_modules/archiver/lib/core.js
 var { ReaddirGlob: ReaddirGlob2 } = src_default;
 var win32 = process.platform === "win32";
 var Archiver = class extends import_readable_stream2.Transform {
@@ -16411,7 +16411,7 @@ var Archiver = class extends import_readable_stream2.Transform {
   }
 };
 
-// node_modules/.pnpm/compress-commons@7.0.1/node_modules/compress-commons/lib/archivers/archive-entry.js
+// node_modules/compress-commons/lib/archivers/archive-entry.js
 var ArchiveEntry = class {
   getName() {
   }
@@ -16423,10 +16423,10 @@ var ArchiveEntry = class {
   }
 };
 
-// node_modules/.pnpm/compress-commons@7.0.1/node_modules/compress-commons/lib/archivers/zip/zip-archive-entry.js
+// node_modules/compress-commons/lib/archivers/zip/zip-archive-entry.js
 var import_normalize_path2 = __toESM(require_normalize_path(), 1);
 
-// node_modules/.pnpm/compress-commons@7.0.1/node_modules/compress-commons/lib/archivers/zip/util.js
+// node_modules/compress-commons/lib/archivers/zip/util.js
 function dateToDos(d, forceLocalTime) {
   forceLocalTime = forceLocalTime || false;
   var year = forceLocalTime ? d.getFullYear() : d.getUTCFullYear();
@@ -16475,7 +16475,7 @@ function getLongBytes(v) {
   return buf;
 }
 
-// node_modules/.pnpm/compress-commons@7.0.1/node_modules/compress-commons/lib/archivers/zip/general-purpose-bit.js
+// node_modules/compress-commons/lib/archivers/zip/general-purpose-bit.js
 var DATA_DESCRIPTOR_FLAG = 1 << 3;
 var ENCRYPTION_FLAG = 1 << 0;
 var NUMBER_OF_SHANNON_FANO_TREES_FLAG = 1 << 2;
@@ -16550,7 +16550,7 @@ var GeneralPurposeBit = class _GeneralPurposeBit {
   }
 };
 
-// node_modules/.pnpm/compress-commons@7.0.1/node_modules/compress-commons/lib/archivers/zip/unix-stat.js
+// node_modules/compress-commons/lib/archivers/zip/unix-stat.js
 var PERM_MASK = 4095;
 var FILE_TYPE_FLAG = 61440;
 var LINK_FLAG = 40960;
@@ -16570,7 +16570,7 @@ var unix_stat_default = {
   DEFAULT_FILE_PERM
 };
 
-// node_modules/.pnpm/compress-commons@7.0.1/node_modules/compress-commons/lib/archivers/zip/constants.js
+// node_modules/compress-commons/lib/archivers/zip/constants.js
 var EMPTY = Buffer.alloc(0);
 var SHORT_MASK = 65535;
 var SHORT_SHIFT = 16;
@@ -16600,7 +16600,7 @@ var S_IFREG = 32768;
 var S_DOS_A = 32;
 var S_DOS_D = 16;
 
-// node_modules/.pnpm/compress-commons@7.0.1/node_modules/compress-commons/lib/archivers/zip/zip-archive-entry.js
+// node_modules/compress-commons/lib/archivers/zip/zip-archive-entry.js
 var ZipArchiveEntry = class extends ArchiveEntry {
   constructor(name) {
     super();
@@ -16941,10 +16941,10 @@ var ZipArchiveEntry = class extends ArchiveEntry {
   }
 };
 
-// node_modules/.pnpm/compress-commons@7.0.1/node_modules/compress-commons/lib/archivers/archive-output-stream.js
+// node_modules/compress-commons/lib/archivers/archive-output-stream.js
 var import_readable_stream4 = __toESM(require_ours(), 1);
 
-// node_modules/.pnpm/compress-commons@7.0.1/node_modules/compress-commons/lib/util/index.js
+// node_modules/compress-commons/lib/util/index.js
 var import_readable_stream3 = __toESM(require_ours(), 1);
 function normalizeInputSource2(source) {
   if (source === null) {
@@ -16959,7 +16959,7 @@ function normalizeInputSource2(source) {
   return source;
 }
 
-// node_modules/.pnpm/compress-commons@7.0.1/node_modules/compress-commons/lib/archivers/archive-output-stream.js
+// node_modules/compress-commons/lib/archivers/archive-output-stream.js
 var ArchiveOutputStream = class extends import_readable_stream4.Transform {
   constructor(options) {
     super(options);
@@ -17038,10 +17038,10 @@ var ArchiveOutputStream = class extends import_readable_stream4.Transform {
   }
 };
 
-// node_modules/.pnpm/compress-commons@7.0.1/node_modules/compress-commons/lib/archivers/zip/zip-archive-output-stream.js
+// node_modules/compress-commons/lib/archivers/zip/zip-archive-output-stream.js
 var import_crc_323 = __toESM(require_crc32(), 1);
 
-// node_modules/.pnpm/crc32-stream@7.0.1/node_modules/crc32-stream/lib/crc32-stream.js
+// node_modules/crc32-stream/lib/crc32-stream.js
 var import_readable_stream5 = __toESM(require_ours(), 1);
 var import_crc_32 = __toESM(require_crc32(), 1);
 var CRC32Stream = class extends import_readable_stream5.Transform {
@@ -17071,7 +17071,7 @@ var CRC32Stream = class extends import_readable_stream5.Transform {
   }
 };
 
-// node_modules/.pnpm/crc32-stream@7.0.1/node_modules/crc32-stream/lib/deflate-crc32-stream.js
+// node_modules/crc32-stream/lib/deflate-crc32-stream.js
 var import_zlib = require("zlib");
 var import_crc_322 = __toESM(require_crc32(), 1);
 var DeflateCRC32Stream = class extends import_zlib.DeflateRaw {
@@ -17112,7 +17112,7 @@ var DeflateCRC32Stream = class extends import_zlib.DeflateRaw {
   }
 };
 
-// node_modules/.pnpm/compress-commons@7.0.1/node_modules/compress-commons/lib/archivers/zip/zip-archive-output-stream.js
+// node_modules/compress-commons/lib/archivers/zip/zip-archive-output-stream.js
 function _defaults(o) {
   if (typeof o !== "object") {
     o = {};
@@ -17389,7 +17389,7 @@ var ZipArchiveOutputStream = class extends ArchiveOutputStream {
   }
 };
 
-// node_modules/.pnpm/zip-stream@7.0.5/node_modules/zip-stream/utils.js
+// node_modules/zip-stream/utils.js
 var import_normalize_path3 = __toESM(require_normalize_path(), 1);
 function dateify2(dateish) {
   dateish = dateish || /* @__PURE__ */ new Date();
@@ -17406,7 +17406,7 @@ function sanitizePath2(filepath) {
   return (0, import_normalize_path3.default)(filepath, false).replace(/^\w+:/, "").replace(/^(\.\.\/|\/)+/, "");
 }
 
-// node_modules/.pnpm/zip-stream@7.0.5/node_modules/zip-stream/index.js
+// node_modules/zip-stream/index.js
 var ZipStream = class extends ZipArchiveOutputStream {
   /**
    * @constructor
@@ -17543,7 +17543,7 @@ var ZipStream = class extends ZipArchiveOutputStream {
   }
 };
 
-// node_modules/.pnpm/archiver@8.0.0/node_modules/archiver/lib/plugins/zip.js
+// node_modules/archiver/lib/plugins/zip.js
 var Zip = class {
   /**
    * @constructor
@@ -17608,13 +17608,13 @@ var Zip = class {
   }
 };
 
-// node_modules/.pnpm/archiver@8.0.0/node_modules/archiver/lib/plugins/tar.js
+// node_modules/archiver/lib/plugins/tar.js
 var import_tar_stream = __toESM(require_tar_stream(), 1);
 
-// node_modules/.pnpm/archiver@8.0.0/node_modules/archiver/lib/plugins/json.js
+// node_modules/archiver/lib/plugins/json.js
 var import_readable_stream6 = __toESM(require_ours(), 1);
 
-// node_modules/.pnpm/buffer-crc32@1.0.0/node_modules/buffer-crc32/dist/index.mjs
+// node_modules/buffer-crc32/dist/index.mjs
 var CRC_TABLE = new Int32Array([
   0,
   1996959894,
@@ -17911,7 +17911,7 @@ crc324.unsigned = function() {
   return _crc32.apply(null, arguments) >>> 0;
 };
 
-// node_modules/.pnpm/archiver@8.0.0/node_modules/archiver/index.js
+// node_modules/archiver/index.js
 var ZipArchive = class extends Archiver {
   constructor(options) {
     super(options);
