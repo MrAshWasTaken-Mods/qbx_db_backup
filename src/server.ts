@@ -189,7 +189,7 @@ async function requestJob(trigger: JobTrigger): Promise<number | null> {
     return allowedAt;
   }
   if (created.status === "busy") {
-    info(`the dashboard is already running backup job ${created.jobId}, skipping this run`);
+    info(`a backup job (${created.jobId}) is still in progress, skipping this run`);
     return null;
   }
   await runJob(created.job);
@@ -247,9 +247,6 @@ async function pollOnce(): Promise<void> {
     database: databaseName(),
     intervalHours: config.intervalHours,
   });
-  if (isBackupRunning()) return;
-  const job = await api.next();
-  if (job !== null) await runJob(job);
 }
 
 function printUsage(): void {

@@ -13346,9 +13346,10 @@ function delay(ms) {
 }
 
 // src/config.ts
-var RESOURCE_VERSION = "0.2.0";
+var RESOURCE_VERSION = "0.3.0";
 var DEFAULT_API_BASE = "https://dashboard.qbox.re";
-var MIN_POLL_SECONDS = 15;
+var MIN_POLL_SECONDS = 60;
+var DEFAULT_POLL_SECONDS = 300;
 var DEFAULT_INTERVAL_HOURS = 24;
 var DEFAULT_LOCAL_KEEP = 7;
 function loadConfig(source, defaults2) {
@@ -13372,7 +13373,13 @@ function loadConfig(source, defaults2) {
       1,
       toInt(source("qbx_db_backup_local_keep", String(DEFAULT_LOCAL_KEEP)), DEFAULT_LOCAL_KEEP)
     ),
-    pollSeconds: Math.max(MIN_POLL_SECONDS, toInt(source("qbx_db_backup_poll_seconds", "60"), 60)),
+    pollSeconds: Math.max(
+      MIN_POLL_SECONDS,
+      toInt(
+        source("qbx_db_backup_poll_seconds", String(DEFAULT_POLL_SECONDS)),
+        DEFAULT_POLL_SECONDS
+      )
+    ),
     intervalHours: interval === 0 ? 0 : Math.max(1, interval),
     intervalClamped: interval !== 0 && interval < 1,
     dumpBin: source("qbx_db_backup_dump_bin", "").trim(),

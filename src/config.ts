@@ -1,6 +1,7 @@
-export const RESOURCE_VERSION = "0.2.0";
+export const RESOURCE_VERSION = "0.3.0";
 export const DEFAULT_API_BASE = "https://dashboard.qbox.re";
-export const MIN_POLL_SECONDS = 15;
+export const MIN_POLL_SECONDS = 60;
+export const DEFAULT_POLL_SECONDS = 300;
 export const DEFAULT_INTERVAL_HOURS = 24;
 export const DEFAULT_LOCAL_KEEP = 7;
 
@@ -48,7 +49,13 @@ export function loadConfig(
       1,
       toInt(source("qbx_db_backup_local_keep", String(DEFAULT_LOCAL_KEEP)), DEFAULT_LOCAL_KEEP),
     ),
-    pollSeconds: Math.max(MIN_POLL_SECONDS, toInt(source("qbx_db_backup_poll_seconds", "60"), 60)),
+    pollSeconds: Math.max(
+      MIN_POLL_SECONDS,
+      toInt(
+        source("qbx_db_backup_poll_seconds", String(DEFAULT_POLL_SECONDS)),
+        DEFAULT_POLL_SECONDS,
+      ),
+    ),
     intervalHours: interval === 0 ? 0 : Math.max(1, interval),
     intervalClamped: interval !== 0 && interval < 1,
     dumpBin: source("qbx_db_backup_dump_bin", "").trim(),

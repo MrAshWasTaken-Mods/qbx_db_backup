@@ -73,12 +73,6 @@ export class AgentApi {
     return (await response.json()) as HeartbeatResult;
   }
 
-  async next(): Promise<BackupJob | null> {
-    const response = await this.send("GET", "/api/agent/backups/next");
-    if (response.status === 204) return null;
-    return (await response.json()) as BackupJob;
-  }
-
   async createJob(trigger: JobTrigger): Promise<CreateJobResult> {
     const response = await this.send("POST", "/api/agent/backups/jobs", { trigger }, [409, 429]);
     if (response.status === 429) {

@@ -5,7 +5,7 @@ machine itself, so the database never has to be reachable from the internet and 
 never leave it.
 
 - **Standalone**: run a backup from the console and the zip lands next to the resource.
-- **With the QBox dashboard**: scheduled, off-site backups with history and alerts.
+- **With the QBox dashboard**: the same backups, sent off-site, with history and alerts.
 - **Nothing to install**: `mariadb-dump` is bundled for Windows and Linux (x64).
 
 ## Install
@@ -41,13 +41,14 @@ settings:
 set qbx_db_backup_token "your-token"
 ```
 
-Backups then show up in the dashboard with their history and alerts; `qbx_db_backup run` still
-works for an immediate one. Use `set`, never `setr`: `setr` would send the value to every
-connected player.
+Backups then show up in the dashboard with their history and alerts. Use `set`, never `setr`:
+`setr` would send the value to every connected player.
 
 In both modes a backup runs automatically every `qbx_db_backup_interval_hours` hours (daily by
-default). When connected to the dashboard, at most one backup per hour is accepted and the
-dashboard keeps as many backups as your plan's storage allows, deleting the oldest automatically.
+default), and `qbx_db_backup run` in the server console is how you start one by hand. Backups are
+always started on the server itself, never from the dashboard. When connected to the dashboard, at
+most one backup per hour is accepted and the dashboard keeps as many backups as your plan's storage
+allows, deleting the oldest automatically.
 
 ## Configuration
 

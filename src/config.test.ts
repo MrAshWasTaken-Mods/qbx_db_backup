@@ -3,7 +3,9 @@ import {
   type ConfigSource,
   DEFAULT_INTERVAL_HOURS,
   DEFAULT_LOCAL_KEEP,
+  DEFAULT_POLL_SECONDS,
   loadConfig,
+  MIN_POLL_SECONDS,
 } from "./config";
 
 const defaults = { localDir: "/srv/backups", resourceDir: "/srv/resource" };
@@ -47,6 +49,26 @@ describe("schedule convars", () => {
     expect(configWith({ qbx_db_backup_local_keep: "0" }).localKeep).toBe(1);
     expect(configWith({ qbx_db_backup_local_keep: "-3" }).localKeep).toBe(1);
     expect(configWith({ qbx_db_backup_local_keep: "30" }).localKeep).toBe(30);
+  });
+});
+
+describe("heartbeat convars", () => {
+  it("defaults to a five minute heartbeat", () => {
+    expect(configWith({}).pollSeconds).toBe(DEFAULT_POLL_SECONDS);
+  });
+
+  it("accepts a custom interval", () => {
+    expect(configWith({ qbx_db_backup_poll_seconds: "900" }).pollSeconds).toBe(900);
+  });
+
+  it("raises an interval below the minimum", () => {
+    expect(configWith({ qbx_db_backup_poll_seconds: "5" }).pollSeconds).toBe(MIN_POLL_SECONDS);
+  });
+
+  it("falls back to the default for a non-numeric interval", () => {
+    expect(configWith({ qbx_db_backup_poll_seconds: "often" }).pollSeconds).toBe(
+      DEFAULT_POLL_SECONDS,
+    );
   });
 });
 
