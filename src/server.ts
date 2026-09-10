@@ -7,11 +7,21 @@ import {
   isBackupRunning,
   runBackup,
 } from "./backup";
-import { type Config, loadConfig, RESOURCE_VERSION, redactConnectionString } from "./config";
+import {
+  type Config,
+  isS3Configured,
+  loadConfig,
+  RESOURCE_VERSION,
+  redactConnectionString,
+  redactSecret,
+} from "./config";
 import { describeTarget, parseConnectionString } from "./connection-string";
 import { type DumpBinary, detectDumpBinary } from "./dump";
 import { error, errorMessage, info, warn } from "./log";
-import { HOUR_MS, nextRunAt, pruneLocalBackups, readLastRunAt, writeLastRunAt } from "./schedule";
+import { pruneLocalDirectory, pruneS3Bucket } from "./retention";
+import { S3Client } from "./s3/client";
+import { S3Sink } from "./s3/sink";
+import { HOUR_MS, nextRunAt, readLastRunAt, writeLastRunAt } from "./schedule";
 import { LocalFileSink, UploadSink } from "./zip-sink";
 
 const PROGRESS_INTERVAL_MS = 10_000;
@@ -20,6 +30,7 @@ const SIZE_UNITS = ["B", "KB", "MB", "GB", "TB"];
 
 let config: Config;
 let api: AgentApi | null = null;
+let s3Client: S3Client | null = null;
 let dumpBinary: DumpBinary | null = null;
 let pollTimer: NodeJS.Timeout | null = null;
 let scheduleTimer: NodeJS.Timeout | null = null;
@@ -95,7 +106,7 @@ async function refreshDumpBinary(): Promise<void> {
 function describeOutcome(outcome: BackupOutcome): string {
   if (outcome.busy) return "a backup is already running";
   const warnings = outcome.warnings.length > 0 ? ` warnings=${outcome.warnings.join("; ")}` : "";
-  return `ok zip=${outcome.sizeBytes}B sql=${outcome.rawBytes}B in ${Math.round(outcome.durationMs / 1000)}s${outcome.location ? ` -> ${outcome.location}` : ""}${warnings}`;
+  return `ok zip=${formatBytes(outcome.sizeBytes)} sql=${formatBytes(outcome.rawBytes)} in ${Math.round(outcome.durationMs / 1000)}s${outcome.location ? ` -> ${outcome.location}` : ""}${warnings}`;
 }
 
 function describeSchedule(): string {
@@ -104,19 +115,58 @@ function describeSchedule(): string {
   return `every ${config.intervalHours} h, next at ${next}`;
 }
 
+function describeRetention(): string {
+  const parts: string[] = [`local_keep=${config.localKeep}`];
+  if (config.localMaxAgeDays > 0) parts.push(`local_max_age=${config.localMaxAgeDays}d`);
+  if (config.minFreeDiskMb > 0) parts.push(`min_free_disk=${config.minFreeDiskMb}MB`);
+  if (isS3Configured(config.s3)) {
+    if (config.s3.keepCount > 0) parts.push(`s3_keep=${config.s3.keepCount}`);
+    if (config.s3.maxAgeDays > 0) parts.push(`s3_max_age=${config.s3.maxAgeDays}d`);
+  }
+  return parts.join(", ");
+}
+
 async function pruneLocal(): Promise<void> {
-  const removed = await pruneLocalBackups(config.localDir, config.localKeep).catch(
-    (failure: unknown) => {
-      warn(errorMessage(failure));
-      return [] as string[];
-    },
-  );
-  if (removed.length > 0) {
-    info(`removed ${removed.length} old backup(s), keeping the newest ${config.localKeep}`);
+  try {
+    const res = await pruneLocalDirectory(config.localDir, {
+      keepCount: config.localKeep,
+      maxAgeDays: config.localMaxAgeDays,
+      minFreeDiskMb: config.minFreeDiskMb,
+    });
+    if (res.deletedFiles.length > 0) {
+      info(
+        `pruned ${res.deletedFiles.length} old local backup(s) (${formatBytes(res.freedBytes)} freed), ${res.remainingCount} remaining`,
+      );
+    }
+  } catch (failure) {
+    warn(`local retention pruning warning: ${errorMessage(failure)}`);
   }
 }
 
-async function runLocalBackup(): Promise<void> {
+async function pruneS3(): Promise<void> {
+  if (s3Client === null) return;
+  if (config.s3.keepCount <= 0 && config.s3.maxAgeDays <= 0) return;
+
+  try {
+    const res = await pruneS3Bucket(s3Client, {
+      prefix: config.s3.prefix,
+      keepCount: config.s3.keepCount,
+      maxAgeDays: config.s3.maxAgeDays,
+    });
+    if (res.deletedKeys.length > 0) {
+      info(
+        `pruned ${res.deletedKeys.length} expired backup(s) from S3 bucket "${s3Client.bucket}"`,
+      );
+    }
+    if (res.errors.length > 0) {
+      warn(`S3 retention delete error: ${res.errors.map((e) => e.message).join("; ")}`);
+    }
+  } catch (failure) {
+    warn(`S3 retention pruning warning: ${errorMessage(failure)}`);
+  }
+}
+
+async function runLocalBackup(): Promise<BackupOutcome> {
   const target = parseConnectionString(config.connectionString);
   const names = buildBackupNames(target.database, new Date());
   const sink = new LocalFileSink(path.join(config.localDir, names.zipName));
@@ -124,6 +174,40 @@ async function runLocalBackup(): Promise<void> {
   lastOutcome = describeOutcome(outcome);
   info(lastOutcome);
   if (!outcome.busy) await pruneLocal();
+  return outcome;
+}
+
+async function runS3Backup(): Promise<BackupOutcome> {
+  if (s3Client === null) throw new Error("S3 client is not configured");
+  const target = parseConnectionString(config.connectionString);
+  const names = buildBackupNames(target.database, new Date());
+  const key = config.s3.prefix
+    ? `${config.s3.prefix.replace(/\/+$/, "")}/${names.zipName}`
+    : names.zipName;
+
+  const sink = new S3Sink({
+    client: s3Client,
+    s3Key: key,
+    tmpDir: path.join(config.localDir, ".tmp"),
+    keepLocalPath: config.keepLocal ? path.join(config.localDir, names.zipName) : undefined,
+  });
+
+  info(`starting S3 upload -> s3://${s3Client.bucket}/${key}`);
+  const outcome = await runBackup({
+    config,
+    sink,
+    entryName: names.entryName,
+    timeoutMs: config.timeoutMinutes * 60_000,
+  });
+
+  lastOutcome = describeOutcome(outcome);
+  info(lastOutcome);
+
+  if (!outcome.busy) {
+    await pruneS3();
+    if (config.keepLocal) await pruneLocal();
+  }
+  return outcome;
 }
 
 async function runJob(job: BackupJob): Promise<void> {
@@ -138,7 +222,8 @@ async function runJob(job: BackupJob): Promise<void> {
     keepLocalPath: config.keepLocal ? path.join(config.localDir, job.fileName) : undefined,
   });
   let lastPost = 0;
-  info(`starting backup job ${job.jobId} -> ${job.fileName}`);
+  info(`starting Qbox backup job ${job.jobId} -> ${job.fileName}`);
+
   try {
     const outcome = await runBackup({
       config,
@@ -156,6 +241,7 @@ async function runJob(job: BackupJob): Promise<void> {
     info(lastOutcome);
     if (outcome.busy) return;
     if (config.keepLocal) await pruneLocal();
+
     const result = await client.complete(job.jobId, {
       ok: true,
       sizeBytes: outcome.sizeBytes,
@@ -175,6 +261,7 @@ async function runJob(job: BackupJob): Promise<void> {
     await client
       .complete(job.jobId, { ok: false, error: errorMessage(failure) })
       .catch((reportFailure: unknown) => error(errorMessage(reportFailure)));
+    throw failure;
   }
 }
 
@@ -196,6 +283,52 @@ async function requestJob(trigger: JobTrigger): Promise<number | null> {
   return null;
 }
 
+/** Robust priority & fallback pipeline */
+async function executeBackupPipeline(trigger: JobTrigger): Promise<number | null> {
+  if (isBackupRunning()) {
+    info("a backup is already running");
+    return null;
+  }
+
+  if (config.mode === "qbx") {
+    try {
+      return await requestJob(trigger);
+    } catch (qbxFailure) {
+      warn(
+        `Qbox dashboard upload failed (${errorMessage(qbxFailure)}); activating fallback pipeline...`,
+      );
+      if (isS3Configured(config.s3)) {
+        try {
+          await runS3Backup();
+          return null;
+        } catch (s3Failure) {
+          warn(
+            `S3 upload fallback failed (${errorMessage(s3Failure)}); activating local storage fallback...`,
+          );
+          await runLocalBackup();
+          return null;
+        }
+      }
+      await runLocalBackup();
+      return null;
+    }
+  }
+
+  if (config.mode === "s3") {
+    try {
+      await runS3Backup();
+      return null;
+    } catch (s3Failure) {
+      warn(`S3 upload failed (${errorMessage(s3Failure)}); activating local storage fallback...`);
+      await runLocalBackup();
+      return null;
+    }
+  }
+
+  await runLocalBackup();
+  return null;
+}
+
 function armSchedule(at: number): void {
   if (scheduleTimer !== null) clearTimeout(scheduleTimer);
   scheduledAt = at;
@@ -210,25 +343,25 @@ async function runScheduled(): Promise<void> {
   scheduleTimer = null;
   const startedAt = Date.now();
   let nextAt = startedAt + config.intervalHours * HOUR_MS;
+
   if (isBackupRunning()) {
     info("a backup is already running, skipping this scheduled run");
     armSchedule(nextAt);
     return;
   }
+
   await writeLastRunAt(config.localDir, startedAt).catch((failure: unknown) => {
     warn(errorMessage(failure));
   });
+
   try {
-    if (config.mode === "local") {
-      await runLocalBackup();
-    } else {
-      const allowedAt = await requestJob("scheduled");
-      if (allowedAt !== null) nextAt = allowedAt;
-    }
+    const allowedAt = await executeBackupPipeline("scheduled");
+    if (allowedAt !== null) nextAt = allowedAt;
   } catch (failure) {
     lastOutcome = `failed: ${errorMessage(failure)}`;
     error(lastOutcome);
   }
+
   armSchedule(nextAt);
 }
 
@@ -259,9 +392,18 @@ function commandStatus(): void {
   info(`state: ${isBackupRunning() ? "busy" : "idle"}`);
   info(`dump binary: ${dumpBinary ? describeBinary(dumpBinary) : "not found"}`);
   info(`schedule: ${describeSchedule()}`);
+  info(`retention: ${describeRetention()}`);
+
+  if (isS3Configured(config.s3)) {
+    const ep = config.s3.endpoint ?? `s3.${config.s3.region}.amazonaws.com`;
+    info(
+      `s3 storage: bucket="${config.s3.bucket}" endpoint="${ep}" region="${config.s3.region}" key="${config.s3.accessKeyId}" secret="${redactSecret(config.s3.secretAccessKey)}"`,
+    );
+  }
+
   if (lastHeartbeat !== null) {
     info(
-      `plan ${lastHeartbeat.plan}: ${formatBytes(lastHeartbeat.usedBytes)} / ${formatBytes(lastHeartbeat.poolBytes)} used`,
+      `dashboard plan ${lastHeartbeat.plan}: ${formatBytes(lastHeartbeat.usedBytes)} / ${formatBytes(lastHeartbeat.poolBytes)} used`,
     );
   }
   info(`last result: ${lastOutcome}`);
@@ -270,10 +412,24 @@ function commandStatus(): void {
 async function commandTest(): Promise<void> {
   try {
     const target = parseConnectionString(config.connectionString);
-    info(`connection string parsed: ${describeTarget(target)} ssl=${target.ssl}`);
+    info(`database: parsed ${describeTarget(target)} (ssl=${target.ssl})`);
     const binary = await detect();
     dumpBinary = binary;
     info(`dump binary: ${describeBinary(binary)}`);
+
+    if (config.mode === "qbx" && api !== null) {
+      info(`testing Qbox dashboard API at ${config.apiBase}...`);
+      await pollOnce();
+      info(`Qbox dashboard connected (plan=${lastHeartbeat?.plan ?? "unknown"})`);
+    }
+
+    if (isS3Configured(config.s3) && s3Client !== null) {
+      info(
+        `testing S3 storage at "${config.s3.endpoint ?? "AWS S3"}" (bucket: ${config.s3.bucket})...`,
+      );
+      await s3Client.testConnection();
+      info(`S3 storage connected successfully (bucket "${config.s3.bucket}" is accessible)`);
+    }
   } catch (failure) {
     error(errorMessage(failure));
   }
@@ -281,15 +437,7 @@ async function commandTest(): Promise<void> {
 
 async function commandRun(): Promise<void> {
   try {
-    if (isBackupRunning()) {
-      info("a backup is already running");
-      return;
-    }
-    if (config.mode === "local") {
-      await runLocalBackup();
-      return;
-    }
-    await requestJob("manual");
+    await executeBackupPipeline("manual");
   } catch (failure) {
     lastOutcome = `failed: ${errorMessage(failure)}`;
     error(lastOutcome);
@@ -302,9 +450,15 @@ function start(): void {
     localDir: path.join(resourceDir, "backups"),
     resourceDir,
   });
+
+  if (isS3Configured(config.s3)) {
+    s3Client = new S3Client(config.s3);
+  }
+
   info(
     `v${RESOURCE_VERSION} mode=${config.mode} target=${targetLabel()} local_dir=${config.localDir}`,
   );
+
   if (config.connectionString.length === 0) {
     warn("no connection string: set mysql_connection_string or qbx_db_backup_connection_string");
   }
@@ -313,7 +467,7 @@ function start(): void {
   }
   void refreshDumpBinary();
 
-  if (config.mode === "upload") {
+  if (config.mode === "qbx") {
     api = new AgentApi({
       baseUrl: config.apiBase,
       token: config.token,
