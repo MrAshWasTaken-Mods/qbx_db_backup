@@ -13438,7 +13438,7 @@ function delay(ms) {
 }
 
 // src/config.ts
-var RESOURCE_VERSION = "1.0.0";
+var RESOURCE_VERSION = "1.1.0";
 var DEFAULT_API_BASE = "https://dashboard.qbox.re";
 var MIN_POLL_SECONDS = 60;
 var DEFAULT_POLL_SECONDS = 300;

@@ -1,6 +1,6 @@
 import type { S3Config } from "./s3/types";
 
-export const RESOURCE_VERSION = "1.0.0";
+export const RESOURCE_VERSION = "1.1.0";
 export const DEFAULT_API_BASE = "https://dashboard.qbox.re";
 export const MIN_POLL_SECONDS = 60;
 export const DEFAULT_POLL_SECONDS = 300;

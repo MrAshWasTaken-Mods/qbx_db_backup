@@ -1,6 +1,6 @@
 {
   "name": "qbx_db_backup",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Local database backups for the Qbox dashboard",
   "license": "MIT",
