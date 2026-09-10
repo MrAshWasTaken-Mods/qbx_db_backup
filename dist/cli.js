@@ -1863,11 +1863,11 @@ var require_stream_readable = __commonJS({
 var require_stream_transform = __commonJS({
   "node_modules/lazystream/node_modules/readable-stream/lib/_stream_transform.js"(exports2, module2) {
     "use strict";
-    module2.exports = Transform6;
+    module2.exports = Transform7;
     var Duplex = require_stream_duplex();
     var util3 = Object.create(require_util());
     util3.inherits = require_inherits();
-    util3.inherits(Transform6, Duplex);
+    util3.inherits(Transform7, Duplex);
     function afterTransform(er, data) {
       var ts = this._transformState;
       ts.transforming = false;
@@ -1886,8 +1886,8 @@ var require_stream_transform = __commonJS({
         this._read(rs.highWaterMark);
       }
     }
-    function Transform6(options) {
-      if (!(this instanceof Transform6)) return new Transform6(options);
+    function Transform7(options) {
+      if (!(this instanceof Transform7)) return new Transform7(options);
       Duplex.call(this, options);
       this._transformState = {
         afterTransform: afterTransform.bind(this),
@@ -1915,14 +1915,14 @@ var require_stream_transform = __commonJS({
         done(this, null, null);
       }
     }
-    Transform6.prototype.push = function(chunk, encoding) {
+    Transform7.prototype.push = function(chunk, encoding) {
       this._transformState.needTransform = false;
       return Duplex.prototype.push.call(this, chunk, encoding);
     };
-    Transform6.prototype._transform = function(chunk, encoding, cb) {
+    Transform7.prototype._transform = function(chunk, encoding, cb) {
       throw new Error("_transform() is not implemented");
     };
-    Transform6.prototype._write = function(chunk, encoding, cb) {
+    Transform7.prototype._write = function(chunk, encoding, cb) {
       var ts = this._transformState;
       ts.writecb = cb;
       ts.writechunk = chunk;
@@ -1932,7 +1932,7 @@ var require_stream_transform = __commonJS({
         if (ts.needTransform || rs.needReadable || rs.length < rs.highWaterMark) this._read(rs.highWaterMark);
       }
     };
-    Transform6.prototype._read = function(n) {
+    Transform7.prototype._read = function(n) {
       var ts = this._transformState;
       if (ts.writechunk !== null && ts.writecb && !ts.transforming) {
         ts.transforming = true;
@@ -1941,7 +1941,7 @@ var require_stream_transform = __commonJS({
         ts.needTransform = true;
       }
     };
-    Transform6.prototype._destroy = function(err, cb) {
+    Transform7.prototype._destroy = function(err, cb) {
       var _this2 = this;
       Duplex.prototype._destroy.call(this, err, function(err2) {
         cb(err2);
@@ -1964,13 +1964,13 @@ var require_stream_passthrough = __commonJS({
   "node_modules/lazystream/node_modules/readable-stream/lib/_stream_passthrough.js"(exports2, module2) {
     "use strict";
     module2.exports = PassThrough4;
-    var Transform6 = require_stream_transform();
+    var Transform7 = require_stream_transform();
     var util3 = Object.create(require_util());
     util3.inherits = require_inherits();
-    util3.inherits(PassThrough4, Transform6);
+    util3.inherits(PassThrough4, Transform7);
     function PassThrough4(options) {
       if (!(this instanceof PassThrough4)) return new PassThrough4(options);
-      Transform6.call(this, options);
+      Transform7.call(this, options);
     }
     PassThrough4.prototype._transform = function(chunk, encoding, cb) {
       cb(null, chunk);
@@ -8982,15 +8982,15 @@ var require_transform = __commonJS({
   "node_modules/readable-stream/lib/internal/streams/transform.js"(exports2, module2) {
     "use strict";
     var { ObjectSetPrototypeOf, Symbol: Symbol2 } = require_primordials();
-    module2.exports = Transform6;
+    module2.exports = Transform7;
     var { ERR_METHOD_NOT_IMPLEMENTED } = require_errors().codes;
     var Duplex = require_duplex();
     var { getHighWaterMark } = require_state();
-    ObjectSetPrototypeOf(Transform6.prototype, Duplex.prototype);
-    ObjectSetPrototypeOf(Transform6, Duplex);
+    ObjectSetPrototypeOf(Transform7.prototype, Duplex.prototype);
+    ObjectSetPrototypeOf(Transform7, Duplex);
     var kCallback = Symbol2("kCallback");
-    function Transform6(options) {
-      if (!(this instanceof Transform6)) return new Transform6(options);
+    function Transform7(options) {
+      if (!(this instanceof Transform7)) return new Transform7(options);
       const readableHighWaterMark = options ? getHighWaterMark(this, options, "readableHighWaterMark", true) : null;
       if (readableHighWaterMark === 0) {
         options = {
@@ -9044,11 +9044,11 @@ var require_transform = __commonJS({
         final.call(this);
       }
     }
-    Transform6.prototype._final = final;
-    Transform6.prototype._transform = function(chunk, encoding, callback) {
+    Transform7.prototype._final = final;
+    Transform7.prototype._transform = function(chunk, encoding, callback) {
       throw new ERR_METHOD_NOT_IMPLEMENTED("_transform()");
     };
-    Transform6.prototype._write = function(chunk, encoding, callback) {
+    Transform7.prototype._write = function(chunk, encoding, callback) {
       const rState = this._readableState;
       const wState = this._writableState;
       const length = rState.length;
@@ -9069,7 +9069,7 @@ var require_transform = __commonJS({
         }
       });
     };
-    Transform6.prototype._read = function() {
+    Transform7.prototype._read = function() {
       if (this[kCallback]) {
         const callback = this[kCallback];
         this[kCallback] = null;
@@ -9085,12 +9085,12 @@ var require_passthrough2 = __commonJS({
     "use strict";
     var { ObjectSetPrototypeOf } = require_primordials();
     module2.exports = PassThrough4;
-    var Transform6 = require_transform();
-    ObjectSetPrototypeOf(PassThrough4.prototype, Transform6.prototype);
-    ObjectSetPrototypeOf(PassThrough4, Transform6);
+    var Transform7 = require_transform();
+    ObjectSetPrototypeOf(PassThrough4.prototype, Transform7.prototype);
+    ObjectSetPrototypeOf(PassThrough4, Transform7);
     function PassThrough4(options) {
       if (!(this instanceof PassThrough4)) return new PassThrough4(options);
-      Transform6.call(this, options);
+      Transform7.call(this, options);
     }
     PassThrough4.prototype._transform = function(chunk, encoding, cb) {
       cb(null, chunk);
@@ -10352,22 +10352,22 @@ var require_ours = __commonJS({
 // node_modules/normalize-path/index.js
 var require_normalize_path = __commonJS({
   "node_modules/normalize-path/index.js"(exports2, module2) {
-    module2.exports = function(path5, stripTrailing) {
-      if (typeof path5 !== "string") {
+    module2.exports = function(path6, stripTrailing) {
+      if (typeof path6 !== "string") {
         throw new TypeError("expected path to be a string");
       }
-      if (path5 === "\\" || path5 === "/") return "/";
-      var len = path5.length;
-      if (len <= 1) return path5;
+      if (path6 === "\\" || path6 === "/") return "/";
+      var len = path6.length;
+      if (len <= 1) return path6;
       var prefix = "";
-      if (len > 4 && path5[3] === "\\") {
-        var ch = path5[2];
-        if ((ch === "?" || ch === ".") && path5.slice(0, 2) === "\\\\") {
-          path5 = path5.slice(2);
+      if (len > 4 && path6[3] === "\\") {
+        var ch = path6[2];
+        if ((ch === "?" || ch === ".") && path6.slice(0, 2) === "\\\\") {
+          path6 = path6.slice(2);
           prefix = "//";
         }
       }
-      var segs = path5.split(/[/\\]+/);
+      var segs = path6.split(/[/\\]+/);
       if (stripTrailing !== false && segs[segs.length - 1] === "") {
         segs.pop();
       }
@@ -11848,7 +11848,7 @@ var require_streamx = __commonJS({
         return this;
       }
     };
-    var Transform6 = class extends Duplex {
+    var Transform7 = class extends Duplex {
       constructor(opts) {
         super(opts);
         this._transformState = new TransformState(this);
@@ -11892,7 +11892,7 @@ var require_streamx = __commonJS({
         this._flush(transformAfterFlush.bind(this));
       }
     };
-    var PassThrough4 = class extends Transform6 {
+    var PassThrough4 = class extends Transform7 {
     };
     function transformAfterFlush(err, data) {
       const cb = this._transformState.afterFinal;
@@ -12021,7 +12021,7 @@ var require_streamx = __commonJS({
       Writable,
       Readable: Readable2,
       Duplex,
-      Transform: Transform6,
+      Transform: Transform7,
       // Export PassThrough for compatibility with Node.js core's stream module
       PassThrough: PassThrough4
     };
@@ -12897,7 +12897,7 @@ var require_tar_stream = __commonJS({
 });
 
 // src/cli.ts
-var import_node_path3 = __toESM(require("node:path"), 1);
+var import_node_path4 = __toESM(require("node:path"), 1);
 
 // src/backup.ts
 var import_node_stream = require("node:stream");
@@ -13362,6 +13362,41 @@ function loadConfig(source, defaults2) {
     source("qbx_db_backup_interval_hours", String(DEFAULT_INTERVAL_HOURS)),
     DEFAULT_INTERVAL_HOURS
   );
+  const s3Endpoint = source("qbx_db_backup_s3_endpoint", "").trim();
+  const s3Bucket = source("qbx_db_backup_s3_bucket", "").trim();
+  const s3Region = source(
+    "qbx_db_backup_s3_region",
+    s3Endpoint.includes("r2.cloudflarestorage.com") ? "auto" : "us-east-1"
+  ).trim();
+  const s3AccessKeyId = (source("qbx_db_backup_s3_access_key_id", "") || source("qbx_db_backup_s3_key", "")).trim();
+  const s3SecretAccessKey = (source("qbx_db_backup_s3_secret_access_key", "") || source("qbx_db_backup_s3_secret", "")).trim();
+  const s3PathStyleRaw = source("qbx_db_backup_s3_force_path_style", "").trim();
+  const s3Prefix = source("qbx_db_backup_s3_prefix", "").trim();
+  const s3Keep = Math.max(0, toInt(source("qbx_db_backup_s3_keep", "0"), 0));
+  const s3MaxAgeDays = Math.max(0, toInt(source("qbx_db_backup_s3_max_age_days", "0"), 0));
+  const forcePathStyle = s3PathStyleRaw === "1" ? true : s3PathStyleRaw === "0" ? false : s3Endpoint.length > 0;
+  const s3 = {
+    endpoint: s3Endpoint.length > 0 ? s3Endpoint : void 0,
+    bucket: s3Bucket,
+    region: s3Region.length > 0 ? s3Region : "us-east-1",
+    accessKeyId: s3AccessKeyId,
+    secretAccessKey: s3SecretAccessKey,
+    forcePathStyle,
+    prefix: s3Prefix,
+    keepCount: s3Keep,
+    maxAgeDays: s3MaxAgeDays
+  };
+  const localMaxAgeDays = Math.max(
+    0,
+    toInt(source("qbx_db_backup_local_max_age_days", source("qbx_db_backup_max_age_days", "0")), 0)
+  );
+  const minFreeDiskMb = Math.max(0, toInt(source("qbx_db_backup_min_free_disk_mb", "0"), 0));
+  let mode = "local";
+  if (token.length > 0) {
+    mode = "qbx";
+  } else if (isS3Configured(s3)) {
+    mode = "s3";
+  }
   return {
     connectionString: override.length > 0 ? override : shared,
     token,
@@ -13373,6 +13408,8 @@ function loadConfig(source, defaults2) {
       1,
       toInt(source("qbx_db_backup_local_keep", String(DEFAULT_LOCAL_KEEP)), DEFAULT_LOCAL_KEEP)
     ),
+    localMaxAgeDays,
+    minFreeDiskMb,
     pollSeconds: Math.max(
       MIN_POLL_SECONDS,
       toInt(
@@ -13385,8 +13422,12 @@ function loadConfig(source, defaults2) {
     dumpBin: source("qbx_db_backup_dump_bin", "").trim(),
     zipLevel: clamp(toInt(source("qbx_db_backup_zip_level", "6"), 6), 1, 9),
     timeoutMinutes: Math.max(1, toInt(source("qbx_db_backup_timeout_minutes", "120"), 120)),
-    mode: token.length > 0 ? "upload" : "local"
+    mode,
+    s3
   };
+}
+function isS3Configured(s3) {
+  return s3.bucket.length > 0 && s3.accessKeyId.length > 0 && s3.secretAccessKey.length > 0;
 }
 function toInt(value, fallback) {
   const parsed = Number.parseInt(value.trim(), 10);
@@ -13396,8 +13437,374 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-// src/zip-sink.ts
+// src/s3/client.ts
+var import_node_http = require("node:http");
+var import_node_https = require("node:https");
+
+// src/s3/signer.ts
 var import_node_crypto = require("node:crypto");
+function uriEncode(input, encodeSlash = false) {
+  let result = "";
+  for (let i = 0; i < input.length; i += 1) {
+    const char = input[i];
+    if (char >= "A" && char <= "Z" || char >= "a" && char <= "z" || char >= "0" && char <= "9" || char === "_" || char === "-" || char === "~" || char === ".") {
+      result += char;
+    } else if (char === "/" && !encodeSlash) {
+      result += "/";
+    } else {
+      const hex = char.charCodeAt(0).toString(16).toUpperCase();
+      result += hex.length < 2 ? `%0${hex}` : `%${hex}`;
+    }
+  }
+  return result;
+}
+function formatBasicDate(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  const month = pad(date.getUTCMonth() + 1);
+  const day = pad(date.getUTCDate());
+  const hours = pad(date.getUTCHours());
+  const minutes = pad(date.getUTCMinutes());
+  const seconds = pad(date.getUTCSeconds());
+  const dateScope = `${year}${month}${day}`;
+  const isoDate = `${dateScope}T${hours}${minutes}${seconds}Z`;
+  return { isoDate, dateScope };
+}
+function sha256Hex(data) {
+  return (0, import_node_crypto.createHash)("sha256").update(data).digest("hex");
+}
+function getSigningKey(secretKey, dateScope, region, service) {
+  const kDate = (0, import_node_crypto.createHmac)("sha256", `AWS4${secretKey}`).update(dateScope).digest();
+  const kRegion = (0, import_node_crypto.createHmac)("sha256", kDate).update(region).digest();
+  const kService = (0, import_node_crypto.createHmac)("sha256", kRegion).update(service).digest();
+  return (0, import_node_crypto.createHmac)("sha256", kService).update("aws4_request").digest();
+}
+function signS3Request(options) {
+  const targetUrl = typeof options.url === "string" ? new URL(options.url) : options.url;
+  const now = options.now ?? /* @__PURE__ */ new Date();
+  const { isoDate, dateScope } = formatBasicDate(now);
+  const service = options.service ?? "s3";
+  const payloadHash = options.payloadHash ?? sha256Hex("");
+  const method = options.method.toUpperCase();
+  const headers = {
+    ...options.headers,
+    host: targetUrl.host,
+    "x-amz-date": isoDate,
+    "x-amz-content-sha256": payloadHash
+  };
+  const headerKeys = Object.keys(headers).map((k) => k.toLowerCase()).sort();
+  const canonicalHeadersList = [];
+  for (const key of headerKeys) {
+    const rawVal = headers[key] ?? "";
+    const cleanVal = rawVal.trim().replace(/\s+/g, " ");
+    canonicalHeadersList.push(`${key}:${cleanVal}
+`);
+  }
+  const canonicalHeaders = canonicalHeadersList.join("");
+  const signedHeaders = headerKeys.join(";");
+  const rawPath = targetUrl.pathname || "/";
+  const canonicalUri = uriEncode(rawPath, false);
+  const queryEntries = [];
+  targetUrl.searchParams.forEach((value, key) => {
+    queryEntries.push([uriEncode(key, true), uriEncode(value, true)]);
+  });
+  queryEntries.sort(([aKey, aVal], [bKey, bVal]) => {
+    if (aKey !== bKey) return aKey < bKey ? -1 : 1;
+    return aVal < bVal ? -1 : 1;
+  });
+  const canonicalQueryString = queryEntries.map(([k, v]) => `${k}=${v}`).join("&");
+  const canonicalRequest = [
+    method,
+    canonicalUri,
+    canonicalQueryString,
+    canonicalHeaders,
+    signedHeaders,
+    payloadHash
+  ].join("\n");
+  const canonicalRequestHash = sha256Hex(canonicalRequest);
+  const credentialScope = `${dateScope}/${options.region}/${service}/aws4_request`;
+  const stringToSign = ["AWS4-HMAC-SHA256", isoDate, credentialScope, canonicalRequestHash].join(
+    "\n"
+  );
+  const signingKey = getSigningKey(options.secretAccessKey, dateScope, options.region, service);
+  const signature = (0, import_node_crypto.createHmac)("sha256", signingKey).update(stringToSign).digest("hex");
+  const authorization = `AWS4-HMAC-SHA256 Credential=${options.accessKeyId}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+  return {
+    method,
+    url: targetUrl.toString(),
+    headers: {
+      ...headers,
+      authorization
+    }
+  };
+}
+
+// src/s3/client.ts
+var S3Error = class extends Error {
+  constructor(code, message, statusCode, rawBody) {
+    super(`S3 Error [${code}]: ${message}`);
+    this.code = code;
+    this.statusCode = statusCode;
+    this.rawBody = rawBody;
+    this.name = "S3Error";
+  }
+  code;
+  statusCode;
+  rawBody;
+};
+var DEFAULT_TIMEOUT_MS = 6e4;
+var S3Client = class {
+  bucket;
+  region;
+  endpoint;
+  forcePathStyle;
+  accessKeyId;
+  secretAccessKey;
+  timeoutMs;
+  constructor(options) {
+    if (!options.bucket || options.bucket.trim().length === 0) {
+      throw new Error("S3 bucket name is required");
+    }
+    if (!options.accessKeyId || options.accessKeyId.trim().length === 0) {
+      throw new Error("S3 access key ID is required");
+    }
+    if (!options.secretAccessKey || options.secretAccessKey.trim().length === 0) {
+      throw new Error("S3 secret access key is required");
+    }
+    this.bucket = options.bucket.trim();
+    this.accessKeyId = options.accessKeyId.trim();
+    this.secretAccessKey = options.secretAccessKey.trim();
+    this.region = options.region?.trim() || "us-east-1";
+    this.endpoint = options.endpoint?.trim() || void 0;
+    this.timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+    this.forcePathStyle = options.forcePathStyle ?? (this.endpoint !== void 0 && this.endpoint.length > 0);
+  }
+  buildUrl(key = "", query) {
+    let baseUrl;
+    const cleanKey = key.replace(/^\/+/, "");
+    if (this.endpoint) {
+      const ep = this.endpoint.replace(/\/+$/, "");
+      if (this.forcePathStyle) {
+        baseUrl = cleanKey.length > 0 ? `${ep}/${this.bucket}/${cleanKey}` : `${ep}/${this.bucket}`;
+      } else {
+        const parsed = new URL(ep);
+        baseUrl = `${parsed.protocol}//${this.bucket}.${parsed.host}${parsed.pathname.replace(/\/+$/, "")}/${cleanKey}`;
+      }
+    } else {
+      if (this.forcePathStyle) {
+        baseUrl = cleanKey.length > 0 ? `https://s3.${this.region}.amazonaws.com/${this.bucket}/${cleanKey}` : `https://s3.${this.region}.amazonaws.com/${this.bucket}`;
+      } else {
+        baseUrl = cleanKey.length > 0 ? `https://${this.bucket}.s3.${this.region}.amazonaws.com/${cleanKey}` : `https://${this.bucket}.s3.${this.region}.amazonaws.com/`;
+      }
+    }
+    const url = new URL(baseUrl);
+    if (query) {
+      for (const [k, v] of Object.entries(query)) {
+        if (v !== void 0) {
+          url.searchParams.set(k, v);
+        }
+      }
+    }
+    return url;
+  }
+  async putObject(key, body, sizeBytes, payloadSha256, options) {
+    const url = this.buildUrl(key);
+    const contentType = options?.contentType ?? "application/zip";
+    const customHeaders = {
+      "content-type": contentType,
+      "content-length": String(sizeBytes)
+    };
+    if (options?.metadata) {
+      for (const [mKey, mVal] of Object.entries(options.metadata)) {
+        customHeaders[`x-amz-meta-${mKey.toLowerCase()}`] = mVal;
+      }
+    }
+    const signed = signS3Request({
+      method: "PUT",
+      url,
+      headers: customHeaders,
+      payloadHash: payloadSha256,
+      accessKeyId: this.accessKeyId,
+      secretAccessKey: this.secretAccessKey,
+      region: this.region
+    });
+    const response = await this.executeRequest(signed, body);
+    const etag = response.headers.etag?.replace(/"/g, "") ?? "";
+    return { etag };
+  }
+  async listObjectsV2(options) {
+    const query = { "list-type": "2" };
+    if (options?.prefix) query.prefix = options.prefix;
+    if (options?.continuationToken) query["continuation-token"] = options.continuationToken;
+    if (options?.maxKeys) query["max-keys"] = String(options.maxKeys);
+    const url = this.buildUrl("", query);
+    const signed = signS3Request({
+      method: "GET",
+      url,
+      payloadHash: sha256Hex(""),
+      accessKeyId: this.accessKeyId,
+      secretAccessKey: this.secretAccessKey,
+      region: this.region
+    });
+    const response = await this.executeRequest(signed);
+    return parseListObjectsV2Xml(response.body);
+  }
+  async deleteObjects(keys) {
+    if (keys.length === 0) {
+      return { deletedKeys: [], errors: [] };
+    }
+    const objectsXml = keys.map((k) => `<Object><Key>${escapeXml(k)}</Key></Object>`).join("");
+    const xmlBody = `<?xml version="1.0" encoding="UTF-8"?><Delete><Quiet>false</Quiet>${objectsXml}</Delete>`;
+    const bodyBuffer = Buffer.from(xmlBody, "utf8");
+    const payloadHash = sha256Hex(bodyBuffer);
+    const url = this.buildUrl("", { delete: "" });
+    const signed = signS3Request({
+      method: "POST",
+      url,
+      headers: {
+        "content-type": "application/xml",
+        "content-length": String(bodyBuffer.length)
+      },
+      payloadHash,
+      accessKeyId: this.accessKeyId,
+      secretAccessKey: this.secretAccessKey,
+      region: this.region
+    });
+    const response = await this.executeRequest(signed, bodyBuffer);
+    return parseDeleteResultXml(response.body, keys);
+  }
+  async testConnection() {
+    await this.listObjectsV2({ maxKeys: 1 });
+    return { ok: true, bucket: this.bucket, region: this.region };
+  }
+  executeRequest(signed, body) {
+    const target = new URL(signed.url);
+    const send = target.protocol === "http:" ? import_node_http.request : import_node_https.request;
+    return new Promise((resolve2, reject) => {
+      let aborted = false;
+      const timer = setTimeout(() => {
+        aborted = true;
+        req.destroy(new Error(`S3 request timed out after ${this.timeoutMs}ms`));
+      }, this.timeoutMs);
+      const req = send(
+        target,
+        {
+          method: signed.method,
+          headers: signed.headers
+        },
+        (res) => {
+          clearTimeout(timer);
+          const chunks = [];
+          res.on("data", (chunk) => {
+            if (chunks.length < 1024) chunks.push(chunk);
+          });
+          res.on("error", (resErr) => {
+            clearTimeout(timer);
+            reject(resErr);
+          });
+          res.on("end", () => {
+            clearTimeout(timer);
+            const statusCode = res.statusCode ?? 0;
+            const resBody = Buffer.concat(chunks).toString("utf8");
+            if (statusCode >= 200 && statusCode < 300) {
+              resolve2({ statusCode, headers: res.headers, body: resBody });
+              return;
+            }
+            const parsedError = parseS3ErrorXml(resBody, statusCode);
+            reject(parsedError);
+          });
+        }
+      );
+      req.on("error", (reqErr) => {
+        clearTimeout(timer);
+        if (!aborted) reject(reqErr);
+      });
+      if (body) {
+        if (Buffer.isBuffer(body)) {
+          req.end(body);
+        } else {
+          body.on("error", (streamErr) => {
+            clearTimeout(timer);
+            req.destroy(streamErr);
+            reject(streamErr);
+          });
+          body.pipe(req);
+        }
+      } else {
+        req.end();
+      }
+    });
+  }
+};
+function escapeXml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+}
+function parseS3ErrorXml(xml, statusCode) {
+  const codeMatch = /<Code>(.*?)<\/Code>/s.exec(xml);
+  const messageMatch = /<Message>(.*?)<\/Message>/s.exec(xml);
+  const code = codeMatch?.[1]?.trim() ?? `HTTP_${statusCode}`;
+  const message = messageMatch?.[1]?.trim() ?? (xml.slice(0, 200).trim() || `Request failed with HTTP status ${statusCode}`);
+  return new S3Error(code, message, statusCode, xml);
+}
+function parseListObjectsV2Xml(xml) {
+  const isTruncated = /<IsTruncated>(true|false)<\/IsTruncated>/i.exec(xml)?.[1]?.toLowerCase() === "true";
+  const nextToken = /<NextContinuationToken>(.*?)<\/NextContinuationToken>/s.exec(xml)?.[1]?.trim();
+  const objects = [];
+  const contentsRegex = /<Contents>(.*?)<\/Contents>/gs;
+  let match2 = null;
+  while (true) {
+    match2 = contentsRegex.exec(xml);
+    if (!match2) break;
+    const itemXml = match2[1] ?? "";
+    const key = /<Key>(.*?)<\/Key>/s.exec(itemXml)?.[1]?.trim();
+    const lastModifiedRaw = /<LastModified>(.*?)<\/LastModified>/s.exec(itemXml)?.[1]?.trim();
+    const sizeRaw = /<Size>(\d+)<\/Size>/s.exec(itemXml)?.[1]?.trim();
+    const etag = (/ <ETag>(.*?)<\/ETag>/s.exec(itemXml)?.[1] ?? /<ETag>(.*?)<\/ETag>/s.exec(itemXml)?.[1]?.trim() ?? "").replace(/"/g, "");
+    if (key && lastModifiedRaw) {
+      objects.push({
+        key,
+        lastModified: new Date(lastModifiedRaw),
+        sizeBytes: sizeRaw ? Number.parseInt(sizeRaw, 10) : 0,
+        etag
+      });
+    }
+  }
+  return {
+    objects,
+    isTruncated,
+    nextContinuationToken: nextToken
+  };
+}
+function parseDeleteResultXml(xml, fallbackKeys) {
+  const deletedKeys = [];
+  const errors = [];
+  const deletedRegex = /<Deleted>(.*?)<\/Deleted>/gs;
+  let dMatch = null;
+  while (true) {
+    dMatch = deletedRegex.exec(xml);
+    if (!dMatch) break;
+    const k = /<Key>(.*?)<\/Key>/s.exec(dMatch[1] ?? "")?.[1]?.trim();
+    if (k) deletedKeys.push(k);
+  }
+  const errorRegex = /<Error>(.*?)<\/Error>/gs;
+  let eMatch = null;
+  while (true) {
+    eMatch = errorRegex.exec(xml);
+    if (!eMatch) break;
+    const eXml = eMatch[1] ?? "";
+    const k = /<Key>(.*?)<\/Key>/s.exec(eXml)?.[1]?.trim() ?? "";
+    const code = /<Code>(.*?)<\/Code>/s.exec(eXml)?.[1]?.trim() ?? "Unknown";
+    const msg = /<Message>(.*?)<\/Message>/s.exec(eXml)?.[1]?.trim() ?? "";
+    errors.push({ key: k, code, message: msg });
+  }
+  if (deletedKeys.length === 0 && errors.length === 0) {
+    return { deletedKeys: [...fallbackKeys], errors: [] };
+  }
+  return { deletedKeys, errors };
+}
+
+// src/s3/sink.ts
+var import_node_crypto2 = require("node:crypto");
 var import_node_fs2 = require("node:fs");
 var import_promises2 = require("node:fs/promises");
 var import_node_path2 = __toESM(require("node:path"), 1);
@@ -15312,13 +15719,13 @@ function getStat(file, followSymlinks) {
     });
   });
 }
-async function* exploreWalkAsync(dir, path5, followSymlinks, useStat, shouldSkip, strict) {
-  let files = await readdir2(path5 + dir, strict);
+async function* exploreWalkAsync(dir, path6, followSymlinks, useStat, shouldSkip, strict) {
+  let files = await readdir2(path6 + dir, strict);
   for (const file of files) {
     let name = file.name;
     const filename = dir + "/" + name;
     const relative = filename.slice(1);
-    const absolute = path5 + "/" + relative;
+    const absolute = path6 + "/" + relative;
     let stat2 = file;
     if (useStat || followSymlinks) stat2 = await getStat(absolute, followSymlinks) ?? stat2;
     if (stat2.isDirectory()) {
@@ -15328,7 +15735,7 @@ async function* exploreWalkAsync(dir, path5, followSymlinks, useStat, shouldSkip
           absolute,
           stat: stat2
         };
-        yield* exploreWalkAsync(filename, path5, followSymlinks, useStat, shouldSkip, false);
+        yield* exploreWalkAsync(filename, path6, followSymlinks, useStat, shouldSkip, false);
       }
     } else yield {
       relative,
@@ -15337,8 +15744,8 @@ async function* exploreWalkAsync(dir, path5, followSymlinks, useStat, shouldSkip
     };
   }
 }
-async function* explore(path5, followSymlinks, useStat, shouldSkip) {
-  yield* exploreWalkAsync("", path5, followSymlinks, useStat, shouldSkip, true);
+async function* explore(path6, followSymlinks, useStat, shouldSkip) {
+  yield* exploreWalkAsync("", path6, followSymlinks, useStat, shouldSkip, true);
 }
 function readOptions(options) {
   return {
@@ -17766,26 +18173,43 @@ var ZipArchive = class extends Archiver {
   }
 };
 
-// src/zip-sink.ts
-var LocalFileSink = class {
-  constructor(filePath) {
-    this.filePath = filePath;
+// src/s3/sink.ts
+var S3Sink = class {
+  constructor(options) {
+    this.options = options;
   }
-  filePath;
+  options;
   async open(options) {
-    await (0, import_promises2.mkdir)(import_node_path2.default.dirname(this.filePath), { recursive: true });
-    const partPath = `${this.filePath}.part`;
-    const spool = createSpool(partPath, options);
-    const filePath = this.filePath;
+    const root = this.options.tmpDir;
+    await (0, import_promises2.mkdir)(root, { recursive: true });
+    const dir = await (0, import_promises2.mkdtemp)(import_node_path2.default.join(root, "qbx-s3-sink-"));
+    const spoolPath = import_node_path2.default.join(dir, "backup.zip");
+    const spool = createSpool(spoolPath, options, this.options.maxBytes);
+    const opts = this.options;
     return {
       append: spool.append,
       failed: spool.failed,
       finish: async () => {
-        const result = await spool.finish();
-        await (0, import_promises2.rename)(partPath, filePath);
-        return { ...result, location: filePath };
+        try {
+          const result = await spool.finish();
+          if (opts.maxBytes !== void 0 && result.bytesZip > opts.maxBytes) {
+            throw new Error(
+              `Backup zip is ${result.bytesZip} bytes, exceeding the ${opts.maxBytes} byte limit`
+            );
+          }
+          const fileStream = (0, import_node_fs2.createReadStream)(spoolPath);
+          await opts.client.putObject(opts.s3Key, fileStream, result.bytesZip, result.sha256);
+          const localCopy = await keepLocalCopy(spoolPath, opts.keepLocalPath);
+          const s3Location = `s3://${opts.client.bucket}/${opts.s3Key}`;
+          return localCopy === null ? { ...result, location: s3Location } : { ...result, location: `${s3Location} (+ local: ${localCopy})` };
+        } finally {
+          await (0, import_promises2.rm)(dir, { recursive: true, force: true });
+        }
       },
-      abort: spool.abort
+      abort: async () => {
+        await spool.abort();
+        await (0, import_promises2.rm)(dir, { recursive: true, force: true });
+      }
     };
   }
 };
@@ -17832,9 +18256,105 @@ function createSpool(target, options, maxBytes) {
   };
 }
 function createCounter(onBytes, maxBytes) {
-  const hash = (0, import_node_crypto.createHash)("sha256");
+  const hash = (0, import_node_crypto2.createHash)("sha256");
   let total = 0;
   const transform = new import_node_stream2.Transform({
+    transform(chunk, _encoding, callback) {
+      total += chunk.length;
+      hash.update(chunk);
+      onBytes?.(total);
+      if (maxBytes !== void 0 && total > maxBytes) {
+        callback(new Error(`Backup zip exceeded the ${maxBytes} byte limit for this job`));
+        return;
+      }
+      callback(null, chunk);
+    }
+  });
+  return { transform, bytes: () => total, digest: () => hash.digest("hex") };
+}
+async function keepLocalCopy(spoolPath, destination) {
+  if (destination === void 0 || destination.length === 0) return null;
+  await (0, import_promises2.mkdir)(import_node_path2.default.dirname(destination), { recursive: true });
+  const partPath = `${destination}.part`;
+  await (0, import_promises2.copyFile)(spoolPath, partPath);
+  await (0, import_promises2.rename)(partPath, destination);
+  return destination;
+}
+
+// src/zip-sink.ts
+var import_node_crypto3 = require("node:crypto");
+var import_node_fs3 = require("node:fs");
+var import_promises3 = require("node:fs/promises");
+var import_node_path3 = __toESM(require("node:path"), 1);
+var import_node_stream3 = require("node:stream");
+var LocalFileSink = class {
+  constructor(filePath) {
+    this.filePath = filePath;
+  }
+  filePath;
+  async open(options) {
+    await (0, import_promises3.mkdir)(import_node_path3.default.dirname(this.filePath), { recursive: true });
+    const partPath = `${this.filePath}.part`;
+    const spool = createSpool2(partPath, options);
+    const filePath = this.filePath;
+    return {
+      append: spool.append,
+      failed: spool.failed,
+      finish: async () => {
+        const result = await spool.finish();
+        await (0, import_promises3.rename)(partPath, filePath);
+        return { ...result, location: filePath };
+      },
+      abort: spool.abort
+    };
+  }
+};
+function createSpool2(target, options, maxBytes) {
+  const zip = new ZipArchive({ zlib: { level: options.zipLevel }, forceZip64: true });
+  const counter = createCounter2(options.onZipBytes, maxBytes);
+  const file = (0, import_node_fs3.createWriteStream)(target);
+  let source = null;
+  const flushed = new Promise((resolve2, reject) => {
+    file.once("close", () => resolve2());
+    file.once("error", reject);
+    counter.transform.once("error", reject);
+    zip.on("error", (zipError) => reject(new Error(`Zip failed: ${zipError.message}`)));
+    zip.on("warning", (warning) => {
+      if (warning.code !== "ENOENT") reject(new Error(`Zip warning: ${warning.message}`));
+    });
+  });
+  const failed = new Promise((_, reject) => {
+    flushed.catch((flushError) => {
+      source?.destroy(flushError);
+      reject(flushError);
+    });
+  });
+  void failed.catch(() => {
+  });
+  zip.pipe(counter.transform).pipe(file);
+  return {
+    append: (input) => {
+      source = input;
+      zip.append(input, { name: options.entryName });
+    },
+    finish: async () => {
+      await zip.finalize();
+      await flushed;
+      return { bytesZip: counter.bytes(), sha256: counter.digest() };
+    },
+    abort: async () => {
+      zip.abort();
+      counter.transform.destroy();
+      file.destroy();
+      await (0, import_promises3.rm)(target, { force: true });
+    },
+    failed
+  };
+}
+function createCounter2(onBytes, maxBytes) {
+  const hash = (0, import_node_crypto3.createHash)("sha256");
+  let total = 0;
+  const transform = new import_node_stream3.Transform({
     transform(chunk, _encoding, callback) {
       total += chunk.length;
       hash.update(chunk);
@@ -17856,17 +18376,30 @@ var FLAG_BY_CONVAR = {
   qbx_db_backup_local_dir: "out",
   qbx_db_backup_dump_bin: "dump-bin",
   qbx_db_backup_zip_level: "zip-level",
-  qbx_db_backup_timeout_minutes: "timeout-minutes"
+  qbx_db_backup_timeout_minutes: "timeout-minutes",
+  qbx_db_backup_s3_endpoint: "s3-endpoint",
+  qbx_db_backup_s3_bucket: "s3-bucket",
+  qbx_db_backup_s3_region: "s3-region",
+  qbx_db_backup_s3_access_key_id: "s3-key",
+  qbx_db_backup_s3_key: "s3-key",
+  qbx_db_backup_s3_secret_access_key: "s3-secret",
+  qbx_db_backup_s3_secret: "s3-secret",
+  qbx_db_backup_s3_prefix: "s3-prefix",
+  qbx_db_backup_s3_force_path_style: "s3-path-style",
+  qbx_db_backup_s3_keep: "s3-keep",
+  qbx_db_backup_s3_max_age_days: "s3-max-age"
 };
 var USAGE = `qbx_db_backup CLI v${RESOURCE_VERSION}
 
 usage:
   node dist/cli.js run  --connection "<string>" [--out ./backups] [--dump-bin path] [--zip-level 6]
-  node dist/cli.js test --connection "<string>" [--dump-bin path]
+  node dist/cli.js test --connection "<string>" [--dump-bin path] [--s3-bucket b --s3-key k --s3-secret s]
 
 Flags fall back to environment variables: MYSQL_CONNECTION_STRING,
 QBX_DB_BACKUP_CONNECTION_STRING, QBX_DB_BACKUP_LOCAL_DIR, QBX_DB_BACKUP_DUMP_BIN,
-QBX_DB_BACKUP_ZIP_LEVEL, QBX_DB_BACKUP_TIMEOUT_MINUTES.`;
+QBX_DB_BACKUP_ZIP_LEVEL, QBX_DB_BACKUP_TIMEOUT_MINUTES, QBX_DB_BACKUP_S3_BUCKET,
+QBX_DB_BACKUP_S3_KEY, QBX_DB_BACKUP_S3_SECRET, QBX_DB_BACKUP_S3_ENDPOINT,
+QBX_DB_BACKUP_S3_REGION.`;
 function parseFlags(argv) {
   const flags = {};
   for (let index2 = 0; index2 < argv.length; index2 += 1) {
@@ -17896,14 +18429,24 @@ function buildConfig(flags) {
     return process.env[name.toUpperCase()] ?? fallback;
   };
   return loadConfig(source, {
-    localDir: import_node_path3.default.resolve("backups"),
-    resourceDir: import_node_path3.default.resolve(__dirname, "..")
+    localDir: import_node_path4.default.resolve("backups"),
+    resourceDir: import_node_path4.default.resolve(__dirname, "..")
   });
 }
 async function commandRun(config) {
   const target = parseConnectionString(config.connectionString);
   const names = buildBackupNames(target.database, /* @__PURE__ */ new Date());
-  const sink = new LocalFileSink(import_node_path3.default.resolve(config.localDir, names.zipName));
+  let sink = new LocalFileSink(import_node_path4.default.resolve(config.localDir, names.zipName));
+  if (isS3Configured(config.s3)) {
+    const s3Client = new S3Client(config.s3);
+    const key = config.s3.prefix ? `${config.s3.prefix.replace(/\/+$/, "")}/${names.zipName}` : names.zipName;
+    sink = new S3Sink({
+      client: s3Client,
+      s3Key: key,
+      tmpDir: import_node_path4.default.resolve(config.localDir, ".tmp"),
+      keepLocalPath: config.keepLocal ? import_node_path4.default.resolve(config.localDir, names.zipName) : void 0
+    });
+  }
   const outcome = await runBackup({ config, sink, entryName: names.entryName });
   if (outcome.busy) {
     process.stderr.write("a backup is already running\n");
@@ -17919,8 +18462,22 @@ async function commandTest(config) {
     explicitPath: config.dumpBin.length > 0 ? config.dumpBin : void 0,
     resourceDir: config.resourceDir
   });
+  let s3Status = null;
+  if (isS3Configured(config.s3)) {
+    try {
+      const s3Client = new S3Client(config.s3);
+      await s3Client.testConnection();
+      s3Status = {
+        ok: true,
+        bucket: config.s3.bucket,
+        endpoint: config.s3.endpoint ?? `s3.${config.s3.region}.amazonaws.com`
+      };
+    } catch (s3Err) {
+      s3Status = { ok: false, error: errorMessage(s3Err) };
+    }
+  }
   process.stdout.write(
-    `${JSON.stringify({ target: describeTarget(target), ssl: target.ssl, dumpBinary: binary }, null, 2)}
+    `${JSON.stringify({ target: describeTarget(target), ssl: target.ssl, dumpBinary: binary, s3: s3Status }, null, 2)}
 `
   );
   return 0;
