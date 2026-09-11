@@ -1,4 +1,4 @@
-import path from "node:path";
+﻿import path from "node:path";
 import { AgentApi, type BackupJob, type HeartbeatResult, type JobTrigger } from "./api";
 import {
   type BackupOutcome,
@@ -9,6 +9,7 @@ import {
 } from "./backup";
 import {
   type Config,
+  isGDriveConfigured,
   isS3Configured,
   loadConfig,
   RESOURCE_VERSION,
@@ -17,8 +18,11 @@ import {
 } from "./config";
 import { describeTarget, parseConnectionString } from "./connection-string";
 import { type DumpBinary, detectDumpBinary } from "./dump";
+import { GDriveClient } from "./gdrive/client";
+import { loadCredentialsFile } from "./gdrive/auth";
+import { GDriveSink } from "./gdrive/sink";
 import { error, errorMessage, info, warn } from "./log";
-import { pruneLocalDirectory, pruneS3Bucket } from "./retention";
+import { pruneGDriveFolder, pruneLocalDirectory, pruneS3Bucket } from "./retention";
 import { S3Client } from "./s3/client";
 import { S3Sink } from "./s3/sink";
 import { HOUR_MS, nextRunAt, readLastRunAt, writeLastRunAt } from "./schedule";
@@ -31,6 +35,7 @@ const SIZE_UNITS = ["B", "KB", "MB", "GB", "TB"];
 let config: Config;
 let api: AgentApi | null = null;
 let s3Client: S3Client | null = null;
+let gdriveClient: GDriveClient | null = null;
 let dumpBinary: DumpBinary | null = null;
 let pollTimer: NodeJS.Timeout | null = null;
 let scheduleTimer: NodeJS.Timeout | null = null;
@@ -123,6 +128,10 @@ function describeRetention(): string {
     if (config.s3.keepCount > 0) parts.push(`s3_keep=${config.s3.keepCount}`);
     if (config.s3.maxAgeDays > 0) parts.push(`s3_max_age=${config.s3.maxAgeDays}d`);
   }
+  if (isGDriveConfigured(config.gdrive)) {
+    if (config.gdrive.keepCount > 0) parts.push(`gdrive_keep=${config.gdrive.keepCount}`);
+    if (config.gdrive.maxAgeDays > 0) parts.push(`gdrive_max_age=${config.gdrive.maxAgeDays}d`);
+  }
   return parts.join(", ");
 }
 
@@ -163,6 +172,29 @@ async function pruneS3(): Promise<void> {
     }
   } catch (failure) {
     warn(`S3 retention pruning warning: ${errorMessage(failure)}`);
+  }
+}
+
+async function pruneGDrive(): Promise<void> {
+  if (gdriveClient === null) return;
+  if (config.gdrive.keepCount <= 0 && config.gdrive.maxAgeDays <= 0) return;
+
+  try {
+    const res = await pruneGDriveFolder(gdriveClient, {
+      folderId: config.gdrive.folderId,
+      keepCount: config.gdrive.keepCount,
+      maxAgeDays: config.gdrive.maxAgeDays,
+    });
+    if (res.deletedFiles.length > 0) {
+      info(
+        `pruned ${res.deletedFiles.length} expired backup(s) from Google Drive folder "${config.gdrive.folderId || "root"}"`,
+      );
+    }
+    if (res.errors.length > 0) {
+      warn(`Google Drive retention delete error: ${res.errors.map((e) => `${e.name}: ${e.error}`).join("; ")}`);
+    }
+  } catch (failure) {
+    warn(`Google Drive retention pruning warning: ${errorMessage(failure)}`);
   }
 }
 
@@ -210,6 +242,40 @@ async function runS3Backup(): Promise<BackupOutcome> {
   return outcome;
 }
 
+async function runGDriveBackup(): Promise<BackupOutcome> {
+  if (gdriveClient === null) throw new Error("Google Drive client is not configured");
+  const target = parseConnectionString(config.connectionString);
+  const names = buildBackupNames(target.database, new Date());
+
+  const sink = new GDriveSink({
+    client: gdriveClient,
+    fileName: names.zipName,
+    folderId: config.gdrive.folderId,
+    tmpDir: path.join(config.localDir, ".tmp"),
+    keepLocalPath:
+      config.keepLocal || config.gdrive.keepLocal
+        ? path.join(config.localDir, names.zipName)
+        : undefined,
+  });
+
+  info(`starting Google Drive upload -> folder "${config.gdrive.folderId || "root"}" (${names.zipName})`);
+  const outcome = await runBackup({
+    config,
+    sink,
+    entryName: names.entryName,
+    timeoutMs: config.timeoutMinutes * 60_000,
+  });
+
+  lastOutcome = describeOutcome(outcome);
+  info(lastOutcome);
+
+  if (!outcome.busy) {
+    await pruneGDrive();
+    if (config.keepLocal || config.gdrive.keepLocal) await pruneLocal();
+  }
+  return outcome;
+}
+
 async function runJob(job: BackupJob): Promise<void> {
   if (api === null) return;
   const client = api;
@@ -238,22 +304,26 @@ async function runJob(job: BackupJob): Promise<void> {
       },
     });
     lastOutcome = describeOutcome(outcome);
-    info(lastOutcome);
-    if (outcome.busy) return;
+
+    if (outcome.busy) {
+      await client.complete(job.jobId, { ok: false, error: "a backup is already running" });
+      return;
+    }
+
     if (config.keepLocal) await pruneLocal();
 
     const result = await client.complete(job.jobId, {
       ok: true,
       sizeBytes: outcome.sizeBytes,
       rawBytes: outcome.rawBytes,
-      sha256: outcome.sha256,
       durationMs: outcome.durationMs,
+      sha256: outcome.sha256,
       warnings: outcome.warnings,
     });
-    info(`job ${job.jobId}: ${result.status}`);
-    if (result.status === "failed" && result.error) {
-      lastOutcome = `failed: ${result.error}`;
-      error(result.error);
+    // CompleteResult uses status: "ready" | "failed", not ok: boolean
+    if (result.status === "failed") {
+      lastOutcome = `failed: ${result.error ?? "unknown"}`;
+      error(result.error ?? "unknown error from dashboard");
     }
   } catch (failure) {
     lastOutcome = `failed: ${errorMessage(failure)}`;
@@ -303,10 +373,18 @@ async function executeBackupPipeline(trigger: JobTrigger): Promise<number | null
           return null;
         } catch (s3Failure) {
           warn(
-            `S3 upload fallback failed (${errorMessage(s3Failure)}); activating local storage fallback...`,
+            `S3 upload fallback failed (${errorMessage(s3Failure)}); activating secondary fallback...`,
           );
-          await runLocalBackup();
+        }
+      }
+      if (isGDriveConfigured(config.gdrive)) {
+        try {
+          await runGDriveBackup();
           return null;
+        } catch (gdriveFailure) {
+          warn(
+            `Google Drive upload fallback failed (${errorMessage(gdriveFailure)}); activating local storage fallback...`,
+          );
         }
       }
       await runLocalBackup();
@@ -319,7 +397,38 @@ async function executeBackupPipeline(trigger: JobTrigger): Promise<number | null
       await runS3Backup();
       return null;
     } catch (s3Failure) {
-      warn(`S3 upload failed (${errorMessage(s3Failure)}); activating local storage fallback...`);
+      warn(`S3 upload failed (${errorMessage(s3Failure)}); activating fallback pipeline...`);
+      if (isGDriveConfigured(config.gdrive)) {
+        try {
+          await runGDriveBackup();
+          return null;
+        } catch (gdriveFailure) {
+          warn(
+            `Google Drive upload fallback failed (${errorMessage(gdriveFailure)}); activating local storage fallback...`,
+          );
+        }
+      }
+      await runLocalBackup();
+      return null;
+    }
+  }
+
+  if (config.mode === "gdrive") {
+    try {
+      await runGDriveBackup();
+      return null;
+    } catch (gdriveFailure) {
+      warn(`Google Drive upload failed (${errorMessage(gdriveFailure)}); activating fallback pipeline...`);
+      if (isS3Configured(config.s3)) {
+        try {
+          await runS3Backup();
+          return null;
+        } catch (s3Failure) {
+          warn(
+            `S3 upload fallback failed (${errorMessage(s3Failure)}); activating local storage fallback...`,
+          );
+        }
+      }
       await runLocalBackup();
       return null;
     }
@@ -401,6 +510,12 @@ function commandStatus(): void {
     );
   }
 
+  if (isGDriveConfigured(config.gdrive)) {
+    info(
+      `gdrive storage: folder="${config.gdrive.folderId || "root"}" clientId="${config.gdrive.clientId}" refresh_token="${redactSecret(config.gdrive.refreshToken)}"`,
+    );
+  }
+
   if (lastHeartbeat !== null) {
     info(
       `dashboard plan ${lastHeartbeat.plan}: ${formatBytes(lastHeartbeat.usedBytes)} / ${formatBytes(lastHeartbeat.poolBytes)} used`,
@@ -430,6 +545,25 @@ async function commandTest(): Promise<void> {
       await s3Client.testConnection();
       info(`S3 storage connected successfully (bucket "${config.s3.bucket}" is accessible)`);
     }
+
+    if (isGDriveConfigured(config.gdrive) && gdriveClient !== null) {
+      info(
+        `testing Google Drive storage (folder: "${config.gdrive.folderId || "My Drive root"}")...`,
+      );
+      const quota = await gdriveClient.getStorageQuota();
+      const usedFormatted = quota.usage !== undefined ? formatBytes(quota.usage) : "unknown";
+      const limitFormatted = quota.limit !== undefined ? formatBytes(quota.limit) : "unlimited";
+      if (config.gdrive.folderId) {
+        const folder = await gdriveClient.verifyFolder(config.gdrive.folderId);
+        info(
+          `Google Drive connected successfully (folder: "${folder.name}", storage used: ${usedFormatted} / ${limitFormatted})`,
+        );
+      } else {
+        info(
+          `Google Drive connected successfully (no folderId set - backups go to My Drive root; storage used: ${usedFormatted} / ${limitFormatted})`,
+        );
+      }
+    }
   } catch (failure) {
     error(errorMessage(failure));
   }
@@ -453,6 +587,22 @@ function start(): void {
 
   if (isS3Configured(config.s3)) {
     s3Client = new S3Client(config.s3);
+  }
+
+  if (isGDriveConfigured(config.gdrive)) {
+    if (config.gdrive.credentialsFile) {
+      // credentialsFile takes priority: load auth config from disk at startup
+      void loadCredentialsFile(config.gdrive.credentialsFile)
+        .then((fileAuth) => {
+          gdriveClient = new GDriveClient(fileAuth);
+          info(`Google Drive: loaded credentials from file '${config.gdrive.credentialsFile}'`);
+        })
+        .catch((loadErr) => {
+          error(`Google Drive: failed to load credentials file: ${errorMessage(loadErr)}`);
+        });
+    } else {
+      gdriveClient = new GDriveClient(config.gdrive);
+    }
   }
 
   info(
