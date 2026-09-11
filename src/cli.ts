@@ -1,14 +1,17 @@
-import path from "node:path";
+﻿import path from "node:path";
 import { buildBackupNames, runBackup } from "./backup";
 import {
   type Config,
   type ConfigSource,
+  isGDriveConfigured,
   isS3Configured,
   loadConfig,
   RESOURCE_VERSION,
 } from "./config";
 import { describeTarget, parseConnectionString } from "./connection-string";
 import { detectDumpBinary } from "./dump";
+import { GDriveClient } from "./gdrive/client";
+import { GDriveSink } from "./gdrive/sink";
 import { errorMessage } from "./log";
 import { S3Client } from "./s3/client";
 import { S3Sink } from "./s3/sink";
@@ -32,19 +35,26 @@ const FLAG_BY_CONVAR: Record<string, string> = {
   qbx_db_backup_s3_force_path_style: "s3-path-style",
   qbx_db_backup_s3_keep: "s3-keep",
   qbx_db_backup_s3_max_age_days: "s3-max-age",
+  qbx_backup_gdrive_client_id: "gdrive-client-id",
+  qbx_backup_gdrive_client_secret: "gdrive-client-secret",
+  qbx_backup_gdrive_refresh_token: "gdrive-refresh-token",
+  qbx_backup_gdrive_folder_id: "gdrive-folder-id",
+  qbx_backup_gdrive_keep: "gdrive-keep",
+  qbx_backup_gdrive_max_age_days: "gdrive-max-age",
 };
 
 const USAGE = `qbx_db_backup CLI v${RESOURCE_VERSION}
 
 usage:
   node dist/cli.js run  --connection "<string>" [--out ./backups] [--dump-bin path] [--zip-level 6]
-  node dist/cli.js test --connection "<string>" [--dump-bin path] [--s3-bucket b --s3-key k --s3-secret s]
+  node dist/cli.js test --connection "<string>" [--dump-bin path] [--s3-bucket b --s3-key k --s3-secret s] [--gdrive-client-id id --gdrive-client-secret sec --gdrive-refresh-token tok]
 
 Flags fall back to environment variables: MYSQL_CONNECTION_STRING,
 QBX_DB_BACKUP_CONNECTION_STRING, QBX_DB_BACKUP_LOCAL_DIR, QBX_DB_BACKUP_DUMP_BIN,
 QBX_DB_BACKUP_ZIP_LEVEL, QBX_DB_BACKUP_TIMEOUT_MINUTES, QBX_DB_BACKUP_S3_BUCKET,
 QBX_DB_BACKUP_S3_KEY, QBX_DB_BACKUP_S3_SECRET, QBX_DB_BACKUP_S3_ENDPOINT,
-QBX_DB_BACKUP_S3_REGION.`;
+QBX_DB_BACKUP_S3_REGION, QBX_BACKUP_GDRIVE_CLIENT_ID, QBX_BACKUP_GDRIVE_CLIENT_SECRET,
+QBX_BACKUP_GDRIVE_REFRESH_TOKEN, QBX_BACKUP_GDRIVE_FOLDER_ID.`;
 
 function parseFlags(argv: string[]): Record<string, string> {
   const flags: Record<string, string> = {};
@@ -85,9 +95,9 @@ async function commandRun(config: Config): Promise<number> {
   const target = parseConnectionString(config.connectionString);
   const names = buildBackupNames(target.database, new Date());
 
-  let sink = new LocalFileSink(path.resolve(config.localDir, names.zipName));
+  let sink: any = new LocalFileSink(path.resolve(config.localDir, names.zipName));
 
-  if (isS3Configured(config.s3)) {
+  if (config.mode === "s3" && isS3Configured(config.s3)) {
     const s3Client = new S3Client(config.s3);
     const key = config.s3.prefix
       ? `${config.s3.prefix.replace(/\/+$/, "")}/${names.zipName}`
@@ -97,7 +107,19 @@ async function commandRun(config: Config): Promise<number> {
       s3Key: key,
       tmpDir: path.resolve(config.localDir, ".tmp"),
       keepLocalPath: config.keepLocal ? path.resolve(config.localDir, names.zipName) : undefined,
-    }) as unknown as LocalFileSink;
+    });
+  } else if (config.mode === "gdrive" && isGDriveConfigured(config.gdrive)) {
+    const gdriveClient = new GDriveClient(config.gdrive);
+    sink = new GDriveSink({
+      client: gdriveClient,
+      fileName: names.zipName,
+      folderId: config.gdrive.folderId,
+      tmpDir: path.resolve(config.localDir, ".tmp"),
+      keepLocalPath:
+        config.keepLocal || config.gdrive.keepLocal
+          ? path.resolve(config.localDir, names.zipName)
+          : undefined,
+    });
   }
 
   const outcome = await runBackup({ config, sink, entryName: names.entryName });
@@ -131,8 +153,25 @@ async function commandTest(config: Config): Promise<number> {
     }
   }
 
+  let gdriveStatus: unknown = null;
+  if (isGDriveConfigured(config.gdrive)) {
+    try {
+      const gdriveClient = new GDriveClient(config.gdrive);
+      const quota = await gdriveClient.getStorageQuota();
+      const folder = await gdriveClient.verifyFolder(config.gdrive.folderId || "root");
+      gdriveStatus = {
+        ok: true,
+        folder: folder.name,
+        storageUsage: quota.usage,
+        storageLimit: quota.limit,
+      };
+    } catch (gdriveErr) {
+      gdriveStatus = { ok: false, error: errorMessage(gdriveErr) };
+    }
+  }
+
   process.stdout.write(
-    `${JSON.stringify({ target: describeTarget(target), ssl: target.ssl, dumpBinary: binary, s3: s3Status }, null, 2)}\n`,
+    `${JSON.stringify({ target: describeTarget(target), ssl: target.ssl, dumpBinary: binary, s3: s3Status, gdrive: gdriveStatus }, null, 2)}\n`,
   );
   return 0;
 }
