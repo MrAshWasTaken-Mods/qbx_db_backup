@@ -1863,11 +1863,11 @@ var require_stream_readable = __commonJS({
 var require_stream_transform = __commonJS({
   "node_modules/lazystream/node_modules/readable-stream/lib/_stream_transform.js"(exports2, module2) {
     "use strict";
-    module2.exports = Transform7;
+    module2.exports = Transform8;
     var Duplex = require_stream_duplex();
     var util3 = Object.create(require_util());
     util3.inherits = require_inherits();
-    util3.inherits(Transform7, Duplex);
+    util3.inherits(Transform8, Duplex);
     function afterTransform(er, data) {
       var ts = this._transformState;
       ts.transforming = false;
@@ -1886,8 +1886,8 @@ var require_stream_transform = __commonJS({
         this._read(rs.highWaterMark);
       }
     }
-    function Transform7(options) {
-      if (!(this instanceof Transform7)) return new Transform7(options);
+    function Transform8(options) {
+      if (!(this instanceof Transform8)) return new Transform8(options);
       Duplex.call(this, options);
       this._transformState = {
         afterTransform: afterTransform.bind(this),
@@ -1915,14 +1915,14 @@ var require_stream_transform = __commonJS({
         done(this, null, null);
       }
     }
-    Transform7.prototype.push = function(chunk, encoding) {
+    Transform8.prototype.push = function(chunk, encoding) {
       this._transformState.needTransform = false;
       return Duplex.prototype.push.call(this, chunk, encoding);
     };
-    Transform7.prototype._transform = function(chunk, encoding, cb) {
+    Transform8.prototype._transform = function(chunk, encoding, cb) {
       throw new Error("_transform() is not implemented");
     };
-    Transform7.prototype._write = function(chunk, encoding, cb) {
+    Transform8.prototype._write = function(chunk, encoding, cb) {
       var ts = this._transformState;
       ts.writecb = cb;
       ts.writechunk = chunk;
@@ -1932,7 +1932,7 @@ var require_stream_transform = __commonJS({
         if (ts.needTransform || rs.needReadable || rs.length < rs.highWaterMark) this._read(rs.highWaterMark);
       }
     };
-    Transform7.prototype._read = function(n) {
+    Transform8.prototype._read = function(n) {
       var ts = this._transformState;
       if (ts.writechunk !== null && ts.writecb && !ts.transforming) {
         ts.transforming = true;
@@ -1941,7 +1941,7 @@ var require_stream_transform = __commonJS({
         ts.needTransform = true;
       }
     };
-    Transform7.prototype._destroy = function(err, cb) {
+    Transform8.prototype._destroy = function(err, cb) {
       var _this2 = this;
       Duplex.prototype._destroy.call(this, err, function(err2) {
         cb(err2);
@@ -1964,13 +1964,13 @@ var require_stream_passthrough = __commonJS({
   "node_modules/lazystream/node_modules/readable-stream/lib/_stream_passthrough.js"(exports2, module2) {
     "use strict";
     module2.exports = PassThrough4;
-    var Transform7 = require_stream_transform();
+    var Transform8 = require_stream_transform();
     var util3 = Object.create(require_util());
     util3.inherits = require_inherits();
-    util3.inherits(PassThrough4, Transform7);
+    util3.inherits(PassThrough4, Transform8);
     function PassThrough4(options) {
       if (!(this instanceof PassThrough4)) return new PassThrough4(options);
-      Transform7.call(this, options);
+      Transform8.call(this, options);
     }
     PassThrough4.prototype._transform = function(chunk, encoding, cb) {
       cb(null, chunk);
@@ -8982,15 +8982,15 @@ var require_transform = __commonJS({
   "node_modules/readable-stream/lib/internal/streams/transform.js"(exports2, module2) {
     "use strict";
     var { ObjectSetPrototypeOf, Symbol: Symbol2 } = require_primordials();
-    module2.exports = Transform7;
+    module2.exports = Transform8;
     var { ERR_METHOD_NOT_IMPLEMENTED } = require_errors().codes;
     var Duplex = require_duplex();
     var { getHighWaterMark } = require_state();
-    ObjectSetPrototypeOf(Transform7.prototype, Duplex.prototype);
-    ObjectSetPrototypeOf(Transform7, Duplex);
+    ObjectSetPrototypeOf(Transform8.prototype, Duplex.prototype);
+    ObjectSetPrototypeOf(Transform8, Duplex);
     var kCallback = Symbol2("kCallback");
-    function Transform7(options) {
-      if (!(this instanceof Transform7)) return new Transform7(options);
+    function Transform8(options) {
+      if (!(this instanceof Transform8)) return new Transform8(options);
       const readableHighWaterMark = options ? getHighWaterMark(this, options, "readableHighWaterMark", true) : null;
       if (readableHighWaterMark === 0) {
         options = {
@@ -9044,11 +9044,11 @@ var require_transform = __commonJS({
         final.call(this);
       }
     }
-    Transform7.prototype._final = final;
-    Transform7.prototype._transform = function(chunk, encoding, callback) {
+    Transform8.prototype._final = final;
+    Transform8.prototype._transform = function(chunk, encoding, callback) {
       throw new ERR_METHOD_NOT_IMPLEMENTED("_transform()");
     };
-    Transform7.prototype._write = function(chunk, encoding, callback) {
+    Transform8.prototype._write = function(chunk, encoding, callback) {
       const rState = this._readableState;
       const wState = this._writableState;
       const length = rState.length;
@@ -9069,7 +9069,7 @@ var require_transform = __commonJS({
         }
       });
     };
-    Transform7.prototype._read = function() {
+    Transform8.prototype._read = function() {
       if (this[kCallback]) {
         const callback = this[kCallback];
         this[kCallback] = null;
@@ -9085,12 +9085,12 @@ var require_passthrough2 = __commonJS({
     "use strict";
     var { ObjectSetPrototypeOf } = require_primordials();
     module2.exports = PassThrough4;
-    var Transform7 = require_transform();
-    ObjectSetPrototypeOf(PassThrough4.prototype, Transform7.prototype);
-    ObjectSetPrototypeOf(PassThrough4, Transform7);
+    var Transform8 = require_transform();
+    ObjectSetPrototypeOf(PassThrough4.prototype, Transform8.prototype);
+    ObjectSetPrototypeOf(PassThrough4, Transform8);
     function PassThrough4(options) {
       if (!(this instanceof PassThrough4)) return new PassThrough4(options);
-      Transform7.call(this, options);
+      Transform8.call(this, options);
     }
     PassThrough4.prototype._transform = function(chunk, encoding, cb) {
       cb(null, chunk);
@@ -10352,22 +10352,22 @@ var require_ours = __commonJS({
 // node_modules/normalize-path/index.js
 var require_normalize_path = __commonJS({
   "node_modules/normalize-path/index.js"(exports2, module2) {
-    module2.exports = function(path6, stripTrailing) {
-      if (typeof path6 !== "string") {
+    module2.exports = function(path7, stripTrailing) {
+      if (typeof path7 !== "string") {
         throw new TypeError("expected path to be a string");
       }
-      if (path6 === "\\" || path6 === "/") return "/";
-      var len = path6.length;
-      if (len <= 1) return path6;
+      if (path7 === "\\" || path7 === "/") return "/";
+      var len = path7.length;
+      if (len <= 1) return path7;
       var prefix = "";
-      if (len > 4 && path6[3] === "\\") {
-        var ch = path6[2];
-        if ((ch === "?" || ch === ".") && path6.slice(0, 2) === "\\\\") {
-          path6 = path6.slice(2);
+      if (len > 4 && path7[3] === "\\") {
+        var ch = path7[2];
+        if ((ch === "?" || ch === ".") && path7.slice(0, 2) === "\\\\") {
+          path7 = path7.slice(2);
           prefix = "//";
         }
       }
-      var segs = path6.split(/[/\\]+/);
+      var segs = path7.split(/[/\\]+/);
       if (stripTrailing !== false && segs[segs.length - 1] === "") {
         segs.pop();
       }
@@ -11848,7 +11848,7 @@ var require_streamx = __commonJS({
         return this;
       }
     };
-    var Transform7 = class extends Duplex {
+    var Transform8 = class extends Duplex {
       constructor(opts) {
         super(opts);
         this._transformState = new TransformState(this);
@@ -11892,7 +11892,7 @@ var require_streamx = __commonJS({
         this._flush(transformAfterFlush.bind(this));
       }
     };
-    var PassThrough4 = class extends Transform7 {
+    var PassThrough4 = class extends Transform8 {
     };
     function transformAfterFlush(err, data) {
       const cb = this._transformState.afterFinal;
@@ -12021,7 +12021,7 @@ var require_streamx = __commonJS({
       Writable,
       Readable: Readable2,
       Duplex,
-      Transform: Transform7,
+      Transform: Transform8,
       // Export PassThrough for compatibility with Node.js core's stream module
       PassThrough: PassThrough4
     };
@@ -12897,7 +12897,7 @@ var require_tar_stream = __commonJS({
 });
 
 // src/cli.ts
-var import_node_path4 = __toESM(require("node:path"), 1);
+var import_node_path5 = __toESM(require("node:path"), 1);
 
 // src/backup.ts
 var import_node_stream = require("node:stream");
@@ -13354,26 +13354,56 @@ var DEFAULT_INTERVAL_HOURS = 1;
 var DEFAULT_LOCAL_KEEP = 7;
 function loadConfig(source, defaults2) {
   const shared = source("mysql_connection_string", "").trim();
-  const override = source("qbx_db_backup_connection_string", "").trim();
-  const token = source("qbx_db_backup_token", "").trim();
-  const apiBase = source("qbx_db_backup_api", DEFAULT_API_BASE).trim();
-  const localDir = source("qbx_db_backup_local_dir", defaults2.localDir).trim();
+  const override = (source("qbx_db_backup_connection_string", "") || source("qbx_backup_connection_string", "")).trim();
+  const token = (source("qbx_db_backup_token", "") || source("qbx_backup_token", "")).trim();
+  const apiBase = (source("qbx_db_backup_api", "") || source("qbx_backup_api", DEFAULT_API_BASE)).trim();
+  const localDir = (source("qbx_db_backup_local_dir", "") || source("qbx_backup_local_dir", defaults2.localDir)).trim();
   const interval = toInt(
-    source("qbx_db_backup_interval_hours", String(DEFAULT_INTERVAL_HOURS)),
+    source(
+      "qbx_db_backup_interval_hours",
+      source("qbx_backup_interval_hours", String(DEFAULT_INTERVAL_HOURS))
+    ),
     DEFAULT_INTERVAL_HOURS
   );
-  const s3Endpoint = source("qbx_db_backup_s3_endpoint", "").trim();
-  const s3Bucket = source("qbx_db_backup_s3_bucket", "").trim();
-  const s3Region = source(
-    "qbx_db_backup_s3_region",
-    s3Endpoint.includes("r2.cloudflarestorage.com") ? "auto" : "us-east-1"
-  ).trim();
-  const s3AccessKeyId = (source("qbx_db_backup_s3_access_key_id", "") || source("qbx_db_backup_s3_key", "")).trim();
-  const s3SecretAccessKey = (source("qbx_db_backup_s3_secret_access_key", "") || source("qbx_db_backup_s3_secret", "")).trim();
-  const s3PathStyleRaw = source("qbx_db_backup_s3_force_path_style", "").trim();
-  const s3Prefix = source("qbx_db_backup_s3_prefix", "").trim();
-  const s3Keep = Math.max(0, toInt(source("qbx_db_backup_s3_keep", "0"), 0));
-  const s3MaxAgeDays = Math.max(0, toInt(source("qbx_db_backup_s3_max_age_days", "0"), 0));
+  const s3Endpoint = (source("qbx_db_backup_s3_endpoint", "") || source("qbx_backup_s3_endpoint", "")).trim();
+  const s3Bucket = (source("qbx_db_backup_s3_bucket", "") || source("qbx_backup_s3_bucket", "")).trim();
+  const s3Region = (source("qbx_db_backup_s3_region", "") || source("qbx_backup_s3_region", s3Endpoint.includes("r2.cloudflarestorage.com") ? "auto" : "us-east-1")).trim();
+  const s3AccessKeyId = (source("qbx_db_backup_s3_access_key_id", "") || source("qbx_backup_s3_access_key_id", "") || source("qbx_db_backup_s3_key", "") || source("qbx_backup_s3_key", "")).trim();
+  const s3SecretAccessKey = (source("qbx_db_backup_s3_secret_access_key", "") || source("qbx_backup_s3_secret_access_key", "") || source("qbx_db_backup_s3_secret", "") || source("qbx_backup_s3_secret", "")).trim();
+  const s3PathStyleRaw = (source("qbx_db_backup_s3_force_path_style", "") || source("qbx_backup_s3_force_path_style", "")).trim();
+  const s3Prefix = (source("qbx_db_backup_s3_prefix", "") || source("qbx_backup_s3_prefix", "")).trim();
+  const s3Keep = Math.max(
+    0,
+    toInt(
+      source(
+        "qbx_db_backup_s3_keep",
+        source(
+          "qbx_backup_s3_keep",
+          source(
+            "qbx_backup_s3_retention_max_count",
+            source("qbx_db_backup_s3_retention_max_count", "0")
+          )
+        )
+      ),
+      0
+    )
+  );
+  const s3MaxAgeDays = Math.max(
+    0,
+    toInt(
+      source(
+        "qbx_db_backup_s3_max_age_days",
+        source(
+          "qbx_backup_s3_max_age_days",
+          source(
+            "qbx_backup_s3_retention_max_age_days",
+            source("qbx_db_backup_s3_retention_max_age_days", "0")
+          )
+        )
+      ),
+      0
+    )
+  );
   const forcePathStyle = s3PathStyleRaw === "1" ? true : s3PathStyleRaw === "0" ? false : s3Endpoint.length > 0;
   const s3 = {
     endpoint: s3Endpoint.length > 0 ? s3Endpoint : void 0,
@@ -13386,16 +13416,73 @@ function loadConfig(source, defaults2) {
     keepCount: s3Keep,
     maxAgeDays: s3MaxAgeDays
   };
+  const gdriveClientId = (source("qbx_db_backup_gdrive_client_id", "") || source("qbx_backup_gdrive_client_id", "")).trim();
+  const gdriveClientSecret = (source("qbx_db_backup_gdrive_client_secret", "") || source("qbx_backup_gdrive_client_secret", "")).trim();
+  const gdriveRefreshToken = (source("qbx_db_backup_gdrive_refresh_token", "") || source("qbx_backup_gdrive_refresh_token", "")).trim();
+  const gdriveFolderId = (source("qbx_db_backup_gdrive_folder_id", "") || source("qbx_backup_gdrive_folder_id", "")).trim();
+  const gdriveCredsFile = (source("qbx_db_backup_gdrive_credentials_file", "") || source("qbx_backup_gdrive_credentials_file", "")).trim();
+  const gdriveKeep = Math.max(
+    0,
+    toInt(
+      source(
+        "qbx_db_backup_gdrive_keep",
+        source(
+          "qbx_backup_gdrive_keep",
+          source(
+            "qbx_backup_gdrive_retention_max_count",
+            source("qbx_db_backup_gdrive_retention_max_count", "0")
+          )
+        )
+      ),
+      0
+    )
+  );
+  const gdriveMaxAgeDays = Math.max(
+    0,
+    toInt(
+      source(
+        "qbx_db_backup_gdrive_max_age_days",
+        source(
+          "qbx_backup_gdrive_max_age_days",
+          source(
+            "qbx_backup_gdrive_retention_max_age_days",
+            source("qbx_db_backup_gdrive_retention_max_age_days", "0")
+          )
+        )
+      ),
+      0
+    )
+  );
+  const gdriveKeepLocal = (source("qbx_db_backup_gdrive_keep_local", "") || source("qbx_backup_gdrive_keep_local", "0")).trim() === "1" || (source("qbx_db_backup_gdrive_keep_local", "") || source("qbx_backup_gdrive_keep_local", "false")).trim().toLowerCase() === "true";
+  const gdrive = {
+    clientId: gdriveClientId,
+    clientSecret: gdriveClientSecret,
+    refreshToken: gdriveRefreshToken,
+    folderId: gdriveFolderId.length > 0 ? gdriveFolderId : void 0,
+    credentialsFile: gdriveCredsFile.length > 0 ? gdriveCredsFile : void 0,
+    keepCount: gdriveKeep,
+    maxAgeDays: gdriveMaxAgeDays,
+    keepLocal: gdriveKeepLocal
+  };
   const localMaxAgeDays = Math.max(
     0,
     toInt(source("qbx_db_backup_local_max_age_days", source("qbx_db_backup_max_age_days", "0")), 0)
   );
   const minFreeDiskMb = Math.max(0, toInt(source("qbx_db_backup_min_free_disk_mb", "0"), 0));
+  const explicitDestination = (source("qbx_backup_destination", "") || source("qbx_db_backup_destination", "")).trim().toLowerCase();
   let mode = "local";
-  if (token.length > 0) {
+  if (explicitDestination === "qbx" && token.length > 0) {
+    mode = "qbx";
+  } else if (explicitDestination === "s3" && isS3Configured(s3)) {
+    mode = "s3";
+  } else if (explicitDestination === "gdrive" && isGDriveConfigured(gdrive)) {
+    mode = "gdrive";
+  } else if (token.length > 0) {
     mode = "qbx";
   } else if (isS3Configured(s3)) {
     mode = "s3";
+  } else if (isGDriveConfigured(gdrive)) {
+    mode = "gdrive";
   }
   return {
     connectionString: override.length > 0 ? override : shared,
@@ -13423,11 +13510,15 @@ function loadConfig(source, defaults2) {
     zipLevel: clamp(toInt(source("qbx_db_backup_zip_level", "6"), 6), 1, 9),
     timeoutMinutes: Math.max(1, toInt(source("qbx_db_backup_timeout_minutes", "120"), 120)),
     mode,
-    s3
+    s3,
+    gdrive
   };
 }
 function isS3Configured(s3) {
   return s3.bucket.length > 0 && s3.accessKeyId.length > 0 && s3.secretAccessKey.length > 0;
+}
+function isGDriveConfigured(gdrive) {
+  return gdrive.clientId.length > 0 && gdrive.clientSecret.length > 0 && gdrive.refreshToken.length > 0 || Boolean(gdrive.credentialsFile && gdrive.credentialsFile.length > 0);
 }
 function toInt(value, fallback) {
   const parsed = Number.parseInt(value.trim(), 10);
@@ -13437,375 +13528,393 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-// src/s3/client.ts
-var import_node_http = require("node:http");
-var import_node_https = require("node:https");
+// src/gdrive/client.ts
+var import_node_fs2 = __toESM(require("node:fs"), 1);
 
-// src/s3/signer.ts
-var import_node_crypto = require("node:crypto");
-function uriEncode(input, encodeSlash = false) {
-  let result = "";
-  for (let i = 0; i < input.length; i += 1) {
-    const char = input[i];
-    if (char >= "A" && char <= "Z" || char >= "a" && char <= "z" || char >= "0" && char <= "9" || char === "_" || char === "-" || char === "~" || char === ".") {
-      result += char;
-    } else if (char === "/" && !encodeSlash) {
-      result += "/";
-    } else {
-      const hex = char.charCodeAt(0).toString(16).toUpperCase();
-      result += hex.length < 2 ? `%0${hex}` : `%${hex}`;
-    }
-  }
-  return result;
-}
-function formatBasicDate(date) {
-  const pad = (n) => String(n).padStart(2, "0");
-  const year = date.getUTCFullYear();
-  const month = pad(date.getUTCMonth() + 1);
-  const day = pad(date.getUTCDate());
-  const hours = pad(date.getUTCHours());
-  const minutes = pad(date.getUTCMinutes());
-  const seconds = pad(date.getUTCSeconds());
-  const dateScope = `${year}${month}${day}`;
-  const isoDate = `${dateScope}T${hours}${minutes}${seconds}Z`;
-  return { isoDate, dateScope };
-}
-function sha256Hex(data) {
-  return (0, import_node_crypto.createHash)("sha256").update(data).digest("hex");
-}
-function getSigningKey(secretKey, dateScope, region, service) {
-  const kDate = (0, import_node_crypto.createHmac)("sha256", `AWS4${secretKey}`).update(dateScope).digest();
-  const kRegion = (0, import_node_crypto.createHmac)("sha256", kDate).update(region).digest();
-  const kService = (0, import_node_crypto.createHmac)("sha256", kRegion).update(service).digest();
-  return (0, import_node_crypto.createHmac)("sha256", kService).update("aws4_request").digest();
-}
-function signS3Request(options) {
-  const targetUrl = typeof options.url === "string" ? new URL(options.url) : options.url;
-  const now = options.now ?? /* @__PURE__ */ new Date();
-  const { isoDate, dateScope } = formatBasicDate(now);
-  const service = options.service ?? "s3";
-  const payloadHash = options.payloadHash ?? sha256Hex("");
-  const method = options.method.toUpperCase();
-  const headers = {
-    ...options.headers,
-    host: targetUrl.host,
-    "x-amz-date": isoDate,
-    "x-amz-content-sha256": payloadHash
-  };
-  const headerKeys = Object.keys(headers).map((k) => k.toLowerCase()).sort();
-  const canonicalHeadersList = [];
-  for (const key of headerKeys) {
-    const rawVal = headers[key] ?? "";
-    const cleanVal = rawVal.trim().replace(/\s+/g, " ");
-    canonicalHeadersList.push(`${key}:${cleanVal}
-`);
-  }
-  const canonicalHeaders = canonicalHeadersList.join("");
-  const signedHeaders = headerKeys.join(";");
-  const rawPath = targetUrl.pathname || "/";
-  const canonicalUri = uriEncode(rawPath, false);
-  const queryEntries = [];
-  targetUrl.searchParams.forEach((value, key) => {
-    queryEntries.push([uriEncode(key, true), uriEncode(value, true)]);
-  });
-  queryEntries.sort(([aKey, aVal], [bKey, bVal]) => {
-    if (aKey !== bKey) return aKey < bKey ? -1 : 1;
-    return aVal < bVal ? -1 : 1;
-  });
-  const canonicalQueryString = queryEntries.map(([k, v]) => `${k}=${v}`).join("&");
-  const canonicalRequest = [
-    method,
-    canonicalUri,
-    canonicalQueryString,
-    canonicalHeaders,
-    signedHeaders,
-    payloadHash
-  ].join("\n");
-  const canonicalRequestHash = sha256Hex(canonicalRequest);
-  const credentialScope = `${dateScope}/${options.region}/${service}/aws4_request`;
-  const stringToSign = ["AWS4-HMAC-SHA256", isoDate, credentialScope, canonicalRequestHash].join(
-    "\n"
-  );
-  const signingKey = getSigningKey(options.secretAccessKey, dateScope, options.region, service);
-  const signature = (0, import_node_crypto.createHmac)("sha256", signingKey).update(stringToSign).digest("hex");
-  const authorization = `AWS4-HMAC-SHA256 Credential=${options.accessKeyId}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
-  return {
-    method,
-    url: targetUrl.toString(),
-    headers: {
-      ...headers,
-      authorization
-    }
-  };
-}
+// src/gdrive/auth.ts
+var import_node_crypto = __toESM(require("node:crypto"), 1);
 
-// src/s3/client.ts
-var S3Error = class extends Error {
-  constructor(code, message, statusCode, rawBody) {
-    super(`S3 Error [${code}]: ${message}`);
-    this.code = code;
-    this.statusCode = statusCode;
-    this.rawBody = rawBody;
-    this.name = "S3Error";
-  }
+// src/gdrive/types.ts
+function isOAuthConfig(config) {
+  return "refreshToken" in config && Boolean(config.refreshToken);
+}
+var GDriveError = class extends Error {
   code;
-  statusCode;
-  rawBody;
-};
-var DEFAULT_TIMEOUT_MS = 6e4;
-var S3Client = class {
-  bucket;
-  region;
-  endpoint;
-  forcePathStyle;
-  accessKeyId;
-  secretAccessKey;
-  timeoutMs;
-  constructor(options) {
-    if (!options.bucket || options.bucket.trim().length === 0) {
-      throw new Error("S3 bucket name is required");
-    }
-    if (!options.accessKeyId || options.accessKeyId.trim().length === 0) {
-      throw new Error("S3 access key ID is required");
-    }
-    if (!options.secretAccessKey || options.secretAccessKey.trim().length === 0) {
-      throw new Error("S3 secret access key is required");
-    }
-    this.bucket = options.bucket.trim();
-    this.accessKeyId = options.accessKeyId.trim();
-    this.secretAccessKey = options.secretAccessKey.trim();
-    this.region = options.region?.trim() || "us-east-1";
-    this.endpoint = options.endpoint?.trim() || void 0;
-    this.timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
-    this.forcePathStyle = options.forcePathStyle ?? (this.endpoint !== void 0 && this.endpoint.length > 0);
-  }
-  buildUrl(key = "", query) {
-    let baseUrl;
-    const cleanKey = key.replace(/^\/+/, "");
-    if (this.endpoint) {
-      const ep = this.endpoint.replace(/\/+$/, "");
-      if (this.forcePathStyle) {
-        baseUrl = cleanKey.length > 0 ? `${ep}/${this.bucket}/${cleanKey}` : `${ep}/${this.bucket}`;
-      } else {
-        const parsed = new URL(ep);
-        baseUrl = `${parsed.protocol}//${this.bucket}.${parsed.host}${parsed.pathname.replace(/\/+$/, "")}/${cleanKey}`;
-      }
-    } else {
-      if (this.forcePathStyle) {
-        baseUrl = cleanKey.length > 0 ? `https://s3.${this.region}.amazonaws.com/${this.bucket}/${cleanKey}` : `https://s3.${this.region}.amazonaws.com/${this.bucket}`;
-      } else {
-        baseUrl = cleanKey.length > 0 ? `https://${this.bucket}.s3.${this.region}.amazonaws.com/${cleanKey}` : `https://${this.bucket}.s3.${this.region}.amazonaws.com/`;
-      }
-    }
-    const url = new URL(baseUrl);
-    if (query) {
-      for (const [k, v] of Object.entries(query)) {
-        if (v !== void 0) {
-          url.searchParams.set(k, v);
-        }
-      }
-    }
-    return url;
-  }
-  async putObject(key, body, sizeBytes, payloadSha256, options) {
-    const url = this.buildUrl(key);
-    const contentType = options?.contentType ?? "application/zip";
-    const customHeaders = {
-      "content-type": contentType,
-      "content-length": String(sizeBytes)
-    };
-    if (options?.metadata) {
-      for (const [mKey, mVal] of Object.entries(options.metadata)) {
-        customHeaders[`x-amz-meta-${mKey.toLowerCase()}`] = mVal;
-      }
-    }
-    const signed = signS3Request({
-      method: "PUT",
-      url,
-      headers: customHeaders,
-      payloadHash: payloadSha256,
-      accessKeyId: this.accessKeyId,
-      secretAccessKey: this.secretAccessKey,
-      region: this.region
-    });
-    const response = await this.executeRequest(signed, body);
-    const etag = response.headers.etag?.replace(/"/g, "") ?? "";
-    return { etag };
-  }
-  async listObjectsV2(options) {
-    const query = { "list-type": "2" };
-    if (options?.prefix) query.prefix = options.prefix;
-    if (options?.continuationToken) query["continuation-token"] = options.continuationToken;
-    if (options?.maxKeys) query["max-keys"] = String(options.maxKeys);
-    const url = this.buildUrl("", query);
-    const signed = signS3Request({
-      method: "GET",
-      url,
-      payloadHash: sha256Hex(""),
-      accessKeyId: this.accessKeyId,
-      secretAccessKey: this.secretAccessKey,
-      region: this.region
-    });
-    const response = await this.executeRequest(signed);
-    return parseListObjectsV2Xml(response.body);
-  }
-  async deleteObjects(keys) {
-    if (keys.length === 0) {
-      return { deletedKeys: [], errors: [] };
-    }
-    const objectsXml = keys.map((k) => `<Object><Key>${escapeXml(k)}</Key></Object>`).join("");
-    const xmlBody = `<?xml version="1.0" encoding="UTF-8"?><Delete><Quiet>false</Quiet>${objectsXml}</Delete>`;
-    const bodyBuffer = Buffer.from(xmlBody, "utf8");
-    const payloadHash = sha256Hex(bodyBuffer);
-    const url = this.buildUrl("", { delete: "" });
-    const signed = signS3Request({
-      method: "POST",
-      url,
-      headers: {
-        "content-type": "application/xml",
-        "content-length": String(bodyBuffer.length)
-      },
-      payloadHash,
-      accessKeyId: this.accessKeyId,
-      secretAccessKey: this.secretAccessKey,
-      region: this.region
-    });
-    const response = await this.executeRequest(signed, bodyBuffer);
-    return parseDeleteResultXml(response.body, keys);
-  }
-  async testConnection() {
-    await this.listObjectsV2({ maxKeys: 1 });
-    return { ok: true, bucket: this.bucket, region: this.region };
-  }
-  executeRequest(signed, body) {
-    const target = new URL(signed.url);
-    const send = target.protocol === "http:" ? import_node_http.request : import_node_https.request;
-    return new Promise((resolve2, reject) => {
-      let aborted = false;
-      const timer = setTimeout(() => {
-        aborted = true;
-        req.destroy(new Error(`S3 request timed out after ${this.timeoutMs}ms`));
-      }, this.timeoutMs);
-      const req = send(
-        target,
-        {
-          method: signed.method,
-          headers: signed.headers
-        },
-        (res) => {
-          clearTimeout(timer);
-          const chunks = [];
-          res.on("data", (chunk) => {
-            if (chunks.length < 1024) chunks.push(chunk);
-          });
-          res.on("error", (resErr) => {
-            clearTimeout(timer);
-            reject(resErr);
-          });
-          res.on("end", () => {
-            clearTimeout(timer);
-            const statusCode = res.statusCode ?? 0;
-            const resBody = Buffer.concat(chunks).toString("utf8");
-            if (statusCode >= 200 && statusCode < 300) {
-              resolve2({ statusCode, headers: res.headers, body: resBody });
-              return;
-            }
-            const parsedError = parseS3ErrorXml(resBody, statusCode);
-            reject(parsedError);
-          });
-        }
-      );
-      req.on("error", (reqErr) => {
-        clearTimeout(timer);
-        if (!aborted) reject(reqErr);
-      });
-      if (body) {
-        if (Buffer.isBuffer(body)) {
-          req.end(body);
-        } else {
-          body.on("error", (streamErr) => {
-            clearTimeout(timer);
-            req.destroy(streamErr);
-            reject(streamErr);
-          });
-          body.pipe(req);
-        }
-      } else {
-        req.end();
-      }
-    });
+  status;
+  reason;
+  constructor(message, code, status, reason) {
+    super(`[GDrive] ${message}`);
+    this.name = "GDriveError";
+    this.code = code;
+    this.status = status;
+    this.reason = reason;
   }
 };
-function escapeXml(str) {
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
-}
-function parseS3ErrorXml(xml, statusCode) {
-  const codeMatch = /<Code>(.*?)<\/Code>/s.exec(xml);
-  const messageMatch = /<Message>(.*?)<\/Message>/s.exec(xml);
-  const code = codeMatch?.[1]?.trim() ?? `HTTP_${statusCode}`;
-  const message = messageMatch?.[1]?.trim() ?? (xml.slice(0, 200).trim() || `Request failed with HTTP status ${statusCode}`);
-  return new S3Error(code, message, statusCode, xml);
-}
-function parseListObjectsV2Xml(xml) {
-  const isTruncated = /<IsTruncated>(true|false)<\/IsTruncated>/i.exec(xml)?.[1]?.toLowerCase() === "true";
-  const nextToken = /<NextContinuationToken>(.*?)<\/NextContinuationToken>/s.exec(xml)?.[1]?.trim();
-  const objects = [];
-  const contentsRegex = /<Contents>(.*?)<\/Contents>/gs;
-  let match2 = null;
-  while (true) {
-    match2 = contentsRegex.exec(xml);
-    if (!match2) break;
-    const itemXml = match2[1] ?? "";
-    const key = /<Key>(.*?)<\/Key>/s.exec(itemXml)?.[1]?.trim();
-    const lastModifiedRaw = /<LastModified>(.*?)<\/LastModified>/s.exec(itemXml)?.[1]?.trim();
-    const sizeRaw = /<Size>(\d+)<\/Size>/s.exec(itemXml)?.[1]?.trim();
-    const etag = (/ <ETag>(.*?)<\/ETag>/s.exec(itemXml)?.[1] ?? /<ETag>(.*?)<\/ETag>/s.exec(itemXml)?.[1]?.trim() ?? "").replace(/"/g, "");
-    if (key && lastModifiedRaw) {
-      objects.push({
-        key,
-        lastModified: new Date(lastModifiedRaw),
-        sizeBytes: sizeRaw ? Number.parseInt(sizeRaw, 10) : 0,
-        etag
-      });
-    }
-  }
-  return {
-    objects,
-    isTruncated,
-    nextContinuationToken: nextToken
-  };
-}
-function parseDeleteResultXml(xml, fallbackKeys) {
-  const deletedKeys = [];
-  const errors = [];
-  const deletedRegex = /<Deleted>(.*?)<\/Deleted>/gs;
-  let dMatch = null;
-  while (true) {
-    dMatch = deletedRegex.exec(xml);
-    if (!dMatch) break;
-    const k = /<Key>(.*?)<\/Key>/s.exec(dMatch[1] ?? "")?.[1]?.trim();
-    if (k) deletedKeys.push(k);
-  }
-  const errorRegex = /<Error>(.*?)<\/Error>/gs;
-  let eMatch = null;
-  while (true) {
-    eMatch = errorRegex.exec(xml);
-    if (!eMatch) break;
-    const eXml = eMatch[1] ?? "";
-    const k = /<Key>(.*?)<\/Key>/s.exec(eXml)?.[1]?.trim() ?? "";
-    const code = /<Code>(.*?)<\/Code>/s.exec(eXml)?.[1]?.trim() ?? "Unknown";
-    const msg = /<Message>(.*?)<\/Message>/s.exec(eXml)?.[1]?.trim() ?? "";
-    errors.push({ key: k, code, message: msg });
-  }
-  if (deletedKeys.length === 0 && errors.length === 0) {
-    return { deletedKeys: [...fallbackKeys], errors: [] };
-  }
-  return { deletedKeys, errors };
-}
 
-// src/s3/sink.ts
+// src/gdrive/auth.ts
+var GOOGLE_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
+var DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive";
+function base64UrlEncode(strOrBuffer) {
+  const buf = typeof strOrBuffer === "string" ? Buffer.from(strOrBuffer, "utf8") : strOrBuffer;
+  return buf.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+async function refreshOAuthToken(config, fetchFn = fetch) {
+  const params = new URLSearchParams({
+    client_id: config.clientId,
+    client_secret: config.clientSecret,
+    refresh_token: config.refreshToken,
+    grant_type: "refresh_token"
+  });
+  const response = await fetchFn(GOOGLE_TOKEN_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json"
+    },
+    body: params.toString()
+  });
+  if (!response.ok) {
+    let errorDetail = `HTTP ${response.status} ${response.statusText}`;
+    try {
+      const errJson = await response.json();
+      if (errJson.error_description) {
+        errorDetail = `${errJson.error}: ${errJson.error_description}`;
+      } else if (errJson.error) {
+        errorDetail = errJson.error;
+      }
+    } catch {
+    }
+    throw new GDriveError(`OAuth token refresh failed: ${errorDetail}`, response.status);
+  }
+  return await response.json();
+}
+async function authenticateServiceAccount(config, fetchFn = fetch) {
+  const now = Math.floor(Date.now() / 1e3);
+  const header = { alg: "RS256", typ: "JWT" };
+  const claims = {
+    iss: config.clientEmail,
+    scope: DRIVE_FULL_SCOPE,
+    aud: GOOGLE_TOKEN_ENDPOINT,
+    exp: now + 3600,
+    iat: now
+  };
+  const encodedHeader = base64UrlEncode(JSON.stringify(header));
+  const encodedClaims = base64UrlEncode(JSON.stringify(claims));
+  const payloadToSign = `${encodedHeader}.${encodedClaims}`;
+  const signer = import_node_crypto.default.createSign("RSA-SHA256");
+  signer.update(payloadToSign);
+  signer.end();
+  const signature = signer.sign(config.privateKey);
+  const jwt = `${payloadToSign}.${base64UrlEncode(signature)}`;
+  const params = new URLSearchParams({
+    grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+    assertion: jwt
+  });
+  const response = await fetchFn(GOOGLE_TOKEN_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json"
+    },
+    body: params.toString()
+  });
+  if (!response.ok) {
+    let errorDetail = `HTTP ${response.status} ${response.statusText}`;
+    try {
+      const errJson = await response.json();
+      if (errJson.error_description) {
+        errorDetail = `${errJson.error}: ${errJson.error_description}`;
+      } else if (errJson.error) {
+        errorDetail = errJson.error;
+      }
+    } catch {
+    }
+    throw new GDriveError(`Service account authentication failed: ${errorDetail}`, response.status);
+  }
+  return await response.json();
+}
+var GDriveAuthManager = class {
+  constructor(config, fetchFn = fetch) {
+    this.config = config;
+    this.fetchFn = fetchFn;
+  }
+  config;
+  fetchFn;
+  cachedToken = null;
+  expiresAt = 0;
+  /**
+   * Returns a valid access token, automatically refreshing if expired.
+   */
+  async getAccessToken(forceRefresh = false) {
+    const now = Date.now();
+    if (!forceRefresh && this.cachedToken && now < this.expiresAt - 6e4) {
+      return this.cachedToken;
+    }
+    let tokenResponse;
+    if (isOAuthConfig(this.config)) {
+      tokenResponse = await refreshOAuthToken(this.config, this.fetchFn);
+    } else {
+      tokenResponse = await authenticateServiceAccount(this.config, this.fetchFn);
+    }
+    this.cachedToken = tokenResponse.access_token;
+    const expiresInSec = tokenResponse.expires_in || 3600;
+    this.expiresAt = Date.now() + expiresInSec * 1e3;
+    return this.cachedToken;
+  }
+  invalidateToken() {
+    this.cachedToken = null;
+    this.expiresAt = 0;
+  }
+};
+
+// src/gdrive/client.ts
+var DRIVE_API_V3 = "https://www.googleapis.com/drive/v3";
+var DRIVE_UPLOAD_V3 = "https://www.googleapis.com/upload/drive/v3";
+var DEFAULT_CHUNK_SIZE = 4 * 1024 * 1024;
+var GDriveClient = class {
+  constructor(config, fetchFn = fetch) {
+    this.config = config;
+    this.fetchFn = fetchFn;
+    this.auth = new GDriveAuthManager(config, fetchFn);
+  }
+  config;
+  fetchFn;
+  auth;
+  /**
+   * Helper to execute an authenticated request with automatic token refresh.
+   */
+  async fetchAuth(url, init = {}) {
+    const token = await this.auth.getAccessToken();
+    const headers = new Headers(init.headers || {});
+    headers.set("Authorization", `Bearer ${token}`);
+    let response = await this.fetchFn(url, { ...init, headers });
+    if (response.status === 401) {
+      this.auth.invalidateToken();
+      const freshToken = await this.auth.getAccessToken(true);
+      headers.set("Authorization", `Bearer ${freshToken}`);
+      response = await this.fetchFn(url, { ...init, headers });
+    }
+    return response;
+  }
+  /**
+   * Parses Google Drive API errors into typed GDriveError.
+   */
+  async parseErrorResponse(response, contextMsg) {
+    let errorDetail = `HTTP ${response.status} ${response.statusText}`;
+    let reason;
+    try {
+      const errJson = await response.json();
+      if (errJson.error?.message) {
+        errorDetail = errJson.error.message;
+      }
+      if (errJson.error?.errors?.[0]?.reason) {
+        reason = errJson.error.errors[0].reason;
+      }
+    } catch {
+    }
+    throw new GDriveError(`${contextMsg}: ${errorDetail}`, response.status, response.statusText, reason);
+  }
+  /**
+   * Retrieves Google Drive storage quota and user information.
+   */
+  async getStorageQuota() {
+    const url = `${DRIVE_API_V3}/about?fields=storageQuota`;
+    const response = await this.fetchAuth(url, {
+      method: "GET",
+      headers: { Accept: "application/json" }
+    });
+    if (!response.ok) {
+      await this.parseErrorResponse(response, "Failed to fetch storage quota");
+    }
+    const data = await response.json();
+    const sq = data.storageQuota || {};
+    return {
+      limit: sq.limit ? Number(sq.limit) : void 0,
+      usage: sq.usage ? Number(sq.usage) : void 0,
+      usageInDrive: sq.usageInDrive ? Number(sq.usageInDrive) : void 0,
+      usageInDriveTrash: sq.usageInDriveTrash ? Number(sq.usageInDriveTrash) : void 0
+    };
+  }
+  /**
+   * Initiates a resumable upload session and returns the session URI.
+   */
+  async initiateResumableUpload(name, fileSize, folderId, mimeType = "application/zip", description) {
+    const url = `${DRIVE_UPLOAD_V3}/files?uploadType=resumable`;
+    const metadata = {
+      name,
+      mimeType,
+      description: description || "Database Backup archive created by qbx_db_backup"
+    };
+    if (folderId && folderId.toLowerCase() !== "root") {
+      metadata.parents = [folderId];
+    }
+    const response = await this.fetchAuth(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+        "X-Upload-Content-Type": mimeType,
+        "X-Upload-Content-Length": fileSize.toString()
+      },
+      body: JSON.stringify(metadata)
+    });
+    if (!response.ok) {
+      await this.parseErrorResponse(response, `Failed to initiate resumable upload for '${name}'`);
+    }
+    const sessionUri = response.headers.get("Location");
+    if (!sessionUri) {
+      throw new GDriveError("Google Drive did not return a resumable session URI Location header");
+    }
+    return sessionUri;
+  }
+  /**
+   * Streams a local file to Google Drive using the Resumable Upload protocol in chunks.
+   */
+  async uploadFileResumable(params) {
+    const { name, filePath, folderId, mimeType = "application/zip", description, chunkSize = DEFAULT_CHUNK_SIZE, onProgress } = params;
+    const stats = await import_node_fs2.default.promises.stat(filePath);
+    const totalBytes = stats.size;
+    const sessionUri = await this.initiateResumableUpload(name, totalBytes, folderId, mimeType, description);
+    if (totalBytes === 0) {
+      const response = await this.fetchFn(sessionUri, {
+        method: "PUT",
+        headers: {
+          "Content-Length": "0",
+          "Content-Range": "bytes */0"
+        }
+      });
+      if (!response.ok) {
+        await this.parseErrorResponse(response, `Failed to upload empty file '${name}'`);
+      }
+      return await response.json();
+    }
+    const fileHandle = await import_node_fs2.default.promises.open(filePath, "r");
+    try {
+      let offset = 0;
+      const buffer = Buffer.alloc(chunkSize);
+      while (offset < totalBytes) {
+        const bytesToRead = Math.min(chunkSize, totalBytes - offset);
+        const { bytesRead } = await fileHandle.read(buffer, 0, bytesToRead, offset);
+        const chunk = buffer.subarray(0, bytesRead);
+        const endByte = offset + bytesRead - 1;
+        const response = await this.fetchFn(sessionUri, {
+          method: "PUT",
+          headers: {
+            "Content-Length": bytesRead.toString(),
+            "Content-Range": `bytes ${offset}-${endByte}/${totalBytes}`,
+            "Content-Type": mimeType
+          },
+          body: chunk
+        });
+        if (response.status === 308) {
+          offset += bytesRead;
+          if (onProgress) {
+            onProgress(offset, totalBytes);
+          }
+          continue;
+        }
+        if (response.ok) {
+          offset += bytesRead;
+          if (onProgress) {
+            onProgress(totalBytes, totalBytes);
+          }
+          return await response.json();
+        }
+        await this.parseErrorResponse(response, `Failed to upload chunk ${offset}-${endByte} for '${name}'`);
+      }
+      throw new GDriveError(`Upload ended unexpectedly without server confirmation for '${name}'`);
+    } finally {
+      await fileHandle.close();
+    }
+  }
+  /**
+   * Lists files in a given Google Drive folder matching optional criteria.
+   */
+  async listFiles(folderId, namePrefix) {
+    const queryParts = ["trashed = false"];
+    if (folderId && folderId.toLowerCase() !== "root") {
+      queryParts.push(`'${folderId}' in parents`);
+    }
+    if (namePrefix) {
+      queryParts.push(`name contains '${namePrefix}'`);
+    }
+    const q = queryParts.join(" and ");
+    const fields = "files(id, name, size, mimeType, createdTime, modifiedTime, md5Checksum), nextPageToken";
+    const allFiles = [];
+    let pageToken;
+    do {
+      const params = new URLSearchParams({
+        q,
+        fields,
+        pageSize: "100",
+        orderBy: "createdTime desc"
+      });
+      if (pageToken) {
+        params.set("pageToken", pageToken);
+      }
+      const url = `${DRIVE_API_V3}/files?${params.toString()}`;
+      const response = await this.fetchAuth(url, {
+        method: "GET",
+        headers: { Accept: "application/json" }
+      });
+      if (!response.ok) {
+        await this.parseErrorResponse(response, "Failed to list Google Drive files");
+      }
+      const data = await response.json();
+      if (data.files) {
+        for (const f of data.files) {
+          allFiles.push({
+            id: f.id,
+            name: f.name,
+            size: f.size ? Number(f.size) : void 0,
+            mimeType: f.mimeType,
+            createdTime: f.createdTime,
+            modifiedTime: f.modifiedTime,
+            md5Checksum: f.md5Checksum
+          });
+        }
+      }
+      pageToken = data.nextPageToken;
+    } while (pageToken);
+    return allFiles;
+  }
+  /**
+   * Deletes a file permanently from Google Drive by file ID.
+   */
+  async deleteFile(fileId) {
+    const url = `${DRIVE_API_V3}/files/${encodeURIComponent(fileId)}`;
+    const response = await this.fetchAuth(url, {
+      method: "DELETE"
+    });
+    if (!response.ok && response.status !== 204 && response.status !== 200) {
+      await this.parseErrorResponse(response, `Failed to delete Google Drive file '${fileId}'`);
+    }
+  }
+  /**
+   * Verifies that the target folder is accessible.
+   */
+  async verifyFolder(folderId) {
+    if (!folderId || folderId.toLowerCase() === "root") {
+      return { id: "root", name: "My Drive" };
+    }
+    const url = `${DRIVE_API_V3}/files/${encodeURIComponent(folderId)}?fields=id,name,mimeType,trashed`;
+    const response = await this.fetchAuth(url, {
+      method: "GET",
+      headers: { Accept: "application/json" }
+    });
+    if (!response.ok) {
+      await this.parseErrorResponse(response, `Cannot access folder ID '${folderId}'`);
+    }
+    const data = await response.json();
+    if (data.trashed) {
+      throw new GDriveError(`Folder ID '${folderId}' is in the trash.`);
+    }
+    return { id: data.id, name: data.name };
+  }
+};
+
+// src/gdrive/sink.ts
 var import_node_crypto2 = require("node:crypto");
-var import_node_fs2 = require("node:fs");
+var import_node_fs3 = require("node:fs");
 var import_promises2 = require("node:fs/promises");
 var import_node_path2 = __toESM(require("node:path"), 1);
 var import_node_stream2 = require("node:stream");
@@ -13819,7 +13928,7 @@ function isStream(stream, { checkOpen = true } = {}) {
 }
 
 // node_modules/readdir-glob/dist/index.mjs
-var fs = __toESM(require("fs"), 1);
+var fs2 = __toESM(require("fs"), 1);
 var import_events = require("events");
 
 // node_modules/balanced-match/dist/esm/index.js
@@ -15681,7 +15790,7 @@ minimatch.unescape = unescape;
 var import_path = require("path");
 function readdir2(dir, strict) {
   return new Promise((resolve$1, reject) => {
-    fs.readdir(dir, { withFileTypes: true }, (err, files) => {
+    fs2.readdir(dir, { withFileTypes: true }, (err, files) => {
       if (err) switch (err.code) {
         case "ENOTDIR":
           if (strict) reject(err);
@@ -15704,7 +15813,7 @@ function readdir2(dir, strict) {
 }
 function getStat(file, followSymlinks) {
   return new Promise((resolve$1) => {
-    const statFunc = followSymlinks ? fs.stat : fs.lstat;
+    const statFunc = followSymlinks ? fs2.stat : fs2.lstat;
     statFunc(file, (err, stats) => {
       if (err) switch (err.code) {
         case "ENOENT":
@@ -15719,13 +15828,13 @@ function getStat(file, followSymlinks) {
     });
   });
 }
-async function* exploreWalkAsync(dir, path6, followSymlinks, useStat, shouldSkip, strict) {
-  let files = await readdir2(path6 + dir, strict);
+async function* exploreWalkAsync(dir, path7, followSymlinks, useStat, shouldSkip, strict) {
+  let files = await readdir2(path7 + dir, strict);
   for (const file of files) {
     let name = file.name;
     const filename = dir + "/" + name;
     const relative = filename.slice(1);
-    const absolute = path6 + "/" + relative;
+    const absolute = path7 + "/" + relative;
     let stat2 = file;
     if (useStat || followSymlinks) stat2 = await getStat(absolute, followSymlinks) ?? stat2;
     if (stat2.isDirectory()) {
@@ -15735,7 +15844,7 @@ async function* exploreWalkAsync(dir, path6, followSymlinks, useStat, shouldSkip
           absolute,
           stat: stat2
         };
-        yield* exploreWalkAsync(filename, path6, followSymlinks, useStat, shouldSkip, false);
+        yield* exploreWalkAsync(filename, path7, followSymlinks, useStat, shouldSkip, false);
       }
     } else yield {
       relative,
@@ -15744,8 +15853,8 @@ async function* exploreWalkAsync(dir, path6, followSymlinks, useStat, shouldSkip
     };
   }
 }
-async function* explore(path6, followSymlinks, useStat, shouldSkip) {
-  yield* exploreWalkAsync("", path6, followSymlinks, useStat, shouldSkip, true);
+async function* explore(path7, followSymlinks, useStat, shouldSkip) {
+  yield* exploreWalkAsync("", path7, followSymlinks, useStat, shouldSkip, true);
 }
 function readOptions(options) {
   return {
@@ -18173,8 +18282,8 @@ var ZipArchive = class extends Archiver {
   }
 };
 
-// src/s3/sink.ts
-var S3Sink = class {
+// src/gdrive/sink.ts
+var GDriveSink = class {
   constructor(options) {
     this.options = options;
   }
@@ -18182,7 +18291,7 @@ var S3Sink = class {
   async open(options) {
     const root = this.options.tmpDir;
     await (0, import_promises2.mkdir)(root, { recursive: true });
-    const dir = await (0, import_promises2.mkdtemp)(import_node_path2.default.join(root, "qbx-s3-sink-"));
+    const dir = await (0, import_promises2.mkdtemp)(import_node_path2.default.join(root, "qbx-gdrive-sink-"));
     const spoolPath = import_node_path2.default.join(dir, "backup.zip");
     const spool = createSpool(spoolPath, options, this.options.maxBytes);
     const opts = this.options;
@@ -18197,11 +18306,16 @@ var S3Sink = class {
               `Backup zip is ${result.bytesZip} bytes, exceeding the ${opts.maxBytes} byte limit`
             );
           }
-          const fileStream = (0, import_node_fs2.createReadStream)(spoolPath);
-          await opts.client.putObject(opts.s3Key, fileStream, result.bytesZip, result.sha256);
+          const uploadedFile = await opts.client.uploadFileResumable({
+            name: opts.fileName,
+            filePath: spoolPath,
+            folderId: opts.folderId,
+            mimeType: "application/zip",
+            description: `Automated Qbox Database Backup (SHA256: ${result.sha256})`
+          });
           const localCopy = await keepLocalCopy(spoolPath, opts.keepLocalPath);
-          const s3Location = `s3://${opts.client.bucket}/${opts.s3Key}`;
-          return localCopy === null ? { ...result, location: s3Location } : { ...result, location: `${s3Location} (+ local: ${localCopy})` };
+          const gdriveLocation = `gdrive://${opts.folderId || "root"}/${uploadedFile.id} (${uploadedFile.name})`;
+          return localCopy === null ? { ...result, location: gdriveLocation } : { ...result, location: `${gdriveLocation} (+ local: ${localCopy})` };
         } finally {
           await (0, import_promises2.rm)(dir, { recursive: true, force: true });
         }
@@ -18216,7 +18330,7 @@ var S3Sink = class {
 function createSpool(target, options, maxBytes) {
   const zip = new ZipArchive({ zlib: { level: options.zipLevel }, forceZip64: true });
   const counter = createCounter(options.onZipBytes, maxBytes);
-  const file = (0, import_node_fs2.createWriteStream)(target);
+  const file = (0, import_node_fs3.createWriteStream)(target);
   let source = null;
   const flushed = new Promise((resolve2, reject) => {
     file.once("close", () => resolve2());
@@ -18281,38 +18395,421 @@ async function keepLocalCopy(spoolPath, destination) {
   return destination;
 }
 
-// src/zip-sink.ts
+// src/s3/client.ts
+var import_node_http = require("node:http");
+var import_node_https = require("node:https");
+
+// src/s3/signer.ts
 var import_node_crypto3 = require("node:crypto");
-var import_node_fs3 = require("node:fs");
+function uriEncode(input, encodeSlash = false) {
+  let result = "";
+  for (let i = 0; i < input.length; i += 1) {
+    const char = input[i];
+    if (char >= "A" && char <= "Z" || char >= "a" && char <= "z" || char >= "0" && char <= "9" || char === "_" || char === "-" || char === "~" || char === ".") {
+      result += char;
+    } else if (char === "/" && !encodeSlash) {
+      result += "/";
+    } else {
+      const hex = char.charCodeAt(0).toString(16).toUpperCase();
+      result += hex.length < 2 ? `%0${hex}` : `%${hex}`;
+    }
+  }
+  return result;
+}
+function formatBasicDate(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  const month = pad(date.getUTCMonth() + 1);
+  const day = pad(date.getUTCDate());
+  const hours = pad(date.getUTCHours());
+  const minutes = pad(date.getUTCMinutes());
+  const seconds = pad(date.getUTCSeconds());
+  const dateScope = `${year}${month}${day}`;
+  const isoDate = `${dateScope}T${hours}${minutes}${seconds}Z`;
+  return { isoDate, dateScope };
+}
+function sha256Hex(data) {
+  return (0, import_node_crypto3.createHash)("sha256").update(data).digest("hex");
+}
+function getSigningKey(secretKey, dateScope, region, service) {
+  const kDate = (0, import_node_crypto3.createHmac)("sha256", `AWS4${secretKey}`).update(dateScope).digest();
+  const kRegion = (0, import_node_crypto3.createHmac)("sha256", kDate).update(region).digest();
+  const kService = (0, import_node_crypto3.createHmac)("sha256", kRegion).update(service).digest();
+  return (0, import_node_crypto3.createHmac)("sha256", kService).update("aws4_request").digest();
+}
+function signS3Request(options) {
+  const targetUrl = typeof options.url === "string" ? new URL(options.url) : options.url;
+  const now = options.now ?? /* @__PURE__ */ new Date();
+  const { isoDate, dateScope } = formatBasicDate(now);
+  const service = options.service ?? "s3";
+  const payloadHash = options.payloadHash ?? sha256Hex("");
+  const method = options.method.toUpperCase();
+  const headers = {
+    ...options.headers,
+    host: targetUrl.host,
+    "x-amz-date": isoDate,
+    "x-amz-content-sha256": payloadHash
+  };
+  const headerKeys = Object.keys(headers).map((k) => k.toLowerCase()).sort();
+  const canonicalHeadersList = [];
+  for (const key of headerKeys) {
+    const rawVal = headers[key] ?? "";
+    const cleanVal = rawVal.trim().replace(/\s+/g, " ");
+    canonicalHeadersList.push(`${key}:${cleanVal}
+`);
+  }
+  const canonicalHeaders = canonicalHeadersList.join("");
+  const signedHeaders = headerKeys.join(";");
+  const rawPath = targetUrl.pathname || "/";
+  const canonicalUri = uriEncode(rawPath, false);
+  const queryEntries = [];
+  targetUrl.searchParams.forEach((value, key) => {
+    queryEntries.push([uriEncode(key, true), uriEncode(value, true)]);
+  });
+  queryEntries.sort(([aKey, aVal], [bKey, bVal]) => {
+    if (aKey !== bKey) return aKey < bKey ? -1 : 1;
+    return aVal < bVal ? -1 : 1;
+  });
+  const canonicalQueryString = queryEntries.map(([k, v]) => `${k}=${v}`).join("&");
+  const canonicalRequest = [
+    method,
+    canonicalUri,
+    canonicalQueryString,
+    canonicalHeaders,
+    signedHeaders,
+    payloadHash
+  ].join("\n");
+  const canonicalRequestHash = sha256Hex(canonicalRequest);
+  const credentialScope = `${dateScope}/${options.region}/${service}/aws4_request`;
+  const stringToSign = ["AWS4-HMAC-SHA256", isoDate, credentialScope, canonicalRequestHash].join(
+    "\n"
+  );
+  const signingKey = getSigningKey(options.secretAccessKey, dateScope, options.region, service);
+  const signature = (0, import_node_crypto3.createHmac)("sha256", signingKey).update(stringToSign).digest("hex");
+  const authorization = `AWS4-HMAC-SHA256 Credential=${options.accessKeyId}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+  return {
+    method,
+    url: targetUrl.toString(),
+    headers: {
+      ...headers,
+      authorization
+    }
+  };
+}
+
+// src/s3/client.ts
+var S3Error = class extends Error {
+  constructor(code, message, statusCode, rawBody) {
+    super(`S3 Error [${code}]: ${message}`);
+    this.code = code;
+    this.statusCode = statusCode;
+    this.rawBody = rawBody;
+    this.name = "S3Error";
+  }
+  code;
+  statusCode;
+  rawBody;
+};
+var DEFAULT_TIMEOUT_MS = 6e4;
+var S3Client = class {
+  bucket;
+  region;
+  endpoint;
+  forcePathStyle;
+  accessKeyId;
+  secretAccessKey;
+  timeoutMs;
+  constructor(options) {
+    if (!options.bucket || options.bucket.trim().length === 0) {
+      throw new Error("S3 bucket name is required");
+    }
+    if (!options.accessKeyId || options.accessKeyId.trim().length === 0) {
+      throw new Error("S3 access key ID is required");
+    }
+    if (!options.secretAccessKey || options.secretAccessKey.trim().length === 0) {
+      throw new Error("S3 secret access key is required");
+    }
+    this.bucket = options.bucket.trim();
+    this.accessKeyId = options.accessKeyId.trim();
+    this.secretAccessKey = options.secretAccessKey.trim();
+    this.region = options.region?.trim() || "us-east-1";
+    this.endpoint = options.endpoint?.trim() || void 0;
+    this.timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+    this.forcePathStyle = options.forcePathStyle ?? (this.endpoint !== void 0 && this.endpoint.length > 0);
+  }
+  buildUrl(key = "", query) {
+    let baseUrl;
+    const cleanKey = key.replace(/^\/+/, "");
+    if (this.endpoint) {
+      const ep = this.endpoint.replace(/\/+$/, "");
+      if (this.forcePathStyle) {
+        baseUrl = cleanKey.length > 0 ? `${ep}/${this.bucket}/${cleanKey}` : `${ep}/${this.bucket}`;
+      } else {
+        const parsed = new URL(ep);
+        baseUrl = `${parsed.protocol}//${this.bucket}.${parsed.host}${parsed.pathname.replace(/\/+$/, "")}/${cleanKey}`;
+      }
+    } else {
+      if (this.forcePathStyle) {
+        baseUrl = cleanKey.length > 0 ? `https://s3.${this.region}.amazonaws.com/${this.bucket}/${cleanKey}` : `https://s3.${this.region}.amazonaws.com/${this.bucket}`;
+      } else {
+        baseUrl = cleanKey.length > 0 ? `https://${this.bucket}.s3.${this.region}.amazonaws.com/${cleanKey}` : `https://${this.bucket}.s3.${this.region}.amazonaws.com/`;
+      }
+    }
+    const url = new URL(baseUrl);
+    if (query) {
+      for (const [k, v] of Object.entries(query)) {
+        if (v !== void 0) {
+          url.searchParams.set(k, v);
+        }
+      }
+    }
+    return url;
+  }
+  async putObject(key, body, sizeBytes, payloadSha256, options) {
+    const url = this.buildUrl(key);
+    const contentType = options?.contentType ?? "application/zip";
+    const customHeaders = {
+      "content-type": contentType,
+      "content-length": String(sizeBytes)
+    };
+    if (options?.metadata) {
+      for (const [mKey, mVal] of Object.entries(options.metadata)) {
+        customHeaders[`x-amz-meta-${mKey.toLowerCase()}`] = mVal;
+      }
+    }
+    const signed = signS3Request({
+      method: "PUT",
+      url,
+      headers: customHeaders,
+      payloadHash: payloadSha256,
+      accessKeyId: this.accessKeyId,
+      secretAccessKey: this.secretAccessKey,
+      region: this.region
+    });
+    const response = await this.executeRequest(signed, body);
+    const etag = response.headers.etag?.replace(/"/g, "") ?? "";
+    return { etag };
+  }
+  async listObjectsV2(options) {
+    const query = { "list-type": "2" };
+    if (options?.prefix) query.prefix = options.prefix;
+    if (options?.continuationToken) query["continuation-token"] = options.continuationToken;
+    if (options?.maxKeys) query["max-keys"] = String(options.maxKeys);
+    const url = this.buildUrl("", query);
+    const signed = signS3Request({
+      method: "GET",
+      url,
+      payloadHash: sha256Hex(""),
+      accessKeyId: this.accessKeyId,
+      secretAccessKey: this.secretAccessKey,
+      region: this.region
+    });
+    const response = await this.executeRequest(signed);
+    return parseListObjectsV2Xml(response.body);
+  }
+  async deleteObjects(keys) {
+    if (keys.length === 0) {
+      return { deletedKeys: [], errors: [] };
+    }
+    const objectsXml = keys.map((k) => `<Object><Key>${escapeXml(k)}</Key></Object>`).join("");
+    const xmlBody = `<?xml version="1.0" encoding="UTF-8"?><Delete><Quiet>false</Quiet>${objectsXml}</Delete>`;
+    const bodyBuffer = Buffer.from(xmlBody, "utf8");
+    const payloadHash = sha256Hex(bodyBuffer);
+    const url = this.buildUrl("", { delete: "" });
+    const signed = signS3Request({
+      method: "POST",
+      url,
+      headers: {
+        "content-type": "application/xml",
+        "content-length": String(bodyBuffer.length)
+      },
+      payloadHash,
+      accessKeyId: this.accessKeyId,
+      secretAccessKey: this.secretAccessKey,
+      region: this.region
+    });
+    const response = await this.executeRequest(signed, bodyBuffer);
+    return parseDeleteResultXml(response.body, keys);
+  }
+  async testConnection() {
+    await this.listObjectsV2({ maxKeys: 1 });
+    return { ok: true, bucket: this.bucket, region: this.region };
+  }
+  executeRequest(signed, body) {
+    const target = new URL(signed.url);
+    const send = target.protocol === "http:" ? import_node_http.request : import_node_https.request;
+    return new Promise((resolve2, reject) => {
+      let aborted = false;
+      const timer = setTimeout(() => {
+        aborted = true;
+        req.destroy(new Error(`S3 request timed out after ${this.timeoutMs}ms`));
+      }, this.timeoutMs);
+      const req = send(
+        target,
+        {
+          method: signed.method,
+          headers: signed.headers
+        },
+        (res) => {
+          clearTimeout(timer);
+          const chunks = [];
+          res.on("data", (chunk) => {
+            if (chunks.length < 1024) chunks.push(chunk);
+          });
+          res.on("error", (resErr) => {
+            clearTimeout(timer);
+            reject(resErr);
+          });
+          res.on("end", () => {
+            clearTimeout(timer);
+            const statusCode = res.statusCode ?? 0;
+            const resBody = Buffer.concat(chunks).toString("utf8");
+            if (statusCode >= 200 && statusCode < 300) {
+              resolve2({ statusCode, headers: res.headers, body: resBody });
+              return;
+            }
+            const parsedError = parseS3ErrorXml(resBody, statusCode);
+            reject(parsedError);
+          });
+        }
+      );
+      req.on("error", (reqErr) => {
+        clearTimeout(timer);
+        if (!aborted) reject(reqErr);
+      });
+      if (body) {
+        if (Buffer.isBuffer(body)) {
+          req.end(body);
+        } else {
+          body.on("error", (streamErr) => {
+            clearTimeout(timer);
+            req.destroy(streamErr);
+            reject(streamErr);
+          });
+          body.pipe(req);
+        }
+      } else {
+        req.end();
+      }
+    });
+  }
+};
+function escapeXml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+}
+function parseS3ErrorXml(xml, statusCode) {
+  const codeMatch = /<Code>(.*?)<\/Code>/s.exec(xml);
+  const messageMatch = /<Message>(.*?)<\/Message>/s.exec(xml);
+  const code = codeMatch?.[1]?.trim() ?? `HTTP_${statusCode}`;
+  const message = messageMatch?.[1]?.trim() ?? (xml.slice(0, 200).trim() || `Request failed with HTTP status ${statusCode}`);
+  return new S3Error(code, message, statusCode, xml);
+}
+function parseListObjectsV2Xml(xml) {
+  const isTruncated = /<IsTruncated>(true|false)<\/IsTruncated>/i.exec(xml)?.[1]?.toLowerCase() === "true";
+  const nextToken = /<NextContinuationToken>(.*?)<\/NextContinuationToken>/s.exec(xml)?.[1]?.trim();
+  const objects = [];
+  const contentsRegex = /<Contents>(.*?)<\/Contents>/gs;
+  let match2 = null;
+  while (true) {
+    match2 = contentsRegex.exec(xml);
+    if (!match2) break;
+    const itemXml = match2[1] ?? "";
+    const key = /<Key>(.*?)<\/Key>/s.exec(itemXml)?.[1]?.trim();
+    const lastModifiedRaw = /<LastModified>(.*?)<\/LastModified>/s.exec(itemXml)?.[1]?.trim();
+    const sizeRaw = /<Size>(\d+)<\/Size>/s.exec(itemXml)?.[1]?.trim();
+    const etag = (/ <ETag>(.*?)<\/ETag>/s.exec(itemXml)?.[1] ?? /<ETag>(.*?)<\/ETag>/s.exec(itemXml)?.[1]?.trim() ?? "").replace(/"/g, "");
+    if (key && lastModifiedRaw) {
+      objects.push({
+        key,
+        lastModified: new Date(lastModifiedRaw),
+        sizeBytes: sizeRaw ? Number.parseInt(sizeRaw, 10) : 0,
+        etag
+      });
+    }
+  }
+  return {
+    objects,
+    isTruncated,
+    nextContinuationToken: nextToken
+  };
+}
+function parseDeleteResultXml(xml, fallbackKeys) {
+  const deletedKeys = [];
+  const errors = [];
+  const deletedRegex = /<Deleted>(.*?)<\/Deleted>/gs;
+  let dMatch = null;
+  while (true) {
+    dMatch = deletedRegex.exec(xml);
+    if (!dMatch) break;
+    const k = /<Key>(.*?)<\/Key>/s.exec(dMatch[1] ?? "")?.[1]?.trim();
+    if (k) deletedKeys.push(k);
+  }
+  const errorRegex = /<Error>(.*?)<\/Error>/gs;
+  let eMatch = null;
+  while (true) {
+    eMatch = errorRegex.exec(xml);
+    if (!eMatch) break;
+    const eXml = eMatch[1] ?? "";
+    const k = /<Key>(.*?)<\/Key>/s.exec(eXml)?.[1]?.trim() ?? "";
+    const code = /<Code>(.*?)<\/Code>/s.exec(eXml)?.[1]?.trim() ?? "Unknown";
+    const msg = /<Message>(.*?)<\/Message>/s.exec(eXml)?.[1]?.trim() ?? "";
+    errors.push({ key: k, code, message: msg });
+  }
+  if (deletedKeys.length === 0 && errors.length === 0) {
+    return { deletedKeys: [...fallbackKeys], errors: [] };
+  }
+  return { deletedKeys, errors };
+}
+
+// src/s3/sink.ts
+var import_node_crypto4 = require("node:crypto");
+var import_node_fs4 = require("node:fs");
 var import_promises3 = require("node:fs/promises");
 var import_node_path3 = __toESM(require("node:path"), 1);
 var import_node_stream3 = require("node:stream");
-var LocalFileSink = class {
-  constructor(filePath) {
-    this.filePath = filePath;
+var S3Sink = class {
+  constructor(options) {
+    this.options = options;
   }
-  filePath;
+  options;
   async open(options) {
-    await (0, import_promises3.mkdir)(import_node_path3.default.dirname(this.filePath), { recursive: true });
-    const partPath = `${this.filePath}.part`;
-    const spool = createSpool2(partPath, options);
-    const filePath = this.filePath;
+    const root = this.options.tmpDir;
+    await (0, import_promises3.mkdir)(root, { recursive: true });
+    const dir = await (0, import_promises3.mkdtemp)(import_node_path3.default.join(root, "qbx-s3-sink-"));
+    const spoolPath = import_node_path3.default.join(dir, "backup.zip");
+    const spool = createSpool2(spoolPath, options, this.options.maxBytes);
+    const opts = this.options;
     return {
       append: spool.append,
       failed: spool.failed,
       finish: async () => {
-        const result = await spool.finish();
-        await (0, import_promises3.rename)(partPath, filePath);
-        return { ...result, location: filePath };
+        try {
+          const result = await spool.finish();
+          if (opts.maxBytes !== void 0 && result.bytesZip > opts.maxBytes) {
+            throw new Error(
+              `Backup zip is ${result.bytesZip} bytes, exceeding the ${opts.maxBytes} byte limit`
+            );
+          }
+          const fileStream = (0, import_node_fs4.createReadStream)(spoolPath);
+          await opts.client.putObject(opts.s3Key, fileStream, result.bytesZip, result.sha256);
+          const localCopy = await keepLocalCopy2(spoolPath, opts.keepLocalPath);
+          const s3Location = `s3://${opts.client.bucket}/${opts.s3Key}`;
+          return localCopy === null ? { ...result, location: s3Location } : { ...result, location: `${s3Location} (+ local: ${localCopy})` };
+        } finally {
+          await (0, import_promises3.rm)(dir, { recursive: true, force: true });
+        }
       },
-      abort: spool.abort
+      abort: async () => {
+        await spool.abort();
+        await (0, import_promises3.rm)(dir, { recursive: true, force: true });
+      }
     };
   }
 };
 function createSpool2(target, options, maxBytes) {
   const zip = new ZipArchive({ zlib: { level: options.zipLevel }, forceZip64: true });
   const counter = createCounter2(options.onZipBytes, maxBytes);
-  const file = (0, import_node_fs3.createWriteStream)(target);
+  const file = (0, import_node_fs4.createWriteStream)(target);
   let source = null;
   const flushed = new Promise((resolve2, reject) => {
     file.once("close", () => resolve2());
@@ -18352,9 +18849,105 @@ function createSpool2(target, options, maxBytes) {
   };
 }
 function createCounter2(onBytes, maxBytes) {
-  const hash = (0, import_node_crypto3.createHash)("sha256");
+  const hash = (0, import_node_crypto4.createHash)("sha256");
   let total = 0;
   const transform = new import_node_stream3.Transform({
+    transform(chunk, _encoding, callback) {
+      total += chunk.length;
+      hash.update(chunk);
+      onBytes?.(total);
+      if (maxBytes !== void 0 && total > maxBytes) {
+        callback(new Error(`Backup zip exceeded the ${maxBytes} byte limit for this job`));
+        return;
+      }
+      callback(null, chunk);
+    }
+  });
+  return { transform, bytes: () => total, digest: () => hash.digest("hex") };
+}
+async function keepLocalCopy2(spoolPath, destination) {
+  if (destination === void 0 || destination.length === 0) return null;
+  await (0, import_promises3.mkdir)(import_node_path3.default.dirname(destination), { recursive: true });
+  const partPath = `${destination}.part`;
+  await (0, import_promises3.copyFile)(spoolPath, partPath);
+  await (0, import_promises3.rename)(partPath, destination);
+  return destination;
+}
+
+// src/zip-sink.ts
+var import_node_crypto5 = require("node:crypto");
+var import_node_fs5 = require("node:fs");
+var import_promises4 = require("node:fs/promises");
+var import_node_path4 = __toESM(require("node:path"), 1);
+var import_node_stream4 = require("node:stream");
+var LocalFileSink = class {
+  constructor(filePath) {
+    this.filePath = filePath;
+  }
+  filePath;
+  async open(options) {
+    await (0, import_promises4.mkdir)(import_node_path4.default.dirname(this.filePath), { recursive: true });
+    const partPath = `${this.filePath}.part`;
+    const spool = createSpool3(partPath, options);
+    const filePath = this.filePath;
+    return {
+      append: spool.append,
+      failed: spool.failed,
+      finish: async () => {
+        const result = await spool.finish();
+        await (0, import_promises4.rename)(partPath, filePath);
+        return { ...result, location: filePath };
+      },
+      abort: spool.abort
+    };
+  }
+};
+function createSpool3(target, options, maxBytes) {
+  const zip = new ZipArchive({ zlib: { level: options.zipLevel }, forceZip64: true });
+  const counter = createCounter3(options.onZipBytes, maxBytes);
+  const file = (0, import_node_fs5.createWriteStream)(target);
+  let source = null;
+  const flushed = new Promise((resolve2, reject) => {
+    file.once("close", () => resolve2());
+    file.once("error", reject);
+    counter.transform.once("error", reject);
+    zip.on("error", (zipError) => reject(new Error(`Zip failed: ${zipError.message}`)));
+    zip.on("warning", (warning) => {
+      if (warning.code !== "ENOENT") reject(new Error(`Zip warning: ${warning.message}`));
+    });
+  });
+  const failed = new Promise((_, reject) => {
+    flushed.catch((flushError) => {
+      source?.destroy(flushError);
+      reject(flushError);
+    });
+  });
+  void failed.catch(() => {
+  });
+  zip.pipe(counter.transform).pipe(file);
+  return {
+    append: (input) => {
+      source = input;
+      zip.append(input, { name: options.entryName });
+    },
+    finish: async () => {
+      await zip.finalize();
+      await flushed;
+      return { bytesZip: counter.bytes(), sha256: counter.digest() };
+    },
+    abort: async () => {
+      zip.abort();
+      counter.transform.destroy();
+      file.destroy();
+      await (0, import_promises4.rm)(target, { force: true });
+    },
+    failed
+  };
+}
+function createCounter3(onBytes, maxBytes) {
+  const hash = (0, import_node_crypto5.createHash)("sha256");
+  let total = 0;
+  const transform = new import_node_stream4.Transform({
     transform(chunk, _encoding, callback) {
       total += chunk.length;
       hash.update(chunk);
@@ -18387,19 +18980,26 @@ var FLAG_BY_CONVAR = {
   qbx_db_backup_s3_prefix: "s3-prefix",
   qbx_db_backup_s3_force_path_style: "s3-path-style",
   qbx_db_backup_s3_keep: "s3-keep",
-  qbx_db_backup_s3_max_age_days: "s3-max-age"
+  qbx_db_backup_s3_max_age_days: "s3-max-age",
+  qbx_backup_gdrive_client_id: "gdrive-client-id",
+  qbx_backup_gdrive_client_secret: "gdrive-client-secret",
+  qbx_backup_gdrive_refresh_token: "gdrive-refresh-token",
+  qbx_backup_gdrive_folder_id: "gdrive-folder-id",
+  qbx_backup_gdrive_keep: "gdrive-keep",
+  qbx_backup_gdrive_max_age_days: "gdrive-max-age"
 };
 var USAGE = `qbx_db_backup CLI v${RESOURCE_VERSION}
 
 usage:
   node dist/cli.js run  --connection "<string>" [--out ./backups] [--dump-bin path] [--zip-level 6]
-  node dist/cli.js test --connection "<string>" [--dump-bin path] [--s3-bucket b --s3-key k --s3-secret s]
+  node dist/cli.js test --connection "<string>" [--dump-bin path] [--s3-bucket b --s3-key k --s3-secret s] [--gdrive-client-id id --gdrive-client-secret sec --gdrive-refresh-token tok]
 
 Flags fall back to environment variables: MYSQL_CONNECTION_STRING,
 QBX_DB_BACKUP_CONNECTION_STRING, QBX_DB_BACKUP_LOCAL_DIR, QBX_DB_BACKUP_DUMP_BIN,
 QBX_DB_BACKUP_ZIP_LEVEL, QBX_DB_BACKUP_TIMEOUT_MINUTES, QBX_DB_BACKUP_S3_BUCKET,
 QBX_DB_BACKUP_S3_KEY, QBX_DB_BACKUP_S3_SECRET, QBX_DB_BACKUP_S3_ENDPOINT,
-QBX_DB_BACKUP_S3_REGION.`;
+QBX_DB_BACKUP_S3_REGION, QBX_BACKUP_GDRIVE_CLIENT_ID, QBX_BACKUP_GDRIVE_CLIENT_SECRET,
+QBX_BACKUP_GDRIVE_REFRESH_TOKEN, QBX_BACKUP_GDRIVE_FOLDER_ID.`;
 function parseFlags(argv) {
   const flags = {};
   for (let index2 = 0; index2 < argv.length; index2 += 1) {
@@ -18429,22 +19029,31 @@ function buildConfig(flags) {
     return process.env[name.toUpperCase()] ?? fallback;
   };
   return loadConfig(source, {
-    localDir: import_node_path4.default.resolve("backups"),
-    resourceDir: import_node_path4.default.resolve(__dirname, "..")
+    localDir: import_node_path5.default.resolve("backups"),
+    resourceDir: import_node_path5.default.resolve(__dirname, "..")
   });
 }
 async function commandRun(config) {
   const target = parseConnectionString(config.connectionString);
   const names = buildBackupNames(target.database, /* @__PURE__ */ new Date());
-  let sink = new LocalFileSink(import_node_path4.default.resolve(config.localDir, names.zipName));
-  if (isS3Configured(config.s3)) {
+  let sink = new LocalFileSink(import_node_path5.default.resolve(config.localDir, names.zipName));
+  if (config.mode === "s3" && isS3Configured(config.s3)) {
     const s3Client = new S3Client(config.s3);
     const key = config.s3.prefix ? `${config.s3.prefix.replace(/\/+$/, "")}/${names.zipName}` : names.zipName;
     sink = new S3Sink({
       client: s3Client,
       s3Key: key,
-      tmpDir: import_node_path4.default.resolve(config.localDir, ".tmp"),
-      keepLocalPath: config.keepLocal ? import_node_path4.default.resolve(config.localDir, names.zipName) : void 0
+      tmpDir: import_node_path5.default.resolve(config.localDir, ".tmp"),
+      keepLocalPath: config.keepLocal ? import_node_path5.default.resolve(config.localDir, names.zipName) : void 0
+    });
+  } else if (config.mode === "gdrive" && isGDriveConfigured(config.gdrive)) {
+    const gdriveClient = new GDriveClient(config.gdrive);
+    sink = new GDriveSink({
+      client: gdriveClient,
+      fileName: names.zipName,
+      folderId: config.gdrive.folderId,
+      tmpDir: import_node_path5.default.resolve(config.localDir, ".tmp"),
+      keepLocalPath: config.keepLocal || config.gdrive.keepLocal ? import_node_path5.default.resolve(config.localDir, names.zipName) : void 0
     });
   }
   const outcome = await runBackup({ config, sink, entryName: names.entryName });
@@ -18476,8 +19085,24 @@ async function commandTest(config) {
       s3Status = { ok: false, error: errorMessage(s3Err) };
     }
   }
+  let gdriveStatus = null;
+  if (isGDriveConfigured(config.gdrive)) {
+    try {
+      const gdriveClient = new GDriveClient(config.gdrive);
+      const quota = await gdriveClient.getStorageQuota();
+      const folder = await gdriveClient.verifyFolder(config.gdrive.folderId || "root");
+      gdriveStatus = {
+        ok: true,
+        folder: folder.name,
+        storageUsage: quota.usage,
+        storageLimit: quota.limit
+      };
+    } catch (gdriveErr) {
+      gdriveStatus = { ok: false, error: errorMessage(gdriveErr) };
+    }
+  }
   process.stdout.write(
-    `${JSON.stringify({ target: describeTarget(target), ssl: target.ssl, dumpBinary: binary, s3: s3Status }, null, 2)}
+    `${JSON.stringify({ target: describeTarget(target), ssl: target.ssl, dumpBinary: binary, s3: s3Status, gdrive: gdriveStatus }, null, 2)}
 `
   );
   return 0;
