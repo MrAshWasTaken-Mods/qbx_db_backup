@@ -1,10 +1,11 @@
-# qbx_db_backup
+﻿# qbx_db_backup
 
 Backs up your FiveM server's MySQL/MariaDB database from inside the server. The dump runs on the
 machine itself, so the database never has to be reachable from the internet and your credentials
 never leave it.
 
 - **Standalone**: run a backup from the console and the zip lands next to the resource.
+- **Google Drive (100% Free)**: stream backups directly to your personal Google Drive (15 GB free) with zero API costs or credit cards.
 - **Universal S3 storage**: upload directly to Cloudflare R2, AWS S3, Wasabi, Backblaze B2, or MinIO.
 - **With the Qbox dashboard**: the same backups, sent off-site, with history and alerts.
 - **Nothing to install**: `mariadb-dump` is bundled for Windows and Linux (x64).
@@ -31,9 +32,9 @@ From the server console:
 
 | Command | What it does |
 | --- | --- |
-| `qbx_db_backup run` | Back up now. Standalone: writes the zip to `resources/qbx_db_backup/backups/`. Connected: uploads to the dashboard or S3. |
+| `qbx_db_backup run` | Back up now. Standalone: writes the zip to `resources/qbx_db_backup/backups/`. Connected: uploads to Google Drive, S3, or the dashboard. |
 | `qbx_db_backup status` | Shows the current mode, target database, schedule, and the last result. |
-| `qbx_db_backup test` | Checks the configuration without touching the database. |
+| `qbx_db_backup test` | Checks the configuration and cloud connectivity without touching the database. |
 | `qbx_db_backup version` | Prints the version. |
 
 To connect the resource to the Qbox dashboard, paste the token from your organisation's backup
@@ -43,14 +44,23 @@ settings:
 set qbx_db_backup_token "your-token"
 ```
 
-Backups then show up in the dashboard with their history and alerts. Use `set`, never `setr`:
-`setr` would send the value to every connected player.
-
 In all modes a backup runs automatically every `qbx_db_backup_interval_hours` hours (hourly by
-default), and `qbx_db_backup run` in the server console is how you start one by hand. Backups are
-always started on the server itself, never from the dashboard. When connected to the dashboard, at
-most one backup per hour is accepted and the dashboard keeps as many backups as your plan's storage
-allows, deleting the oldest automatically.
+default), and `qbx_db_backup run` in the server console is how you start one by hand.
+
+## Google Drive Storage (100% Free)
+
+To stream backups directly to Google Drive using your personal account's 15 GB free storage:
+
+```cfg
+set qbx_backup_destination "gdrive"
+set qbx_backup_gdrive_client_id "your-client-id.apps.googleusercontent.com"
+set qbx_backup_gdrive_client_secret "GOCSPX-yourClientSecret"
+set qbx_backup_gdrive_refresh_token "1//04yourRefreshToken"
+set qbx_backup_gdrive_folder_id "1A2B3C4D5E6F7G8H9..."
+set qbx_backup_gdrive_keep "14"
+```
+
+See [docs/GDRIVE_EXAMPLES.md](docs/GDRIVE_EXAMPLES.md) for the 3-minute step-by-step setup guide.
 
 ## S3 Storage
 
@@ -71,13 +81,21 @@ Everything has a working default. The resource reads the database credentials fr
 
 | Convar | Default | Meaning |
 | --- | --- | --- |
-| `qbx_db_backup_token` | (empty) | Dashboard token. Leave empty to run standalone or with S3. |
+| `qbx_backup_destination` | (auto) | Explicit destination: `qbx`, `gdrive`, `s3`, or `local`. |
+| `qbx_db_backup_token` | (empty) | Dashboard token. Leave empty to run standalone, GDrive, or S3. |
 | `qbx_db_backup_connection_string` | (empty) | Use different credentials than the server does. Same formats as oxmysql. |
 | `qbx_db_backup_interval_hours` | `1` | How often to back up, in hours. Minimum 1, 0 disables the schedule. Manual runs always work. |
 | `qbx_db_backup_local_keep` | `7` | How many zips to keep in the local folder (standalone, or connected with `keep_local`). |
 | `qbx_db_backup_local_max_age_days` | `0` | Delete local backups older than this many days (0 disables age pruning). |
 | `qbx_db_backup_min_free_disk_mb` | `0` | Minimum free disk space in MB. Prunes oldest local zips if drive space drops below this. |
-| `qbx_db_backup_keep_local` | `0` | When uploading to S3 or dashboard, also keep a copy of each zip in the local folder. |
+| `qbx_db_backup_keep_local` | `0` | When uploading to cloud storage, also keep a copy of each zip in the local folder. |
+| `qbx_backup_gdrive_client_id` | (empty) | Google Cloud OAuth 2.0 Client ID. |
+| `qbx_backup_gdrive_client_secret` | (empty) | Google Cloud OAuth 2.0 Client Secret. |
+| `qbx_backup_gdrive_refresh_token` | (empty) | Google OAuth 2.0 1-time Refresh Token. |
+| `qbx_backup_gdrive_folder_id` | (empty) | Target Google Drive folder ID (or leave empty for root My Drive). |
+| `qbx_backup_gdrive_keep` | `0` | Number of backups to keep in Google Drive folder (0 disables count pruning). |
+| `qbx_backup_gdrive_max_age_days` | `0` | Delete Google Drive backups older than this many days (0 disables age pruning). |
+| `qbx_backup_gdrive_keep_local` | `0` | Also retain local zip copy when uploading to Google Drive. |
 | `qbx_db_backup_s3_bucket` | (empty) | S3 bucket name. |
 | `qbx_db_backup_s3_key` | (empty) | S3 Access Key ID (or `qbx_db_backup_s3_access_key_id`). |
 | `qbx_db_backup_s3_secret` | (empty) | S3 Secret Access Key (or `qbx_db_backup_s3_secret_access_key`). |
@@ -108,14 +126,4 @@ GNU GPL v2. See [`bin/UPSTREAM.md`](bin/UPSTREAM.md) for where it came from and
 
 ## License
 
-MIT. The bundled `mariadb-dump` is GPLv2 (see above).
-
-## Building from source
-
-`dist/` is committed, so a clone runs as is. To rebuild after changing `src/`:
-
-```sh
-bun install
-bun run build
-bun test
-```
+MIT
