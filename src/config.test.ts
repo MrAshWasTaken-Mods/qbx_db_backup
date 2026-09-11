@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+﻿import { describe, expect, it } from "bun:test";
 import {
   type ConfigSource,
   DEFAULT_INTERVAL_HOURS,
@@ -88,6 +88,28 @@ describe("S3 convars", () => {
   });
 });
 
+describe("Google Drive convars", () => {
+  it("loads full Google Drive configuration", () => {
+    const config = configWith({
+      qbx_backup_gdrive_client_id: "123.apps.googleusercontent.com",
+      qbx_backup_gdrive_client_secret: "SECRET_GOCSPX",
+      qbx_backup_gdrive_refresh_token: "1//04_REFRESH",
+      qbx_backup_gdrive_folder_id: "FOLDER_XYZ",
+      qbx_backup_gdrive_keep: "14",
+      qbx_backup_gdrive_max_age_days: "30",
+      qbx_backup_gdrive_keep_local: "true",
+    });
+
+    expect(config.gdrive.clientId).toBe("123.apps.googleusercontent.com");
+    expect(config.gdrive.clientSecret).toBe("SECRET_GOCSPX");
+    expect(config.gdrive.refreshToken).toBe("1//04_REFRESH");
+    expect(config.gdrive.folderId).toBe("FOLDER_XYZ");
+    expect(config.gdrive.keepCount).toBe(14);
+    expect(config.gdrive.maxAgeDays).toBe(30);
+    expect(config.gdrive.keepLocal).toBe(true);
+  });
+});
+
 describe("heartbeat convars", () => {
   it("defaults to a five minute heartbeat", () => {
     expect(configWith({}).pollSeconds).toBe(DEFAULT_POLL_SECONDS);
@@ -109,7 +131,7 @@ describe("heartbeat convars", () => {
 });
 
 describe("mode resolution", () => {
-  it("stays local without token or s3", () => {
+  it("stays local without token or s3 or gdrive", () => {
     expect(configWith({}).mode).toBe("local");
   });
 
@@ -126,12 +148,37 @@ describe("mode resolution", () => {
     expect(config.mode).toBe("s3");
   });
 
-  it("prioritizes qbx over s3 when both are configured", () => {
+  it("resolves to gdrive when gdrive credentials are configured", () => {
+    const config = configWith({
+      qbx_backup_gdrive_client_id: "cid",
+      qbx_backup_gdrive_client_secret: "csec",
+      qbx_backup_gdrive_refresh_token: "refr",
+    });
+    expect(config.mode).toBe("gdrive");
+  });
+
+  it("prioritizes explicit destination convar override", () => {
+    const config = configWith({
+      qbx_backup_destination: "gdrive",
+      qbx_db_backup_s3_bucket: "my-bucket",
+      qbx_db_backup_s3_access_key_id: "KEY",
+      qbx_db_backup_s3_secret_access_key: "SECRET",
+      qbx_backup_gdrive_client_id: "cid",
+      qbx_backup_gdrive_client_secret: "csec",
+      qbx_backup_gdrive_refresh_token: "refr",
+    });
+    expect(config.mode).toBe("gdrive");
+  });
+
+  it("prioritizes qbx over s3 and gdrive by default when both are configured without explicit override", () => {
     const config = configWith({
       qbx_db_backup_token: "tok",
       qbx_db_backup_s3_bucket: "my-bucket",
       qbx_db_backup_s3_access_key_id: "KEY",
       qbx_db_backup_s3_secret_access_key: "SECRET",
+      qbx_backup_gdrive_client_id: "cid",
+      qbx_backup_gdrive_client_secret: "csec",
+      qbx_backup_gdrive_refresh_token: "refr",
     });
     expect(config.mode).toBe("qbx");
   });

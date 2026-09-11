@@ -1,11 +1,13 @@
-import { describe, expect, it } from "bun:test";
+﻿import { describe, expect, it, mock } from "bun:test";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import type { GDriveClient } from "./gdrive/client";
 import {
   type BackupEntry,
   isOwnBackupFile,
   parseBackupTimestamp,
+  pruneGDriveFolder,
   pruneLocalDirectory,
   selectPrunableEntries,
 } from "./retention";
@@ -97,5 +99,30 @@ describe("Retention Engine", () => {
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
+  });
+
+  it("prunes Google Drive folder and deletes obsolete files", async () => {
+    const deletedFileIds: string[] = [];
+
+    const mockClient = {
+      listFiles: mock(async () => [
+        { id: "id_old", name: "db-2026-09-01_12-00-00Z.zip", size: 500 },
+        { id: "id_mid", name: "db-2026-09-05_12-00-00Z.zip", size: 500 },
+        { id: "id_new", name: "db-2026-09-09_12-00-00Z.zip", size: 500 },
+      ]),
+      deleteFile: mock(async (id: string) => {
+        deletedFileIds.push(id);
+      }),
+    } as unknown as GDriveClient;
+
+    const result = await pruneGDriveFolder(mockClient, {
+      folderId: "gdrive_folder_123",
+      keepCount: 2,
+    });
+
+    expect(result.deletedFiles.length).toBe(1);
+    expect(result.deletedFiles[0]!.id).toBe("id_old");
+    expect(deletedFileIds).toEqual(["id_old"]);
+    expect(result.errors).toEqual([]);
   });
 });
