@@ -1,4 +1,4 @@
-import type { S3Config } from "./s3/types";
+﻿import type { S3Config } from "./s3/types";
 
 export const RESOURCE_VERSION = "1.1.0";
 export const DEFAULT_API_BASE = "https://dashboard.qbox.re";
@@ -8,7 +8,18 @@ export const DEFAULT_INTERVAL_HOURS = 1;
 export const DEFAULT_LOCAL_KEEP = 7;
 
 export type ConfigSource = (name: string, fallback: string) => string;
-export type BackupMode = "local" | "qbx" | "s3";
+export type BackupMode = "local" | "qbx" | "s3" | "gdrive";
+
+export type GDriveConfig = {
+  clientId: string;
+  clientSecret: string;
+  refreshToken: string;
+  folderId?: string;
+  credentialsFile?: string;
+  keepCount: number;
+  maxAgeDays: number;
+  keepLocal: boolean;
+};
 
 export type Config = {
   connectionString: string;
@@ -28,6 +39,7 @@ export type Config = {
   timeoutMinutes: number;
   mode: BackupMode;
   s3: S3Config;
+  gdrive: GDriveConfig;
 };
 
 export function loadConfig(
@@ -35,32 +47,85 @@ export function loadConfig(
   defaults: { localDir: string; resourceDir: string },
 ): Config {
   const shared = source("mysql_connection_string", "").trim();
-  const override = source("qbx_db_backup_connection_string", "").trim();
-  const token = source("qbx_db_backup_token", "").trim();
-  const apiBase = source("qbx_db_backup_api", DEFAULT_API_BASE).trim();
-  const localDir = source("qbx_db_backup_local_dir", defaults.localDir).trim();
+  const override = (
+    source("qbx_db_backup_connection_string", "") || source("qbx_backup_connection_string", "")
+  ).trim();
+  const token = (source("qbx_db_backup_token", "") || source("qbx_backup_token", "")).trim();
+  const apiBase = (
+    source("qbx_db_backup_api", "") || source("qbx_backup_api", DEFAULT_API_BASE)
+  ).trim();
+  const localDir = (
+    source("qbx_db_backup_local_dir", "") || source("qbx_backup_local_dir", defaults.localDir)
+  ).trim();
   const interval = toInt(
-    source("qbx_db_backup_interval_hours", String(DEFAULT_INTERVAL_HOURS)),
+    source(
+      "qbx_db_backup_interval_hours",
+      source("qbx_backup_interval_hours", String(DEFAULT_INTERVAL_HOURS)),
+    ),
     DEFAULT_INTERVAL_HOURS,
   );
 
   // S3 convars
-  const s3Endpoint = source("qbx_db_backup_s3_endpoint", "").trim();
-  const s3Bucket = source("qbx_db_backup_s3_bucket", "").trim();
-  const s3Region = source(
-    "qbx_db_backup_s3_region",
-    s3Endpoint.includes("r2.cloudflarestorage.com") ? "auto" : "us-east-1",
+  const s3Endpoint = (
+    source("qbx_db_backup_s3_endpoint", "") || source("qbx_backup_s3_endpoint", "")
+  ).trim();
+  const s3Bucket = (
+    source("qbx_db_backup_s3_bucket", "") || source("qbx_backup_s3_bucket", "")
+  ).trim();
+  const s3Region = (
+    source("qbx_db_backup_s3_region", "") ||
+    source("qbx_backup_s3_region", s3Endpoint.includes("r2.cloudflarestorage.com") ? "auto" : "us-east-1")
   ).trim();
   const s3AccessKeyId = (
-    source("qbx_db_backup_s3_access_key_id", "") || source("qbx_db_backup_s3_key", "")
+    source("qbx_db_backup_s3_access_key_id", "") ||
+    source("qbx_backup_s3_access_key_id", "") ||
+    source("qbx_db_backup_s3_key", "") ||
+    source("qbx_backup_s3_key", "")
   ).trim();
   const s3SecretAccessKey = (
-    source("qbx_db_backup_s3_secret_access_key", "") || source("qbx_db_backup_s3_secret", "")
+    source("qbx_db_backup_s3_secret_access_key", "") ||
+    source("qbx_backup_s3_secret_access_key", "") ||
+    source("qbx_db_backup_s3_secret", "") ||
+    source("qbx_backup_s3_secret", "")
   ).trim();
-  const s3PathStyleRaw = source("qbx_db_backup_s3_force_path_style", "").trim();
-  const s3Prefix = source("qbx_db_backup_s3_prefix", "").trim();
-  const s3Keep = Math.max(0, toInt(source("qbx_db_backup_s3_keep", "0"), 0));
-  const s3MaxAgeDays = Math.max(0, toInt(source("qbx_db_backup_s3_max_age_days", "0"), 0));
+  const s3PathStyleRaw = (
+    source("qbx_db_backup_s3_force_path_style", "") || source("qbx_backup_s3_force_path_style", "")
+  ).trim();
+  const s3Prefix = (
+    source("qbx_db_backup_s3_prefix", "") || source("qbx_backup_s3_prefix", "")
+  ).trim();
+  const s3Keep = Math.max(
+    0,
+    toInt(
+      source(
+        "qbx_db_backup_s3_keep",
+        source(
+          "qbx_backup_s3_keep",
+          source(
+            "qbx_backup_s3_retention_max_count",
+            source("qbx_db_backup_s3_retention_max_count", "0"),
+          ),
+        ),
+      ),
+      0,
+    ),
+  );
+  const s3MaxAgeDays = Math.max(
+    0,
+    toInt(
+      source(
+        "qbx_db_backup_s3_max_age_days",
+        source(
+          "qbx_backup_s3_max_age_days",
+          source(
+            "qbx_backup_s3_retention_max_age_days",
+            source("qbx_db_backup_s3_retention_max_age_days", "0"),
+          ),
+        ),
+      ),
+      0,
+    ),
+  );
 
   const forcePathStyle =
     s3PathStyleRaw === "1" ? true : s3PathStyleRaw === "0" ? false : s3Endpoint.length > 0;
@@ -77,17 +142,95 @@ export function loadConfig(
     maxAgeDays: s3MaxAgeDays,
   };
 
+  // Google Drive convars
+  const gdriveClientId = (
+    source("qbx_db_backup_gdrive_client_id", "") || source("qbx_backup_gdrive_client_id", "")
+  ).trim();
+  const gdriveClientSecret = (
+    source("qbx_db_backup_gdrive_client_secret", "") || source("qbx_backup_gdrive_client_secret", "")
+  ).trim();
+  const gdriveRefreshToken = (
+    source("qbx_db_backup_gdrive_refresh_token", "") || source("qbx_backup_gdrive_refresh_token", "")
+  ).trim();
+  const gdriveFolderId = (
+    source("qbx_db_backup_gdrive_folder_id", "") || source("qbx_backup_gdrive_folder_id", "")
+  ).trim();
+  const gdriveCredsFile = (
+    source("qbx_db_backup_gdrive_credentials_file", "") || source("qbx_backup_gdrive_credentials_file", "")
+  ).trim();
+  const gdriveKeep = Math.max(
+    0,
+    toInt(
+      source(
+        "qbx_db_backup_gdrive_keep",
+        source(
+          "qbx_backup_gdrive_keep",
+          source(
+            "qbx_backup_gdrive_retention_max_count",
+            source("qbx_db_backup_gdrive_retention_max_count", "0"),
+          ),
+        ),
+      ),
+      0,
+    ),
+  );
+  const gdriveMaxAgeDays = Math.max(
+    0,
+    toInt(
+      source(
+        "qbx_db_backup_gdrive_max_age_days",
+        source(
+          "qbx_backup_gdrive_max_age_days",
+          source(
+            "qbx_backup_gdrive_retention_max_age_days",
+            source("qbx_db_backup_gdrive_retention_max_age_days", "0"),
+          ),
+        ),
+      ),
+      0,
+    ),
+  );
+  // Read once to avoid calling source() twice for the same convar (Fix #7)
+  const gdriveKeepLocalRaw = (
+    source("qbx_db_backup_gdrive_keep_local", "") ||
+    source("qbx_backup_gdrive_keep_local", "0")
+  ).trim().toLowerCase();
+  const gdriveKeepLocal = gdriveKeepLocalRaw === "1" || gdriveKeepLocalRaw === "true";
+
+  const gdrive: GDriveConfig = {
+    clientId: gdriveClientId,
+    clientSecret: gdriveClientSecret,
+    refreshToken: gdriveRefreshToken,
+    folderId: gdriveFolderId.length > 0 ? gdriveFolderId : undefined,
+    credentialsFile: gdriveCredsFile.length > 0 ? gdriveCredsFile : undefined,
+    keepCount: gdriveKeep,
+    maxAgeDays: gdriveMaxAgeDays,
+    keepLocal: gdriveKeepLocal,
+  };
+
   const localMaxAgeDays = Math.max(
     0,
     toInt(source("qbx_db_backup_local_max_age_days", source("qbx_db_backup_max_age_days", "0")), 0),
   );
   const minFreeDiskMb = Math.max(0, toInt(source("qbx_db_backup_min_free_disk_mb", "0"), 0));
 
+  const explicitDestination = (
+    source("qbx_backup_destination", "") || source("qbx_db_backup_destination", "")
+  ).trim().toLowerCase();
+
   let mode: BackupMode = "local";
-  if (token.length > 0) {
+  if (explicitDestination === "qbx" && token.length > 0) {
+    mode = "qbx";
+  } else if (explicitDestination === "s3" && isS3Configured(s3)) {
+    mode = "s3";
+  } else if (explicitDestination === "gdrive" && isGDriveConfigured(gdrive)) {
+    mode = "gdrive";
+  } else if (token.length > 0) {
     mode = "qbx";
   } else if (isS3Configured(s3)) {
     mode = "s3";
+  } else if (isGDriveConfigured(gdrive)) {
+    mode = "gdrive";
   }
 
   return {
@@ -117,11 +260,19 @@ export function loadConfig(
     timeoutMinutes: Math.max(1, toInt(source("qbx_db_backup_timeout_minutes", "120"), 120)),
     mode,
     s3,
+    gdrive,
   };
 }
 
 export function isS3Configured(s3: S3Config): boolean {
   return s3.bucket.length > 0 && s3.accessKeyId.length > 0 && s3.secretAccessKey.length > 0;
+}
+
+export function isGDriveConfigured(gdrive: GDriveConfig): boolean {
+  return (
+    (gdrive.clientId.length > 0 && gdrive.clientSecret.length > 0 && gdrive.refreshToken.length > 0) ||
+    Boolean(gdrive.credentialsFile && gdrive.credentialsFile.length > 0)
+  );
 }
 
 const URI_PASSWORD = /^([a-z][a-z0-9+.-]*:\/\/[^/@]*?:)[^/]*(@[^/@]*)/i;
