@@ -1,5 +1,6 @@
-import { readdir, rm, stat, statfs } from "node:fs/promises";
+﻿import { readdir, rm, stat, statfs } from "node:fs/promises";
 import path from "node:path";
+import type { GDriveClient } from "./gdrive/client";
 import type { S3Client } from "./s3/client";
 
 export const BACKUP_NAME_PATTERN = /^[A-Za-z0-9._-]+-(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})Z\.zip$/;
@@ -31,6 +32,12 @@ export type S3RetentionPolicy = {
   maxAgeDays?: number;
 };
 
+export type GDriveRetentionPolicy = {
+  folderId?: string;
+  keepCount?: number;
+  maxAgeDays?: number;
+};
+
 export type PruneLocalResult = {
   deletedFiles: string[];
   freedBytes: number;
@@ -40,6 +47,11 @@ export type PruneLocalResult = {
 export type PruneS3Result = {
   deletedKeys: string[];
   errors: { key: string; code: string; message: string }[];
+};
+
+export type PruneGDriveResult = {
+  deletedFiles: { id: string; name: string }[];
+  errors: { id: string; name: string; error: string }[];
 };
 
 export function isOwnBackupFile(name: string): boolean {
@@ -261,4 +273,56 @@ export async function pruneS3Bucket(
   const deleteResult = await client.deleteObjects(keysToDelete);
 
   return deleteResult;
+}
+
+export async function pruneGDriveFolder(
+  client: GDriveClient,
+  policy: GDriveRetentionPolicy,
+): Promise<PruneGDriveResult> {
+  // Pass '.zip' as a name hint so the Drive API pre-filters the result set.
+  // isOwnBackupFile() still applies the full regex on every returned filename
+  // to ensure only backup archives produced by this resource are considered.
+  const gdriveFiles = await client.listFiles(policy.folderId, '.zip');
+
+  const entries: (BackupEntry & { id: string })[] = [];
+  for (const file of gdriveFiles) {
+    if (!isOwnBackupFile(file.name)) continue;
+    const ts =
+      parseBackupTimestamp(file.name) ??
+      (file.createdTime ? new Date(file.createdTime).getTime() : 0);
+
+    entries.push({
+      id: file.id,
+      name: file.name,
+      timestamp: ts,
+      sizeBytes: file.size,
+    });
+  }
+
+  const options: RetentionOptions = {
+    maxCount: policy.keepCount,
+    maxAgeMs:
+      policy.maxAgeDays !== undefined && policy.maxAgeDays > 0
+        ? policy.maxAgeDays * 86_400_000
+        : undefined,
+  };
+
+  const prunable = selectPrunableEntries(entries, options);
+  const deletedFiles: { id: string; name: string }[] = [];
+  const errors: { id: string; name: string; error: string }[] = [];
+
+  for (const item of prunable) {
+    try {
+      await client.deleteFile(item.id);
+      deletedFiles.push({ id: item.id, name: item.name });
+    } catch (err) {
+      errors.push({
+        id: item.id,
+        name: item.name,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+
+  return { deletedFiles, errors };
 }
