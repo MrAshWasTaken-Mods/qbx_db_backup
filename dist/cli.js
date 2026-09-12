@@ -1863,11 +1863,11 @@ var require_stream_readable = __commonJS({
 var require_stream_transform = __commonJS({
   "node_modules/lazystream/node_modules/readable-stream/lib/_stream_transform.js"(exports2, module2) {
     "use strict";
-    module2.exports = Transform8;
+    module2.exports = Transform9;
     var Duplex = require_stream_duplex();
     var util3 = Object.create(require_util());
     util3.inherits = require_inherits();
-    util3.inherits(Transform8, Duplex);
+    util3.inherits(Transform9, Duplex);
     function afterTransform(er, data) {
       var ts = this._transformState;
       ts.transforming = false;
@@ -1886,8 +1886,8 @@ var require_stream_transform = __commonJS({
         this._read(rs.highWaterMark);
       }
     }
-    function Transform8(options) {
-      if (!(this instanceof Transform8)) return new Transform8(options);
+    function Transform9(options) {
+      if (!(this instanceof Transform9)) return new Transform9(options);
       Duplex.call(this, options);
       this._transformState = {
         afterTransform: afterTransform.bind(this),
@@ -1915,14 +1915,14 @@ var require_stream_transform = __commonJS({
         done(this, null, null);
       }
     }
-    Transform8.prototype.push = function(chunk, encoding) {
+    Transform9.prototype.push = function(chunk, encoding) {
       this._transformState.needTransform = false;
       return Duplex.prototype.push.call(this, chunk, encoding);
     };
-    Transform8.prototype._transform = function(chunk, encoding, cb) {
+    Transform9.prototype._transform = function(chunk, encoding, cb) {
       throw new Error("_transform() is not implemented");
     };
-    Transform8.prototype._write = function(chunk, encoding, cb) {
+    Transform9.prototype._write = function(chunk, encoding, cb) {
       var ts = this._transformState;
       ts.writecb = cb;
       ts.writechunk = chunk;
@@ -1932,7 +1932,7 @@ var require_stream_transform = __commonJS({
         if (ts.needTransform || rs.needReadable || rs.length < rs.highWaterMark) this._read(rs.highWaterMark);
       }
     };
-    Transform8.prototype._read = function(n) {
+    Transform9.prototype._read = function(n) {
       var ts = this._transformState;
       if (ts.writechunk !== null && ts.writecb && !ts.transforming) {
         ts.transforming = true;
@@ -1941,7 +1941,7 @@ var require_stream_transform = __commonJS({
         ts.needTransform = true;
       }
     };
-    Transform8.prototype._destroy = function(err, cb) {
+    Transform9.prototype._destroy = function(err, cb) {
       var _this2 = this;
       Duplex.prototype._destroy.call(this, err, function(err2) {
         cb(err2);
@@ -1964,13 +1964,13 @@ var require_stream_passthrough = __commonJS({
   "node_modules/lazystream/node_modules/readable-stream/lib/_stream_passthrough.js"(exports2, module2) {
     "use strict";
     module2.exports = PassThrough4;
-    var Transform8 = require_stream_transform();
+    var Transform9 = require_stream_transform();
     var util3 = Object.create(require_util());
     util3.inherits = require_inherits();
-    util3.inherits(PassThrough4, Transform8);
+    util3.inherits(PassThrough4, Transform9);
     function PassThrough4(options) {
       if (!(this instanceof PassThrough4)) return new PassThrough4(options);
-      Transform8.call(this, options);
+      Transform9.call(this, options);
     }
     PassThrough4.prototype._transform = function(chunk, encoding, cb) {
       cb(null, chunk);
@@ -5087,9 +5087,9 @@ var require_util2 = __commonJS({
     var AbortController = globalThis.AbortController || require_abort_controller().AbortController;
     var AsyncFunction = Object.getPrototypeOf(async function() {
     }).constructor;
-    var Blob = globalThis.Blob || bufferModule.Blob;
-    var isBlob = typeof Blob !== "undefined" ? function isBlob2(b) {
-      return b instanceof Blob;
+    var Blob2 = globalThis.Blob || bufferModule.Blob;
+    var isBlob = typeof Blob2 !== "undefined" ? function isBlob2(b) {
+      return b instanceof Blob2;
     } : function isBlob2(b) {
       return false;
     };
@@ -8540,9 +8540,9 @@ var require_duplexify = __commonJS({
     var Writable = require_writable();
     var { createDeferredPromise } = require_util2();
     var from = require_from();
-    var Blob = globalThis.Blob || bufferModule.Blob;
-    var isBlob = typeof Blob !== "undefined" ? function isBlob2(b) {
-      return b instanceof Blob;
+    var Blob2 = globalThis.Blob || bufferModule.Blob;
+    var isBlob = typeof Blob2 !== "undefined" ? function isBlob2(b) {
+      return b instanceof Blob2;
     } : function isBlob2(b) {
       return false;
     };
@@ -8982,15 +8982,15 @@ var require_transform = __commonJS({
   "node_modules/readable-stream/lib/internal/streams/transform.js"(exports2, module2) {
     "use strict";
     var { ObjectSetPrototypeOf, Symbol: Symbol2 } = require_primordials();
-    module2.exports = Transform8;
+    module2.exports = Transform9;
     var { ERR_METHOD_NOT_IMPLEMENTED } = require_errors().codes;
     var Duplex = require_duplex();
     var { getHighWaterMark } = require_state();
-    ObjectSetPrototypeOf(Transform8.prototype, Duplex.prototype);
-    ObjectSetPrototypeOf(Transform8, Duplex);
+    ObjectSetPrototypeOf(Transform9.prototype, Duplex.prototype);
+    ObjectSetPrototypeOf(Transform9, Duplex);
     var kCallback = Symbol2("kCallback");
-    function Transform8(options) {
-      if (!(this instanceof Transform8)) return new Transform8(options);
+    function Transform9(options) {
+      if (!(this instanceof Transform9)) return new Transform9(options);
       const readableHighWaterMark = options ? getHighWaterMark(this, options, "readableHighWaterMark", true) : null;
       if (readableHighWaterMark === 0) {
         options = {
@@ -9044,11 +9044,11 @@ var require_transform = __commonJS({
         final.call(this);
       }
     }
-    Transform8.prototype._final = final;
-    Transform8.prototype._transform = function(chunk, encoding, callback) {
+    Transform9.prototype._final = final;
+    Transform9.prototype._transform = function(chunk, encoding, callback) {
       throw new ERR_METHOD_NOT_IMPLEMENTED("_transform()");
     };
-    Transform8.prototype._write = function(chunk, encoding, callback) {
+    Transform9.prototype._write = function(chunk, encoding, callback) {
       const rState = this._readableState;
       const wState = this._writableState;
       const length = rState.length;
@@ -9069,7 +9069,7 @@ var require_transform = __commonJS({
         }
       });
     };
-    Transform8.prototype._read = function() {
+    Transform9.prototype._read = function() {
       if (this[kCallback]) {
         const callback = this[kCallback];
         this[kCallback] = null;
@@ -9085,12 +9085,12 @@ var require_passthrough2 = __commonJS({
     "use strict";
     var { ObjectSetPrototypeOf } = require_primordials();
     module2.exports = PassThrough4;
-    var Transform8 = require_transform();
-    ObjectSetPrototypeOf(PassThrough4.prototype, Transform8.prototype);
-    ObjectSetPrototypeOf(PassThrough4, Transform8);
+    var Transform9 = require_transform();
+    ObjectSetPrototypeOf(PassThrough4.prototype, Transform9.prototype);
+    ObjectSetPrototypeOf(PassThrough4, Transform9);
     function PassThrough4(options) {
       if (!(this instanceof PassThrough4)) return new PassThrough4(options);
-      Transform8.call(this, options);
+      Transform9.call(this, options);
     }
     PassThrough4.prototype._transform = function(chunk, encoding, cb) {
       cb(null, chunk);
@@ -10352,22 +10352,22 @@ var require_ours = __commonJS({
 // node_modules/normalize-path/index.js
 var require_normalize_path = __commonJS({
   "node_modules/normalize-path/index.js"(exports2, module2) {
-    module2.exports = function(path7, stripTrailing) {
-      if (typeof path7 !== "string") {
+    module2.exports = function(path8, stripTrailing) {
+      if (typeof path8 !== "string") {
         throw new TypeError("expected path to be a string");
       }
-      if (path7 === "\\" || path7 === "/") return "/";
-      var len = path7.length;
-      if (len <= 1) return path7;
+      if (path8 === "\\" || path8 === "/") return "/";
+      var len = path8.length;
+      if (len <= 1) return path8;
       var prefix = "";
-      if (len > 4 && path7[3] === "\\") {
-        var ch = path7[2];
-        if ((ch === "?" || ch === ".") && path7.slice(0, 2) === "\\\\") {
-          path7 = path7.slice(2);
+      if (len > 4 && path8[3] === "\\") {
+        var ch = path8[2];
+        if ((ch === "?" || ch === ".") && path8.slice(0, 2) === "\\\\") {
+          path8 = path8.slice(2);
           prefix = "//";
         }
       }
-      var segs = path7.split(/[/\\]+/);
+      var segs = path8.split(/[/\\]+/);
       if (stripTrailing !== false && segs[segs.length - 1] === "") {
         segs.pop();
       }
@@ -11848,7 +11848,7 @@ var require_streamx = __commonJS({
         return this;
       }
     };
-    var Transform8 = class extends Duplex {
+    var Transform9 = class extends Duplex {
       constructor(opts) {
         super(opts);
         this._transformState = new TransformState(this);
@@ -11892,7 +11892,7 @@ var require_streamx = __commonJS({
         this._flush(transformAfterFlush.bind(this));
       }
     };
-    var PassThrough4 = class extends Transform8 {
+    var PassThrough4 = class extends Transform9 {
     };
     function transformAfterFlush(err, data) {
       const cb = this._transformState.afterFinal;
@@ -12021,7 +12021,7 @@ var require_streamx = __commonJS({
       Writable,
       Readable: Readable2,
       Duplex,
-      Transform: Transform8,
+      Transform: Transform9,
       // Export PassThrough for compatibility with Node.js core's stream module
       PassThrough: PassThrough4
     };
@@ -12897,7 +12897,7 @@ var require_tar_stream = __commonJS({
 });
 
 // src/cli.ts
-var import_node_path5 = __toESM(require("node:path"), 1);
+var import_node_path6 = __toESM(require("node:path"), 1);
 
 // src/backup.ts
 var import_node_stream = require("node:stream");
@@ -13351,13 +13351,13 @@ var DEFAULT_API_BASE = "https://dashboard.qbox.re";
 var MIN_POLL_SECONDS = 60;
 var DEFAULT_POLL_SECONDS = 300;
 var DEFAULT_INTERVAL_HOURS = 1;
-var DEFAULT_LOCAL_KEEP = 7;
+var DEFAULT_LOCAL_KEEP = 3;
 function loadConfig(source, defaults2) {
   const shared = source("mysql_connection_string", "").trim();
-  const override = (source("qbx_db_backup_connection_string", "") || source("qbx_backup_connection_string", "")).trim();
+  const override = source("qbx_db_backup_connection_string", "").trim();
   const token = (source("qbx_db_backup_token", "") || source("qbx_backup_token", "")).trim();
-  const apiBase = (source("qbx_db_backup_api", "") || source("qbx_backup_api", DEFAULT_API_BASE)).trim();
-  const localDir = (source("qbx_db_backup_local_dir", "") || source("qbx_backup_local_dir", defaults2.localDir)).trim();
+  const apiBase = source("qbx_db_backup_api_base", DEFAULT_API_BASE).trim();
+  const localDir = (source("qbx_db_backup_local_dir", "") || source("qbx_backup_local_dir", "")).trim();
   const interval = toInt(
     source(
       "qbx_db_backup_interval_hours",
@@ -13367,7 +13367,10 @@ function loadConfig(source, defaults2) {
   );
   const s3Endpoint = (source("qbx_db_backup_s3_endpoint", "") || source("qbx_backup_s3_endpoint", "")).trim();
   const s3Bucket = (source("qbx_db_backup_s3_bucket", "") || source("qbx_backup_s3_bucket", "")).trim();
-  const s3Region = (source("qbx_db_backup_s3_region", "") || source("qbx_backup_s3_region", s3Endpoint.includes("r2.cloudflarestorage.com") ? "auto" : "us-east-1")).trim();
+  const s3Region = (source("qbx_db_backup_s3_region", "") || source(
+    "qbx_backup_s3_region",
+    s3Endpoint.includes("r2.cloudflarestorage.com") ? "auto" : "us-east-1"
+  )).trim();
   const s3AccessKeyId = (source("qbx_db_backup_s3_access_key_id", "") || source("qbx_backup_s3_access_key_id", "") || source("qbx_db_backup_s3_key", "") || source("qbx_backup_s3_key", "")).trim();
   const s3SecretAccessKey = (source("qbx_db_backup_s3_secret_access_key", "") || source("qbx_backup_s3_secret_access_key", "") || source("qbx_db_backup_s3_secret", "") || source("qbx_backup_s3_secret", "")).trim();
   const s3PathStyleRaw = (source("qbx_db_backup_s3_force_path_style", "") || source("qbx_backup_s3_force_path_style", "")).trim();
@@ -13453,7 +13456,8 @@ function loadConfig(source, defaults2) {
       0
     )
   );
-  const gdriveKeepLocal = (source("qbx_db_backup_gdrive_keep_local", "") || source("qbx_backup_gdrive_keep_local", "0")).trim() === "1" || (source("qbx_db_backup_gdrive_keep_local", "") || source("qbx_backup_gdrive_keep_local", "false")).trim().toLowerCase() === "true";
+  const gdriveKeepLocalRaw = (source("qbx_db_backup_gdrive_keep_local", "") || source("qbx_backup_gdrive_keep_local", "0")).trim().toLowerCase();
+  const gdriveKeepLocal = gdriveKeepLocalRaw === "1" || gdriveKeepLocalRaw === "true";
   const gdrive = {
     clientId: gdriveClientId,
     clientSecret: gdriveClientSecret,
@@ -13463,6 +13467,37 @@ function loadConfig(source, defaults2) {
     keepCount: gdriveKeep,
     maxAgeDays: gdriveMaxAgeDays,
     keepLocal: gdriveKeepLocal
+  };
+  const discordWebhookUrl = (source("qbx_db_backup_discord_webhook_url", "") || source("qbx_discord_webhook_url", "") || source("qbx_db_backup_discord_webhook", "") || source("qbx_discord_webhook", "")).trim();
+  const discordBotToken = (source("qbx_db_backup_discord_bot_token", "") || source("qbx_discord_bot_token", "") || source("qbx_db_backup_discord_token", "") || source("qbx_discord_token", "")).trim();
+  const discordChannelId = (source("qbx_db_backup_discord_channel_id", "") || source("qbx_discord_channel_id", "") || source("qbx_db_backup_discord_channel", "") || source("qbx_discord_channel", "")).trim();
+  const discordIsForumRaw = (source("qbx_db_backup_discord_is_forum", "") || source("qbx_discord_is_forum", "0")).trim().toLowerCase();
+  const discordIsForum = discordIsForumRaw === "1" || discordIsForumRaw === "true" || discordIsForumRaw === "yes";
+  const discordThreadTitle = (source("qbx_db_backup_discord_thread_title", "") || source("qbx_discord_thread_title", "") || source("qbx_db_backup_discord_thread_name", "") || source("qbx_discord_thread_name", "")).trim();
+  const discordUsername = (source("qbx_db_backup_discord_username", "") || source("qbx_discord_username", "")).trim();
+  const discordAvatarUrl = (source("qbx_db_backup_discord_avatar_url", "") || source("qbx_discord_avatar_url", "")).trim();
+  const discordKeepLocalRaw = (source("qbx_db_backup_discord_keep_local", "") || source("qbx_discord_keep_local", "0")).trim().toLowerCase();
+  const discordKeepLocal = discordKeepLocalRaw === "1" || discordKeepLocalRaw === "true";
+  const discordMaxFileSizeMb = Math.max(
+    1,
+    toInt(
+      source(
+        "qbx_db_backup_discord_max_file_size_mb",
+        source("qbx_discord_max_file_size_mb", "25")
+      ),
+      25
+    )
+  );
+  const discord = {
+    webhookUrl: discordWebhookUrl.length > 0 ? discordWebhookUrl : void 0,
+    botToken: discordBotToken.length > 0 ? discordBotToken : void 0,
+    channelId: discordChannelId.length > 0 ? discordChannelId : void 0,
+    isForum: discordIsForum,
+    threadTitle: discordThreadTitle.length > 0 ? discordThreadTitle : void 0,
+    username: discordUsername.length > 0 ? discordUsername : void 0,
+    avatarUrl: discordAvatarUrl.length > 0 ? discordAvatarUrl : void 0,
+    keepLocal: discordKeepLocal,
+    maxFileSizeMb: discordMaxFileSizeMb
   };
   const localMaxAgeDays = Math.max(
     0,
@@ -13477,12 +13512,16 @@ function loadConfig(source, defaults2) {
     mode = "s3";
   } else if (explicitDestination === "gdrive" && isGDriveConfigured(gdrive)) {
     mode = "gdrive";
+  } else if (explicitDestination === "discord" && isDiscordConfigured(discord)) {
+    mode = "discord";
   } else if (token.length > 0) {
     mode = "qbx";
   } else if (isS3Configured(s3)) {
     mode = "s3";
   } else if (isGDriveConfigured(gdrive)) {
     mode = "gdrive";
+  } else if (isDiscordConfigured(discord)) {
+    mode = "discord";
   }
   return {
     connectionString: override.length > 0 ? override : shared,
@@ -13511,7 +13550,8 @@ function loadConfig(source, defaults2) {
     timeoutMinutes: Math.max(1, toInt(source("qbx_db_backup_timeout_minutes", "120"), 120)),
     mode,
     s3,
-    gdrive
+    gdrive,
+    discord
   };
 }
 function isS3Configured(s3) {
@@ -13519,6 +13559,11 @@ function isS3Configured(s3) {
 }
 function isGDriveConfigured(gdrive) {
   return gdrive.clientId.length > 0 && gdrive.clientSecret.length > 0 && gdrive.refreshToken.length > 0 || Boolean(gdrive.credentialsFile && gdrive.credentialsFile.length > 0);
+}
+function isDiscordConfigured(discord) {
+  return Boolean(
+    discord.webhookUrl && discord.webhookUrl.trim().length > 0 || discord.botToken && discord.botToken.trim().length > 0 && discord.channelId && discord.channelId.trim().length > 0
+  );
 }
 function toInt(value, fallback) {
   const parsed = Number.parseInt(value.trim(), 10);
@@ -13528,393 +13573,406 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-// src/gdrive/client.ts
-var import_node_fs2 = __toESM(require("node:fs"), 1);
-
-// src/gdrive/auth.ts
-var import_node_crypto = __toESM(require("node:crypto"), 1);
-
-// src/gdrive/types.ts
-function isOAuthConfig(config) {
-  return "refreshToken" in config && Boolean(config.refreshToken);
-}
-var GDriveError = class extends Error {
-  code;
+// src/discord/types.ts
+var DiscordError = class extends Error {
   status;
-  reason;
-  constructor(message, code, status, reason) {
-    super(`[GDrive] ${message}`);
-    this.name = "GDriveError";
-    this.code = code;
-    this.status = status;
-    this.reason = reason;
+  code;
+  details;
+  constructor(message, options) {
+    super(message);
+    this.name = "DiscordError";
+    this.status = options?.status;
+    this.code = options?.code;
+    this.details = options?.details;
   }
 };
 
-// src/gdrive/auth.ts
-var GOOGLE_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
-var DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive";
-function base64UrlEncode(strOrBuffer) {
-  const buf = typeof strOrBuffer === "string" ? Buffer.from(strOrBuffer, "utf8") : strOrBuffer;
-  return buf.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-async function refreshOAuthToken(config, fetchFn = fetch) {
-  const params = new URLSearchParams({
-    client_id: config.clientId,
-    client_secret: config.clientSecret,
-    refresh_token: config.refreshToken,
-    grant_type: "refresh_token"
-  });
-  const response = await fetchFn(GOOGLE_TOKEN_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Accept: "application/json"
-    },
-    body: params.toString()
-  });
-  if (!response.ok) {
-    let errorDetail = `HTTP ${response.status} ${response.statusText}`;
-    try {
-      const errJson = await response.json();
-      if (errJson.error_description) {
-        errorDetail = `${errJson.error}: ${errJson.error_description}`;
-      } else if (errJson.error) {
-        errorDetail = errJson.error;
-      }
-    } catch {
-    }
-    throw new GDriveError(`OAuth token refresh failed: ${errorDetail}`, response.status);
-  }
-  return await response.json();
-}
-async function authenticateServiceAccount(config, fetchFn = fetch) {
-  const now = Math.floor(Date.now() / 1e3);
-  const header = { alg: "RS256", typ: "JWT" };
-  const claims = {
-    iss: config.clientEmail,
-    scope: DRIVE_FULL_SCOPE,
-    aud: GOOGLE_TOKEN_ENDPOINT,
-    exp: now + 3600,
-    iat: now
-  };
-  const encodedHeader = base64UrlEncode(JSON.stringify(header));
-  const encodedClaims = base64UrlEncode(JSON.stringify(claims));
-  const payloadToSign = `${encodedHeader}.${encodedClaims}`;
-  const signer = import_node_crypto.default.createSign("RSA-SHA256");
-  signer.update(payloadToSign);
-  signer.end();
-  const signature = signer.sign(config.privateKey);
-  const jwt = `${payloadToSign}.${base64UrlEncode(signature)}`;
-  const params = new URLSearchParams({
-    grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-    assertion: jwt
-  });
-  const response = await fetchFn(GOOGLE_TOKEN_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Accept: "application/json"
-    },
-    body: params.toString()
-  });
-  if (!response.ok) {
-    let errorDetail = `HTTP ${response.status} ${response.statusText}`;
-    try {
-      const errJson = await response.json();
-      if (errJson.error_description) {
-        errorDetail = `${errJson.error}: ${errJson.error_description}`;
-      } else if (errJson.error) {
-        errorDetail = errJson.error;
-      }
-    } catch {
-    }
-    throw new GDriveError(`Service account authentication failed: ${errorDetail}`, response.status);
-  }
-  return await response.json();
-}
-var GDriveAuthManager = class {
-  constructor(config, fetchFn = fetch) {
-    this.config = config;
-    this.fetchFn = fetchFn;
-  }
+// src/discord/client.ts
+var DISCORD_API_BASE = "https://discord.com/api/v10";
+var USER_AGENT = "DiscordBot (https://github.com/MrAshWasTaken-Mods/qbx_db_backup, 1.1.0)";
+var DEFAULT_MAX_FILE_SIZE_MB = 25;
+var MAX_RATE_LIMIT_WAIT_MS = 1e4;
+var DiscordClient = class {
   config;
-  fetchFn;
-  cachedToken = null;
-  expiresAt = 0;
-  /**
-   * Returns a valid access token, automatically refreshing if expired.
-   */
-  async getAccessToken(forceRefresh = false) {
-    const now = Date.now();
-    if (!forceRefresh && this.cachedToken && now < this.expiresAt - 6e4) {
-      return this.cachedToken;
+  maxFileSizeBytes;
+  constructor(config) {
+    if (!config.webhookUrl && (!config.botToken || !config.channelId)) {
+      throw new DiscordError("DiscordClient requires either webhookUrl or botToken + channelId");
     }
-    let tokenResponse;
-    if (isOAuthConfig(this.config)) {
-      tokenResponse = await refreshOAuthToken(this.config, this.fetchFn);
-    } else {
-      tokenResponse = await authenticateServiceAccount(this.config, this.fetchFn);
+    this.config = {
+      ...config,
+      maxFileSizeMb: config.maxFileSizeMb > 0 ? config.maxFileSizeMb : DEFAULT_MAX_FILE_SIZE_MB
+    };
+    this.maxFileSizeBytes = this.config.maxFileSizeMb * 1024 * 1024;
+  }
+  get authHeaders() {
+    const headers = {
+      "User-Agent": USER_AGENT
+    };
+    if (this.config.botToken && this.config.botToken.trim().length > 0) {
+      headers.Authorization = `Bot ${this.config.botToken.trim()}`;
     }
-    this.cachedToken = tokenResponse.access_token;
-    const expiresInSec = tokenResponse.expires_in || 3600;
-    this.expiresAt = Date.now() + expiresInSec * 1e3;
-    return this.cachedToken;
+    return headers;
   }
-  invalidateToken() {
-    this.cachedToken = null;
-    this.expiresAt = 0;
-  }
-};
-
-// src/gdrive/client.ts
-var DRIVE_API_V3 = "https://www.googleapis.com/drive/v3";
-var DRIVE_UPLOAD_V3 = "https://www.googleapis.com/upload/drive/v3";
-var DEFAULT_CHUNK_SIZE = 4 * 1024 * 1024;
-var GDriveClient = class {
-  constructor(config, fetchFn = fetch) {
-    this.config = config;
-    this.fetchFn = fetchFn;
-    this.auth = new GDriveAuthManager(config, fetchFn);
-  }
-  config;
-  fetchFn;
-  auth;
-  /**
-   * Helper to execute an authenticated request with automatic token refresh.
-   */
-  async fetchAuth(url, init = {}) {
-    const token = await this.auth.getAccessToken();
-    const headers = new Headers(init.headers || {});
-    headers.set("Authorization", `Bearer ${token}`);
-    let response = await this.fetchFn(url, { ...init, headers });
-    if (response.status === 401) {
-      this.auth.invalidateToken();
-      const freshToken = await this.auth.getAccessToken(true);
-      headers.set("Authorization", `Bearer ${freshToken}`);
-      response = await this.fetchFn(url, { ...init, headers });
-    }
-    return response;
-  }
-  /**
-   * Parses Google Drive API errors into typed GDriveError.
-   */
-  async parseErrorResponse(response, contextMsg) {
-    let errorDetail = `HTTP ${response.status} ${response.statusText}`;
-    let reason;
-    try {
-      const errJson = await response.json();
-      if (errJson.error?.message) {
-        errorDetail = errJson.error.message;
+  async requestWithRetry(url, init, attempt = 1) {
+    const response = await fetch(url, init);
+    if (response.status === 429) {
+      if (attempt >= 3) {
+        throw new DiscordError("Discord API rate limit exceeded after 3 retries", {
+          status: 429
+        });
       }
-      if (errJson.error?.errors?.[0]?.reason) {
-        reason = errJson.error.errors[0].reason;
+      let retryAfterMs = 1500;
+      const retryAfterHeader = response.headers.get("Retry-After");
+      if (retryAfterHeader) {
+        const parsed = Number.parseFloat(retryAfterHeader);
+        if (Number.isFinite(parsed) && parsed > 0) {
+          retryAfterMs = parsed * 1e3;
+        }
+      } else {
+        try {
+          const body = await response.json();
+          if (body && typeof body.retry_after === "number") {
+            retryAfterMs = body.retry_after * 1e3;
+          }
+        } catch {
+        }
       }
-    } catch {
+      const waitTime = Math.min(Math.max(500, retryAfterMs), MAX_RATE_LIMIT_WAIT_MS);
+      await new Promise((resolve2) => setTimeout(resolve2, waitTime));
+      return this.requestWithRetry(url, init, attempt + 1);
     }
-    throw new GDriveError(`${contextMsg}: ${errorDetail}`, response.status, response.statusText, reason);
-  }
-  /**
-   * Retrieves Google Drive storage quota and user information.
-   */
-  async getStorageQuota() {
-    const url = `${DRIVE_API_V3}/about?fields=storageQuota`;
-    const response = await this.fetchAuth(url, {
-      method: "GET",
-      headers: { Accept: "application/json" }
-    });
     if (!response.ok) {
-      await this.parseErrorResponse(response, "Failed to fetch storage quota");
+      let errorDetails = null;
+      let errorMsg = `Discord API error: ${response.status} ${response.statusText}`;
+      try {
+        const json = await response.json();
+        errorDetails = json;
+        if (json.message) {
+          errorMsg = `Discord API error (${json.code ?? response.status}): ${json.message}`;
+        }
+      } catch {
+      }
+      throw new DiscordError(errorMsg, {
+        status: response.status,
+        code: typeof errorDetails === "object" && errorDetails !== null && "code" in errorDetails ? errorDetails.code : void 0,
+        details: errorDetails
+      });
+    }
+    if (response.status === 204) {
+      return { status: 204, data: {} };
     }
     const data = await response.json();
-    const sq = data.storageQuota || {};
-    return {
-      limit: sq.limit ? Number(sq.limit) : void 0,
-      usage: sq.usage ? Number(sq.usage) : void 0,
-      usageInDrive: sq.usageInDrive ? Number(sq.usageInDrive) : void 0,
-      usageInDriveTrash: sq.usageInDriveTrash ? Number(sq.usageInDriveTrash) : void 0
-    };
+    return { status: response.status, data };
   }
-  /**
-   * Initiates a resumable upload session and returns the session URI.
-   */
-  async initiateResumableUpload(name, fileSize, folderId, mimeType = "application/zip", description) {
-    const url = `${DRIVE_UPLOAD_V3}/files?uploadType=resumable`;
-    const metadata = {
-      name,
-      mimeType,
-      description: description || "Database Backup archive created by qbx_db_backup"
-    };
-    if (folderId && folderId.toLowerCase() !== "root") {
-      metadata.parents = [folderId];
+  /** Applies config-level username/avatar defaults to a payload copy. */
+  applyConfigDefaults(payload) {
+    const copy = { ...payload };
+    if (this.config.username && !copy.username) copy.username = this.config.username;
+    if (this.config.avatarUrl && !copy.avatar_url) copy.avatar_url = this.config.avatarUrl;
+    return copy;
+  }
+  buildFormData(payload, file) {
+    const form = new FormData();
+    const payloadCopy = { ...payload };
+    if (file) {
+      payloadCopy.attachments = [
+        {
+          id: 0,
+          filename: file.filename
+        }
+      ];
     }
-    const response = await this.fetchAuth(url, {
+    if (this.config.username && !payloadCopy.username) {
+      payloadCopy.username = this.config.username;
+    }
+    if (this.config.avatarUrl && !payloadCopy.avatar_url) {
+      payloadCopy.avatar_url = this.config.avatarUrl;
+    }
+    form.append("payload_json", JSON.stringify(payloadCopy));
+    if (file) {
+      const blob = file.buffer instanceof Blob ? file.buffer : new Blob([file.buffer], { type: "application/zip" });
+      form.append("files[0]", blob, file.filename);
+    }
+    return form;
+  }
+  formatThreadTitle(date) {
+    const pattern = this.config.threadTitle || "Database Backup - {date}";
+    const pad = (n) => n.toString().padStart(2, "0");
+    const year = date.getUTCFullYear();
+    const month = pad(date.getUTCMonth() + 1);
+    const day = pad(date.getUTCDate());
+    const hours = pad(date.getUTCHours());
+    const minutes = pad(date.getUTCMinutes());
+    const seconds = pad(date.getUTCSeconds());
+    const dateStr = `${year}-${month}-${day}`;
+    const timeStr = `${hours}:${minutes}:${seconds} UTC`;
+    const datetimeStr = `${dateStr} ${timeStr}`;
+    return pattern.replace(/\{date\}/gi, dateStr).replace(/\{time\}/gi, timeStr).replace(/\{datetime\}/gi, datetimeStr);
+  }
+  async sendWebhook(payload, file, threadId) {
+    if (!this.config.webhookUrl) {
+      throw new DiscordError("No Discord webhook URL configured");
+    }
+    let url = this.config.webhookUrl.trim();
+    const separator = url.includes("?") ? "&" : "?";
+    url = `${url}${separator}wait=true`;
+    if (threadId) {
+      url = `${url}&thread_id=${encodeURIComponent(threadId)}`;
+    }
+    const form = this.buildFormData(payload, file);
+    const result = await this.requestWithRetry(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json; charset=UTF-8",
-        "X-Upload-Content-Type": mimeType,
-        "X-Upload-Content-Length": fileSize.toString()
+        "User-Agent": USER_AGENT
       },
-      body: JSON.stringify(metadata)
+      body: form
     });
-    if (!response.ok) {
-      await this.parseErrorResponse(response, `Failed to initiate resumable upload for '${name}'`);
-    }
-    const sessionUri = response.headers.get("Location");
-    if (!sessionUri) {
-      throw new GDriveError("Google Drive did not return a resumable session URI Location header");
-    }
-    return sessionUri;
+    return {
+      messageId: result.data.id,
+      channelId: result.data.channel_id,
+      threadId,
+      fileAttached: Boolean(file)
+    };
   }
-  /**
-   * Streams a local file to Google Drive using the Resumable Upload protocol in chunks.
-   */
-  async uploadFileResumable(params) {
-    const { name, filePath, folderId, mimeType = "application/zip", description, chunkSize = DEFAULT_CHUNK_SIZE, onProgress } = params;
-    const stats = await import_node_fs2.default.promises.stat(filePath);
-    const totalBytes = stats.size;
-    const sessionUri = await this.initiateResumableUpload(name, totalBytes, folderId, mimeType, description);
-    if (totalBytes === 0) {
-      const response = await this.fetchFn(sessionUri, {
-        method: "PUT",
-        headers: {
-          "Content-Length": "0",
-          "Content-Range": "bytes */0"
-        }
-      });
-      if (!response.ok) {
-        await this.parseErrorResponse(response, `Failed to upload empty file '${name}'`);
-      }
-      return await response.json();
+  async sendChannelMessage(channelId, payload, file) {
+    const url = `${DISCORD_API_BASE}/channels/${channelId}/messages`;
+    const form = this.buildFormData(payload, file);
+    const result = await this.requestWithRetry(url, {
+      method: "POST",
+      headers: this.authHeaders,
+      body: form
+    });
+    return {
+      messageId: result.data.id,
+      channelId: result.data.channel_id,
+      fileAttached: Boolean(file)
+    };
+  }
+  async createForumThread(forumChannelId, title, payload, file) {
+    if (!this.config.botToken) {
+      const forumPayload = {
+        ...payload,
+        thread_name: title
+      };
+      return this.sendWebhook(forumPayload, file);
     }
-    const fileHandle = await import_node_fs2.default.promises.open(filePath, "r");
+    const url = `${DISCORD_API_BASE}/channels/${forumChannelId}/threads`;
+    const form = new FormData();
+    const resolvedPayload = this.applyConfigDefaults(payload);
+    const threadPayload = {
+      name: title,
+      auto_archive_duration: 1440,
+      message: {
+        content: resolvedPayload.content,
+        embeds: resolvedPayload.embeds,
+        attachments: file ? [
+          {
+            id: 0,
+            filename: file.filename
+          }
+        ] : void 0
+      }
+    };
+    form.append("payload_json", JSON.stringify(threadPayload));
+    if (file) {
+      const blob = file.buffer instanceof Blob ? file.buffer : new Blob([file.buffer], { type: "application/zip" });
+      form.append("files[0]", blob, file.filename);
+    }
+    const result = await this.requestWithRetry(url, {
+      method: "POST",
+      headers: this.authHeaders,
+      body: form
+    });
+    return {
+      messageId: result.data.message?.id,
+      channelId: forumChannelId,
+      threadId: result.data.id,
+      fileAttached: Boolean(file)
+    };
+  }
+  async findTodayForumThread(forumChannelId, date) {
+    if (!this.config.botToken) return null;
+    const pad = (n) => n.toString().padStart(2, "0");
+    const dateStr = `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
     try {
-      let offset = 0;
-      const buffer = Buffer.alloc(chunkSize);
-      while (offset < totalBytes) {
-        const bytesToRead = Math.min(chunkSize, totalBytes - offset);
-        const { bytesRead } = await fileHandle.read(buffer, 0, bytesToRead, offset);
-        const chunk = buffer.subarray(0, bytesRead);
-        const endByte = offset + bytesRead - 1;
-        const response = await this.fetchFn(sessionUri, {
-          method: "PUT",
-          headers: {
-            "Content-Length": bytesRead.toString(),
-            "Content-Range": `bytes ${offset}-${endByte}/${totalBytes}`,
-            "Content-Type": mimeType
-          },
-          body: chunk
-        });
-        if (response.status === 308) {
-          offset += bytesRead;
-          if (onProgress) {
-            onProgress(offset, totalBytes);
-          }
-          continue;
+      const activeRes = await this.requestWithRetry(
+        `${DISCORD_API_BASE}/channels/${forumChannelId}/threads/active`,
+        {
+          method: "GET",
+          headers: this.authHeaders
         }
-        if (response.ok) {
-          offset += bytesRead;
-          if (onProgress) {
-            onProgress(totalBytes, totalBytes);
-          }
-          return await response.json();
-        }
-        await this.parseErrorResponse(response, `Failed to upload chunk ${offset}-${endByte} for '${name}'`);
-      }
-      throw new GDriveError(`Upload ended unexpectedly without server confirmation for '${name}'`);
-    } finally {
-      await fileHandle.close();
+      );
+      const activeMatch = activeRes.data.threads?.find((t) => t.name?.includes(dateStr));
+      if (activeMatch) return activeMatch;
+    } catch {
     }
+    try {
+      let before;
+      const MAX_PAGES = 10;
+      for (let page = 0; page < MAX_PAGES; page++) {
+        const params = new URLSearchParams({ limit: "100" });
+        if (before) params.set("before", before);
+        const archivedRes = await this.requestWithRetry(
+          `${DISCORD_API_BASE}/channels/${forumChannelId}/threads/archived/public?${params}`,
+          {
+            method: "GET",
+            headers: this.authHeaders
+          }
+        );
+        const threads = archivedRes.data.threads ?? [];
+        const archivedMatch = threads.find((t) => t.name?.includes(dateStr));
+        if (archivedMatch) {
+          if (archivedMatch.archived) {
+            try {
+              const unarchived = await this.requestWithRetry(
+                `${DISCORD_API_BASE}/channels/${archivedMatch.id}`,
+                {
+                  method: "PATCH",
+                  headers: {
+                    ...this.authHeaders,
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({ archived: false })
+                }
+              );
+              return unarchived.data;
+            } catch {
+              return archivedMatch;
+            }
+          }
+          return archivedMatch;
+        }
+        if (!archivedRes.data.has_more || threads.length === 0) break;
+        before = threads[threads.length - 1]?.id;
+      }
+    } catch {
+    }
+    return null;
   }
-  /**
-   * Lists files in a given Google Drive folder matching optional criteria.
-   */
-  async listFiles(folderId, namePrefix) {
-    const queryParts = ["trashed = false"];
-    if (folderId && folderId.toLowerCase() !== "root") {
-      queryParts.push(`'${folderId}' in parents`);
-    }
-    if (namePrefix) {
-      queryParts.push(`name contains '${namePrefix}'`);
-    }
-    const q = queryParts.join(" and ");
-    const fields = "files(id, name, size, mimeType, createdTime, modifiedTime, md5Checksum), nextPageToken";
-    const allFiles = [];
-    let pageToken;
-    do {
-      const params = new URLSearchParams({
-        q,
-        fields,
-        pageSize: "100",
-        orderBy: "createdTime desc"
+  async sendBackup(options) {
+    const timestamp = options.timestamp ?? /* @__PURE__ */ new Date();
+    const isExceeded = options.sizeBytes > this.maxFileSizeBytes;
+    const embed = {
+      title: "Database Backup Complete",
+      color: isExceeded ? 16705372 : 5763719,
+      timestamp: timestamp.toISOString(),
+      footer: {
+        text: `qbx_db_backup - ${options.fileName}`
+      },
+      fields: [
+        { name: "Database", value: `\`${options.database}\``, inline: true },
+        { name: "Trigger", value: `\`${options.trigger}\``, inline: true },
+        { name: "Archive Size", value: formatBytes(options.sizeBytes), inline: true },
+        {
+          name: "Raw SQL Size",
+          value: options.rawBytes !== void 0 ? formatBytes(options.rawBytes) : "N/A",
+          inline: true
+        },
+        { name: "Duration", value: `${(options.durationMs / 1e3).toFixed(1)}s`, inline: true },
+        {
+          name: "Location",
+          value: options.targetLocation ? `\`${options.targetLocation}\`` : "Discord",
+          inline: true
+        }
+      ]
+    };
+    if (options.warnings && options.warnings.length > 0) {
+      embed.fields?.push({
+        name: "Warnings",
+        value: options.warnings.join("\n"),
+        inline: false
       });
-      if (pageToken) {
-        params.set("pageToken", pageToken);
+    }
+    let warningNote;
+    if (isExceeded) {
+      warningNote = `Backup zip (${formatBytes(options.sizeBytes)}) exceeds Discord upload limit (${this.config.maxFileSizeMb} MB). Saved safely at: ${options.targetLocation ?? "server storage"}.`;
+      embed.fields?.push({
+        name: "Attachment Skipped",
+        value: warningNote,
+        inline: false
+      });
+    }
+    const payload = {
+      embeds: [embed]
+    };
+    const fileBuffer = options.zipBlob ?? (options.zipBuffer ? new Blob([options.zipBuffer]) : void 0);
+    const fileToAttach = !isExceeded && fileBuffer ? { buffer: fileBuffer, filename: options.fileName } : void 0;
+    if (this.config.isForum) {
+      const channelId = this.config.channelId;
+      const title = this.formatThreadTitle(timestamp);
+      if (this.config.botToken && channelId) {
+        const existingThread = await this.findTodayForumThread(channelId, timestamp);
+        if (existingThread) {
+          const res3 = await this.sendChannelMessage(existingThread.id, payload, fileToAttach);
+          return { ...res3, threadId: existingThread.id, warning: warningNote };
+        }
+        const res2 = await this.createForumThread(channelId, title, payload, fileToAttach);
+        return { ...res2, warning: warningNote };
       }
-      const url = `${DRIVE_API_V3}/files?${params.toString()}`;
-      const response = await this.fetchAuth(url, {
+      const res = await this.sendWebhook({ ...payload, thread_name: title }, fileToAttach);
+      return { ...res, warning: warningNote };
+    }
+    if (this.config.botToken && this.config.channelId) {
+      const res = await this.sendChannelMessage(this.config.channelId, payload, fileToAttach);
+      return { ...res, warning: warningNote };
+    }
+    if (this.config.webhookUrl) {
+      const res = await this.sendWebhook(payload, fileToAttach);
+      return { ...res, warning: warningNote };
+    }
+    throw new DiscordError("No valid Discord Webhook URL or Bot Token + Channel ID configured");
+  }
+  async testConnection() {
+    if (this.config.botToken && this.config.channelId) {
+      const url = `${DISCORD_API_BASE}/channels/${this.config.channelId}`;
+      const res = await this.requestWithRetry(url, {
         method: "GET",
-        headers: { Accept: "application/json" }
+        headers: this.authHeaders
       });
-      if (!response.ok) {
-        await this.parseErrorResponse(response, "Failed to list Google Drive files");
-      }
-      const data = await response.json();
-      if (data.files) {
-        for (const f of data.files) {
-          allFiles.push({
-            id: f.id,
-            name: f.name,
-            size: f.size ? Number(f.size) : void 0,
-            mimeType: f.mimeType,
-            createdTime: f.createdTime,
-            modifiedTime: f.modifiedTime,
-            md5Checksum: f.md5Checksum
-          });
+      return {
+        ok: true,
+        type: "bot",
+        name: res.data.name,
+        channelId: res.data.id,
+        guildId: res.data.guild_id,
+        isForum: res.data.type === 15
+      };
+    }
+    if (this.config.webhookUrl) {
+      const res = await this.requestWithRetry(this.config.webhookUrl, {
+        method: "GET",
+        headers: {
+          "User-Agent": USER_AGENT
         }
-      }
-      pageToken = data.nextPageToken;
-    } while (pageToken);
-    return allFiles;
-  }
-  /**
-   * Deletes a file permanently from Google Drive by file ID.
-   */
-  async deleteFile(fileId) {
-    const url = `${DRIVE_API_V3}/files/${encodeURIComponent(fileId)}`;
-    const response = await this.fetchAuth(url, {
-      method: "DELETE"
-    });
-    if (!response.ok && response.status !== 204 && response.status !== 200) {
-      await this.parseErrorResponse(response, `Failed to delete Google Drive file '${fileId}'`);
+      });
+      return {
+        ok: true,
+        type: "webhook",
+        name: res.data.name,
+        channelId: res.data.channel_id,
+        guildId: res.data.guild_id,
+        isForum: this.config.isForum
+      };
     }
-  }
-  /**
-   * Verifies that the target folder is accessible.
-   */
-  async verifyFolder(folderId) {
-    if (!folderId || folderId.toLowerCase() === "root") {
-      return { id: "root", name: "My Drive" };
-    }
-    const url = `${DRIVE_API_V3}/files/${encodeURIComponent(folderId)}?fields=id,name,mimeType,trashed`;
-    const response = await this.fetchAuth(url, {
-      method: "GET",
-      headers: { Accept: "application/json" }
-    });
-    if (!response.ok) {
-      await this.parseErrorResponse(response, `Cannot access folder ID '${folderId}'`);
-    }
-    const data = await response.json();
-    if (data.trashed) {
-      throw new GDriveError(`Folder ID '${folderId}' is in the trash.`);
-    }
-    return { id: data.id, name: data.name };
+    throw new DiscordError("Neither Discord Webhook URL nor Bot Token + Channel ID configured");
   }
 };
+function formatBytes(bytes) {
+  if (bytes <= 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let size = bytes;
+  let unitIdx = 0;
+  while (size >= 1024 && unitIdx < units.length - 1) {
+    size /= 1024;
+    unitIdx += 1;
+  }
+  return `${unitIdx === 0 ? size : size.toFixed(1)} ${units[unitIdx]}`;
+}
 
-// src/gdrive/sink.ts
-var import_node_crypto2 = require("node:crypto");
-var import_node_fs3 = require("node:fs");
+// src/discord/sink.ts
+var import_node_crypto = require("node:crypto");
+var import_node_fs2 = require("node:fs");
 var import_promises2 = require("node:fs/promises");
 var import_node_path2 = __toESM(require("node:path"), 1);
 var import_node_stream2 = require("node:stream");
@@ -13928,7 +13986,7 @@ function isStream(stream, { checkOpen = true } = {}) {
 }
 
 // node_modules/readdir-glob/dist/index.mjs
-var fs2 = __toESM(require("fs"), 1);
+var fs = __toESM(require("fs"), 1);
 var import_events = require("events");
 
 // node_modules/balanced-match/dist/esm/index.js
@@ -15790,7 +15848,7 @@ minimatch.unescape = unescape;
 var import_path = require("path");
 function readdir2(dir, strict) {
   return new Promise((resolve$1, reject) => {
-    fs2.readdir(dir, { withFileTypes: true }, (err, files) => {
+    fs.readdir(dir, { withFileTypes: true }, (err, files) => {
       if (err) switch (err.code) {
         case "ENOTDIR":
           if (strict) reject(err);
@@ -15813,7 +15871,7 @@ function readdir2(dir, strict) {
 }
 function getStat(file, followSymlinks) {
   return new Promise((resolve$1) => {
-    const statFunc = followSymlinks ? fs2.stat : fs2.lstat;
+    const statFunc = followSymlinks ? fs.stat : fs.lstat;
     statFunc(file, (err, stats) => {
       if (err) switch (err.code) {
         case "ENOENT":
@@ -15828,13 +15886,13 @@ function getStat(file, followSymlinks) {
     });
   });
 }
-async function* exploreWalkAsync(dir, path7, followSymlinks, useStat, shouldSkip, strict) {
-  let files = await readdir2(path7 + dir, strict);
+async function* exploreWalkAsync(dir, path8, followSymlinks, useStat, shouldSkip, strict) {
+  let files = await readdir2(path8 + dir, strict);
   for (const file of files) {
     let name = file.name;
     const filename = dir + "/" + name;
     const relative = filename.slice(1);
-    const absolute = path7 + "/" + relative;
+    const absolute = path8 + "/" + relative;
     let stat2 = file;
     if (useStat || followSymlinks) stat2 = await getStat(absolute, followSymlinks) ?? stat2;
     if (stat2.isDirectory()) {
@@ -15844,7 +15902,7 @@ async function* exploreWalkAsync(dir, path7, followSymlinks, useStat, shouldSkip
           absolute,
           stat: stat2
         };
-        yield* exploreWalkAsync(filename, path7, followSymlinks, useStat, shouldSkip, false);
+        yield* exploreWalkAsync(filename, path8, followSymlinks, useStat, shouldSkip, false);
       }
     } else yield {
       relative,
@@ -15853,8 +15911,8 @@ async function* exploreWalkAsync(dir, path7, followSymlinks, useStat, shouldSkip
     };
   }
 }
-async function* explore(path7, followSymlinks, useStat, shouldSkip) {
-  yield* exploreWalkAsync("", path7, followSymlinks, useStat, shouldSkip, true);
+async function* explore(path8, followSymlinks, useStat, shouldSkip) {
+  yield* exploreWalkAsync("", path8, followSymlinks, useStat, shouldSkip, true);
 }
 function readOptions(options) {
   return {
@@ -18282,8 +18340,8 @@ var ZipArchive = class extends Archiver {
   }
 };
 
-// src/gdrive/sink.ts
-var GDriveSink = class {
+// src/discord/sink.ts
+var DiscordSink = class {
   constructor(options) {
     this.options = options;
   }
@@ -18291,10 +18349,11 @@ var GDriveSink = class {
   async open(options) {
     const root = this.options.tmpDir;
     await (0, import_promises2.mkdir)(root, { recursive: true });
-    const dir = await (0, import_promises2.mkdtemp)(import_node_path2.default.join(root, "qbx-gdrive-sink-"));
+    const dir = await (0, import_promises2.mkdtemp)(import_node_path2.default.join(root, "qbx-discord-sink-"));
     const spoolPath = import_node_path2.default.join(dir, "backup.zip");
     const spool = createSpool(spoolPath, options, this.options.maxBytes);
     const opts = this.options;
+    const startedAt = Date.now();
     return {
       append: spool.append,
       failed: spool.failed,
@@ -18306,16 +18365,22 @@ var GDriveSink = class {
               `Backup zip is ${result.bytesZip} bytes, exceeding the ${opts.maxBytes} byte limit`
             );
           }
-          const uploadedFile = await opts.client.uploadFileResumable({
-            name: opts.fileName,
-            filePath: spoolPath,
-            folderId: opts.folderId,
-            mimeType: "application/zip",
-            description: `Automated Qbox Database Backup (SHA256: ${result.sha256})`
-          });
           const localCopy = await keepLocalCopy(spoolPath, opts.keepLocalPath);
-          const gdriveLocation = `gdrive://${opts.folderId || "root"}/${uploadedFile.id} (${uploadedFile.name})`;
-          return localCopy === null ? { ...result, location: gdriveLocation } : { ...result, location: `${gdriveLocation} (+ local: ${localCopy})` };
+          const durationMs = Date.now() - startedAt;
+          const zipBlob = await (0, import_node_fs2.openAsBlob)(spoolPath, { type: "application/zip" });
+          const uploadResult = await opts.client.sendBackup({
+            zipBlob,
+            fileName: opts.fileName,
+            sizeBytes: result.bytesZip,
+            durationMs,
+            database: opts.database,
+            targetLocation: localCopy ? `Local: ${localCopy}` : "Discord Storage",
+            trigger: opts.trigger,
+            warnings: opts.warnings
+          });
+          const locationTarget = uploadResult.threadId ? `discord://${uploadResult.channelId}/threads/${uploadResult.threadId}` : uploadResult.channelId ? `discord://${uploadResult.channelId}` : "discord://webhook";
+          const finalLocation = uploadResult.fileAttached ? `${locationTarget} (${opts.fileName})` : `${locationTarget} (Embed-only summary: attachment skipped)`;
+          return localCopy === null ? { ...result, location: finalLocation } : { ...result, location: `${finalLocation} (+ local: ${localCopy})` };
         } finally {
           await (0, import_promises2.rm)(dir, { recursive: true, force: true });
         }
@@ -18330,7 +18395,7 @@ var GDriveSink = class {
 function createSpool(target, options, maxBytes) {
   const zip = new ZipArchive({ zlib: { level: options.zipLevel }, forceZip64: true });
   const counter = createCounter(options.onZipBytes, maxBytes);
-  const file = (0, import_node_fs3.createWriteStream)(target);
+  const file = (0, import_node_fs2.createWriteStream)(target);
   let source = null;
   const flushed = new Promise((resolve2, reject) => {
     file.once("close", () => resolve2());
@@ -18370,7 +18435,7 @@ function createSpool(target, options, maxBytes) {
   };
 }
 function createCounter(onBytes, maxBytes) {
-  const hash = (0, import_node_crypto2.createHash)("sha256");
+  const hash = (0, import_node_crypto.createHash)("sha256");
   let total = 0;
   const transform = new import_node_stream2.Transform({
     transform(chunk, _encoding, callback) {
@@ -18395,12 +18460,547 @@ async function keepLocalCopy(spoolPath, destination) {
   return destination;
 }
 
+// src/gdrive/client.ts
+var import_node_fs3 = __toESM(require("node:fs"), 1);
+
+// src/gdrive/auth.ts
+var import_node_crypto2 = __toESM(require("node:crypto"), 1);
+
+// src/gdrive/types.ts
+function isOAuthConfig(config) {
+  return "refreshToken" in config && Boolean(config.refreshToken);
+}
+var GDriveError = class extends Error {
+  code;
+  status;
+  reason;
+  constructor(message, code, status, reason) {
+    super(`[GDrive] ${message}`);
+    this.name = "GDriveError";
+    this.code = code;
+    this.status = status;
+    this.reason = reason;
+  }
+};
+
+// src/gdrive/auth.ts
+var GOOGLE_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
+var DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive";
+function base64UrlEncode(strOrBuffer) {
+  const buf = typeof strOrBuffer === "string" ? Buffer.from(strOrBuffer, "utf8") : strOrBuffer;
+  return buf.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+async function refreshOAuthToken(config, fetchFn = fetch) {
+  const params = new URLSearchParams({
+    client_id: config.clientId,
+    client_secret: config.clientSecret,
+    refresh_token: config.refreshToken,
+    grant_type: "refresh_token"
+  });
+  const response = await fetchFn(GOOGLE_TOKEN_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json"
+    },
+    body: params.toString()
+  });
+  if (!response.ok) {
+    let errorDetail = `HTTP ${response.status} ${response.statusText}`;
+    try {
+      const errJson = await response.json();
+      if (errJson.error_description) {
+        errorDetail = `${errJson.error}: ${errJson.error_description}`;
+      } else if (errJson.error) {
+        errorDetail = errJson.error;
+      }
+    } catch {
+    }
+    throw new GDriveError(`OAuth token refresh failed: ${errorDetail}`, response.status);
+  }
+  return await response.json();
+}
+async function authenticateServiceAccount(config, fetchFn = fetch) {
+  const now = Math.floor(Date.now() / 1e3);
+  const header = { alg: "RS256", typ: "JWT" };
+  const claims = {
+    iss: config.clientEmail,
+    scope: DRIVE_FULL_SCOPE,
+    aud: GOOGLE_TOKEN_ENDPOINT,
+    exp: now + 3600,
+    iat: now
+  };
+  const encodedHeader = base64UrlEncode(JSON.stringify(header));
+  const encodedClaims = base64UrlEncode(JSON.stringify(claims));
+  const payloadToSign = `${encodedHeader}.${encodedClaims}`;
+  const signer = import_node_crypto2.default.createSign("RSA-SHA256");
+  signer.update(payloadToSign);
+  signer.end();
+  const signature = signer.sign(config.privateKey);
+  const jwt = `${payloadToSign}.${base64UrlEncode(signature)}`;
+  const params = new URLSearchParams({
+    grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+    assertion: jwt
+  });
+  const response = await fetchFn(GOOGLE_TOKEN_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json"
+    },
+    body: params.toString()
+  });
+  if (!response.ok) {
+    let errorDetail = `HTTP ${response.status} ${response.statusText}`;
+    try {
+      const errJson = await response.json();
+      if (errJson.error_description) {
+        errorDetail = `${errJson.error}: ${errJson.error_description}`;
+      } else if (errJson.error) {
+        errorDetail = errJson.error;
+      }
+    } catch {
+    }
+    throw new GDriveError(`Service account authentication failed: ${errorDetail}`, response.status);
+  }
+  return await response.json();
+}
+var GDriveAuthManager = class {
+  constructor(config, fetchFn = fetch) {
+    this.config = config;
+    this.fetchFn = fetchFn;
+  }
+  config;
+  fetchFn;
+  cachedToken = null;
+  expiresAt = 0;
+  /**
+   * Returns a valid access token, automatically refreshing if expired.
+   */
+  async getAccessToken(forceRefresh = false) {
+    const now = Date.now();
+    if (!forceRefresh && this.cachedToken && now < this.expiresAt - 6e4) {
+      return this.cachedToken;
+    }
+    let tokenResponse;
+    if (isOAuthConfig(this.config)) {
+      tokenResponse = await refreshOAuthToken(this.config, this.fetchFn);
+    } else {
+      tokenResponse = await authenticateServiceAccount(this.config, this.fetchFn);
+    }
+    this.cachedToken = tokenResponse.access_token;
+    const expiresInSec = tokenResponse.expires_in || 3600;
+    this.expiresAt = Date.now() + expiresInSec * 1e3;
+    return this.cachedToken;
+  }
+  invalidateToken() {
+    this.cachedToken = null;
+    this.expiresAt = 0;
+  }
+};
+
+// src/gdrive/client.ts
+var DRIVE_API_V3 = "https://www.googleapis.com/drive/v3";
+var DRIVE_UPLOAD_V3 = "https://www.googleapis.com/upload/drive/v3";
+var DEFAULT_CHUNK_SIZE = 4 * 1024 * 1024;
+var GDriveClient = class {
+  constructor(config, fetchFn = fetch) {
+    this.config = config;
+    this.fetchFn = fetchFn;
+    this.auth = new GDriveAuthManager(config, fetchFn);
+  }
+  config;
+  fetchFn;
+  auth;
+  /**
+   * Helper to execute an authenticated request with automatic token refresh.
+   */
+  async fetchAuth(url, init = {}) {
+    const token = await this.auth.getAccessToken();
+    const headers = new Headers(init.headers || {});
+    headers.set("Authorization", `Bearer ${token}`);
+    let response = await this.fetchFn(url, { ...init, headers });
+    if (response.status === 401) {
+      await response.body?.cancel();
+      this.auth.invalidateToken();
+      const freshToken = await this.auth.getAccessToken(true);
+      headers.set("Authorization", `Bearer ${freshToken}`);
+      response = await this.fetchFn(url, { ...init, headers });
+    }
+    return response;
+  }
+  /**
+   * Parses Google Drive API errors into typed GDriveError.
+   */
+  async parseErrorResponse(response, contextMsg) {
+    let errorDetail = `HTTP ${response.status} ${response.statusText}`;
+    let reason;
+    try {
+      const errJson = await response.json();
+      if (errJson.error?.message) {
+        errorDetail = errJson.error.message;
+      }
+      if (errJson.error?.errors?.[0]?.reason) {
+        reason = errJson.error.errors[0].reason;
+      }
+    } catch {
+    }
+    throw new GDriveError(
+      `${contextMsg}: ${errorDetail}`,
+      response.status,
+      response.statusText,
+      reason
+    );
+  }
+  /**
+   * Retrieves Google Drive storage quota and user information.
+   */
+  async getStorageQuota() {
+    const url = `${DRIVE_API_V3}/about?fields=storageQuota`;
+    const response = await this.fetchAuth(url, {
+      method: "GET",
+      headers: { Accept: "application/json" }
+    });
+    if (!response.ok) {
+      await this.parseErrorResponse(response, "Failed to fetch storage quota");
+    }
+    const data = await response.json();
+    const sq = data.storageQuota || {};
+    return {
+      limit: sq.limit ? Number(sq.limit) : void 0,
+      usage: sq.usage ? Number(sq.usage) : void 0,
+      usageInDrive: sq.usageInDrive ? Number(sq.usageInDrive) : void 0,
+      usageInDriveTrash: sq.usageInDriveTrash ? Number(sq.usageInDriveTrash) : void 0
+    };
+  }
+  /**
+   * Initiates a resumable upload session and returns the session URI.
+   */
+  async initiateResumableUpload(name, fileSize, folderId, mimeType = "application/zip", description) {
+    const url = `${DRIVE_UPLOAD_V3}/files?uploadType=resumable`;
+    const metadata = {
+      name,
+      mimeType,
+      description: description || "Database Backup archive created by qbx_db_backup"
+    };
+    if (folderId && folderId.toLowerCase() !== "root") {
+      metadata.parents = [folderId];
+    }
+    const response = await this.fetchAuth(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+        "X-Upload-Content-Type": mimeType,
+        "X-Upload-Content-Length": fileSize.toString()
+      },
+      body: JSON.stringify(metadata)
+    });
+    if (!response.ok) {
+      await this.parseErrorResponse(response, `Failed to initiate resumable upload for '${name}'`);
+    }
+    const sessionUri = response.headers.get("Location");
+    if (!sessionUri) {
+      throw new GDriveError("Google Drive did not return a resumable session URI Location header");
+    }
+    return sessionUri;
+  }
+  /**
+   * Streams a local file to Google Drive using the Resumable Upload protocol in chunks.
+   */
+  async uploadFileResumable(params) {
+    const {
+      name,
+      filePath,
+      folderId,
+      mimeType = "application/zip",
+      description,
+      chunkSize = DEFAULT_CHUNK_SIZE,
+      onProgress
+    } = params;
+    const stats = await import_node_fs3.default.promises.stat(filePath);
+    const totalBytes = stats.size;
+    const sessionUri = await this.initiateResumableUpload(
+      name,
+      totalBytes,
+      folderId,
+      mimeType,
+      description
+    );
+    if (totalBytes === 0) {
+      const response = await this.fetchFn(sessionUri, {
+        method: "PUT",
+        headers: {
+          "Content-Length": "0",
+          "Content-Range": "bytes */0"
+        }
+      });
+      if (!response.ok) {
+        await this.parseErrorResponse(response, `Failed to upload empty file '${name}'`);
+      }
+      return await response.json();
+    }
+    const fileHandle = await import_node_fs3.default.promises.open(filePath, "r");
+    try {
+      let offset = 0;
+      const buffer = Buffer.alloc(chunkSize);
+      while (offset < totalBytes) {
+        const bytesToRead = Math.min(chunkSize, totalBytes - offset);
+        const { bytesRead } = await fileHandle.read(buffer, 0, bytesToRead, offset);
+        const chunk = buffer.subarray(0, bytesRead);
+        const endByte = offset + bytesRead - 1;
+        const response = await this.fetchFn(sessionUri, {
+          method: "PUT",
+          headers: {
+            "Content-Length": bytesRead.toString(),
+            "Content-Range": `bytes ${offset}-${endByte}/${totalBytes}`,
+            "Content-Type": mimeType
+          },
+          body: chunk
+        });
+        if (response.status === 308) {
+          await response.body?.cancel();
+          const rangeHeader = response.headers.get("Range");
+          if (rangeHeader) {
+            const match2 = /bytes=\d+-(?<end>\d+)/.exec(rangeHeader);
+            if (match2?.groups?.end !== void 0) {
+              offset = Number(match2.groups.end) + 1;
+            } else {
+              offset += bytesRead;
+            }
+          } else {
+          }
+          if (onProgress) {
+            onProgress(offset, totalBytes);
+          }
+          continue;
+        }
+        if (response.ok) {
+          offset += bytesRead;
+          if (onProgress) {
+            onProgress(totalBytes, totalBytes);
+          }
+          return await response.json();
+        }
+        await this.parseErrorResponse(
+          response,
+          `Failed to upload chunk ${offset}-${endByte} for '${name}'`
+        );
+      }
+      throw new GDriveError(`Upload ended unexpectedly without server confirmation for '${name}'`);
+    } finally {
+      await fileHandle.close();
+    }
+  }
+  /**
+   * Lists files in a given Google Drive folder matching optional criteria.
+   */
+  async listFiles(folderId, namePrefix) {
+    const queryParts = ["trashed = false"];
+    if (folderId && folderId.toLowerCase() !== "root") {
+      queryParts.push(`'${folderId}' in parents`);
+    }
+    if (namePrefix) {
+      queryParts.push(`name contains '${namePrefix}'`);
+    }
+    const q = queryParts.join(" and ");
+    const fields = "files(id, name, size, mimeType, createdTime, modifiedTime, md5Checksum), nextPageToken";
+    const allFiles = [];
+    let pageToken;
+    do {
+      const params = new URLSearchParams({
+        q,
+        fields,
+        pageSize: "100",
+        orderBy: "createdTime desc"
+      });
+      if (pageToken) {
+        params.set("pageToken", pageToken);
+      }
+      const url = `${DRIVE_API_V3}/files?${params.toString()}`;
+      const response = await this.fetchAuth(url, {
+        method: "GET",
+        headers: { Accept: "application/json" }
+      });
+      if (!response.ok) {
+        await this.parseErrorResponse(response, "Failed to list Google Drive files");
+      }
+      const data = await response.json();
+      if (data.files) {
+        for (const f of data.files) {
+          allFiles.push({
+            id: f.id,
+            name: f.name,
+            size: f.size ? Number(f.size) : void 0,
+            mimeType: f.mimeType,
+            createdTime: f.createdTime,
+            modifiedTime: f.modifiedTime,
+            md5Checksum: f.md5Checksum
+          });
+        }
+      }
+      pageToken = data.nextPageToken;
+    } while (pageToken);
+    return allFiles;
+  }
+  /**
+   * Deletes a file permanently from Google Drive by file ID.
+   */
+  async deleteFile(fileId) {
+    const url = `${DRIVE_API_V3}/files/${encodeURIComponent(fileId)}`;
+    const response = await this.fetchAuth(url, {
+      method: "DELETE"
+    });
+    if (!response.ok && response.status !== 204 && response.status !== 200) {
+      await this.parseErrorResponse(response, `Failed to delete Google Drive file '${fileId}'`);
+    }
+  }
+  /**
+   * Verifies that the target folder is accessible.
+   */
+  async verifyFolder(folderId) {
+    if (!folderId || folderId.toLowerCase() === "root") {
+      return { id: "root", name: "My Drive" };
+    }
+    const url = `${DRIVE_API_V3}/files/${encodeURIComponent(folderId)}?fields=id,name,mimeType,trashed`;
+    const response = await this.fetchAuth(url, {
+      method: "GET",
+      headers: { Accept: "application/json" }
+    });
+    if (!response.ok) {
+      await this.parseErrorResponse(response, `Cannot access folder ID '${folderId}'`);
+    }
+    const data = await response.json();
+    if (data.trashed) {
+      throw new GDriveError(`Folder ID '${folderId}' is in the trash.`);
+    }
+    return { id: data.id, name: data.name };
+  }
+};
+
+// src/gdrive/sink.ts
+var import_node_crypto3 = require("node:crypto");
+var import_node_fs4 = require("node:fs");
+var import_promises3 = require("node:fs/promises");
+var import_node_path3 = __toESM(require("node:path"), 1);
+var import_node_stream3 = require("node:stream");
+var GDriveSink = class {
+  constructor(options) {
+    this.options = options;
+  }
+  options;
+  async open(options) {
+    const root = this.options.tmpDir;
+    await (0, import_promises3.mkdir)(root, { recursive: true });
+    const dir = await (0, import_promises3.mkdtemp)(import_node_path3.default.join(root, "qbx-gdrive-sink-"));
+    const spoolPath = import_node_path3.default.join(dir, "backup.zip");
+    const spool = createSpool2(spoolPath, options, this.options.maxBytes);
+    const opts = this.options;
+    return {
+      append: spool.append,
+      failed: spool.failed,
+      finish: async () => {
+        try {
+          const result = await spool.finish();
+          if (opts.maxBytes !== void 0 && result.bytesZip > opts.maxBytes) {
+            throw new Error(
+              `Backup zip is ${result.bytesZip} bytes, exceeding the ${opts.maxBytes} byte limit`
+            );
+          }
+          const uploadedFile = await opts.client.uploadFileResumable({
+            name: opts.fileName,
+            filePath: spoolPath,
+            folderId: opts.folderId,
+            mimeType: "application/zip",
+            description: `Automated Qbox Database Backup (SHA256: ${result.sha256})`
+          });
+          const localCopy = await keepLocalCopy2(spoolPath, opts.keepLocalPath);
+          const gdriveLocation = `gdrive://${opts.folderId || "root"}/${uploadedFile.id} (${uploadedFile.name})`;
+          return localCopy === null ? { ...result, location: gdriveLocation } : { ...result, location: `${gdriveLocation} (+ local: ${localCopy})` };
+        } finally {
+          await (0, import_promises3.rm)(dir, { recursive: true, force: true });
+        }
+      },
+      abort: async () => {
+        await spool.abort();
+        await (0, import_promises3.rm)(dir, { recursive: true, force: true });
+      }
+    };
+  }
+};
+function createSpool2(target, options, maxBytes) {
+  const zip = new ZipArchive({ zlib: { level: options.zipLevel }, forceZip64: true });
+  const counter = createCounter2(options.onZipBytes, maxBytes);
+  const file = (0, import_node_fs4.createWriteStream)(target);
+  let source = null;
+  const flushed = new Promise((resolve2, reject) => {
+    file.once("close", () => resolve2());
+    file.once("error", reject);
+    counter.transform.once("error", reject);
+    zip.on("error", (zipError) => reject(new Error(`Zip failed: ${zipError.message}`)));
+    zip.on("warning", (warning) => {
+      if (warning.code !== "ENOENT") reject(new Error(`Zip warning: ${warning.message}`));
+    });
+  });
+  const failed = new Promise((_, reject) => {
+    flushed.catch((flushError) => {
+      source?.destroy(flushError);
+      reject(flushError);
+    });
+  });
+  void failed.catch(() => {
+  });
+  zip.pipe(counter.transform).pipe(file);
+  return {
+    append: (input) => {
+      source = input;
+      zip.append(input, { name: options.entryName });
+    },
+    finish: async () => {
+      await zip.finalize();
+      await flushed;
+      return { bytesZip: counter.bytes(), sha256: counter.digest() };
+    },
+    abort: async () => {
+      zip.abort();
+      counter.transform.destroy();
+      file.destroy();
+      await (0, import_promises3.rm)(target, { force: true });
+    },
+    failed
+  };
+}
+function createCounter2(onBytes, maxBytes) {
+  const hash = (0, import_node_crypto3.createHash)("sha256");
+  let total = 0;
+  const transform = new import_node_stream3.Transform({
+    transform(chunk, _encoding, callback) {
+      total += chunk.length;
+      hash.update(chunk);
+      onBytes?.(total);
+      if (maxBytes !== void 0 && total > maxBytes) {
+        callback(new Error(`Backup zip exceeded the ${maxBytes} byte limit for this job`));
+        return;
+      }
+      callback(null, chunk);
+    }
+  });
+  return { transform, bytes: () => total, digest: () => hash.digest("hex") };
+}
+async function keepLocalCopy2(spoolPath, destination) {
+  if (destination === void 0 || destination.length === 0) return null;
+  await (0, import_promises3.mkdir)(import_node_path3.default.dirname(destination), { recursive: true });
+  const partPath = `${destination}.part`;
+  await (0, import_promises3.copyFile)(spoolPath, partPath);
+  await (0, import_promises3.rename)(partPath, destination);
+  return destination;
+}
+
 // src/s3/client.ts
 var import_node_http = require("node:http");
 var import_node_https = require("node:https");
 
 // src/s3/signer.ts
-var import_node_crypto3 = require("node:crypto");
+var import_node_crypto4 = require("node:crypto");
 function uriEncode(input, encodeSlash = false) {
   let result = "";
   for (let i = 0; i < input.length; i += 1) {
@@ -18429,13 +19029,13 @@ function formatBasicDate(date) {
   return { isoDate, dateScope };
 }
 function sha256Hex(data) {
-  return (0, import_node_crypto3.createHash)("sha256").update(data).digest("hex");
+  return (0, import_node_crypto4.createHash)("sha256").update(data).digest("hex");
 }
 function getSigningKey(secretKey, dateScope, region, service) {
-  const kDate = (0, import_node_crypto3.createHmac)("sha256", `AWS4${secretKey}`).update(dateScope).digest();
-  const kRegion = (0, import_node_crypto3.createHmac)("sha256", kDate).update(region).digest();
-  const kService = (0, import_node_crypto3.createHmac)("sha256", kRegion).update(service).digest();
-  return (0, import_node_crypto3.createHmac)("sha256", kService).update("aws4_request").digest();
+  const kDate = (0, import_node_crypto4.createHmac)("sha256", `AWS4${secretKey}`).update(dateScope).digest();
+  const kRegion = (0, import_node_crypto4.createHmac)("sha256", kDate).update(region).digest();
+  const kService = (0, import_node_crypto4.createHmac)("sha256", kRegion).update(service).digest();
+  return (0, import_node_crypto4.createHmac)("sha256", kService).update("aws4_request").digest();
 }
 function signS3Request(options) {
   const targetUrl = typeof options.url === "string" ? new URL(options.url) : options.url;
@@ -18485,7 +19085,7 @@ function signS3Request(options) {
     "\n"
   );
   const signingKey = getSigningKey(options.secretAccessKey, dateScope, options.region, service);
-  const signature = (0, import_node_crypto3.createHmac)("sha256", signingKey).update(stringToSign).digest("hex");
+  const signature = (0, import_node_crypto4.createHmac)("sha256", signingKey).update(stringToSign).digest("hex");
   const authorization = `AWS4-HMAC-SHA256 Credential=${options.accessKeyId}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
   return {
     method,
@@ -18762,11 +19362,11 @@ function parseDeleteResultXml(xml, fallbackKeys) {
 }
 
 // src/s3/sink.ts
-var import_node_crypto4 = require("node:crypto");
-var import_node_fs4 = require("node:fs");
-var import_promises3 = require("node:fs/promises");
-var import_node_path3 = __toESM(require("node:path"), 1);
-var import_node_stream3 = require("node:stream");
+var import_node_crypto5 = require("node:crypto");
+var import_node_fs5 = require("node:fs");
+var import_promises4 = require("node:fs/promises");
+var import_node_path4 = __toESM(require("node:path"), 1);
+var import_node_stream4 = require("node:stream");
 var S3Sink = class {
   constructor(options) {
     this.options = options;
@@ -18774,10 +19374,10 @@ var S3Sink = class {
   options;
   async open(options) {
     const root = this.options.tmpDir;
-    await (0, import_promises3.mkdir)(root, { recursive: true });
-    const dir = await (0, import_promises3.mkdtemp)(import_node_path3.default.join(root, "qbx-s3-sink-"));
-    const spoolPath = import_node_path3.default.join(dir, "backup.zip");
-    const spool = createSpool2(spoolPath, options, this.options.maxBytes);
+    await (0, import_promises4.mkdir)(root, { recursive: true });
+    const dir = await (0, import_promises4.mkdtemp)(import_node_path4.default.join(root, "qbx-s3-sink-"));
+    const spoolPath = import_node_path4.default.join(dir, "backup.zip");
+    const spool = createSpool3(spoolPath, options, this.options.maxBytes);
     const opts = this.options;
     return {
       append: spool.append,
@@ -18790,115 +19390,19 @@ var S3Sink = class {
               `Backup zip is ${result.bytesZip} bytes, exceeding the ${opts.maxBytes} byte limit`
             );
           }
-          const fileStream = (0, import_node_fs4.createReadStream)(spoolPath);
+          const fileStream = (0, import_node_fs5.createReadStream)(spoolPath);
           await opts.client.putObject(opts.s3Key, fileStream, result.bytesZip, result.sha256);
-          const localCopy = await keepLocalCopy2(spoolPath, opts.keepLocalPath);
+          const localCopy = await keepLocalCopy3(spoolPath, opts.keepLocalPath);
           const s3Location = `s3://${opts.client.bucket}/${opts.s3Key}`;
           return localCopy === null ? { ...result, location: s3Location } : { ...result, location: `${s3Location} (+ local: ${localCopy})` };
         } finally {
-          await (0, import_promises3.rm)(dir, { recursive: true, force: true });
+          await (0, import_promises4.rm)(dir, { recursive: true, force: true });
         }
       },
       abort: async () => {
         await spool.abort();
-        await (0, import_promises3.rm)(dir, { recursive: true, force: true });
+        await (0, import_promises4.rm)(dir, { recursive: true, force: true });
       }
-    };
-  }
-};
-function createSpool2(target, options, maxBytes) {
-  const zip = new ZipArchive({ zlib: { level: options.zipLevel }, forceZip64: true });
-  const counter = createCounter2(options.onZipBytes, maxBytes);
-  const file = (0, import_node_fs4.createWriteStream)(target);
-  let source = null;
-  const flushed = new Promise((resolve2, reject) => {
-    file.once("close", () => resolve2());
-    file.once("error", reject);
-    counter.transform.once("error", reject);
-    zip.on("error", (zipError) => reject(new Error(`Zip failed: ${zipError.message}`)));
-    zip.on("warning", (warning) => {
-      if (warning.code !== "ENOENT") reject(new Error(`Zip warning: ${warning.message}`));
-    });
-  });
-  const failed = new Promise((_, reject) => {
-    flushed.catch((flushError) => {
-      source?.destroy(flushError);
-      reject(flushError);
-    });
-  });
-  void failed.catch(() => {
-  });
-  zip.pipe(counter.transform).pipe(file);
-  return {
-    append: (input) => {
-      source = input;
-      zip.append(input, { name: options.entryName });
-    },
-    finish: async () => {
-      await zip.finalize();
-      await flushed;
-      return { bytesZip: counter.bytes(), sha256: counter.digest() };
-    },
-    abort: async () => {
-      zip.abort();
-      counter.transform.destroy();
-      file.destroy();
-      await (0, import_promises3.rm)(target, { force: true });
-    },
-    failed
-  };
-}
-function createCounter2(onBytes, maxBytes) {
-  const hash = (0, import_node_crypto4.createHash)("sha256");
-  let total = 0;
-  const transform = new import_node_stream3.Transform({
-    transform(chunk, _encoding, callback) {
-      total += chunk.length;
-      hash.update(chunk);
-      onBytes?.(total);
-      if (maxBytes !== void 0 && total > maxBytes) {
-        callback(new Error(`Backup zip exceeded the ${maxBytes} byte limit for this job`));
-        return;
-      }
-      callback(null, chunk);
-    }
-  });
-  return { transform, bytes: () => total, digest: () => hash.digest("hex") };
-}
-async function keepLocalCopy2(spoolPath, destination) {
-  if (destination === void 0 || destination.length === 0) return null;
-  await (0, import_promises3.mkdir)(import_node_path3.default.dirname(destination), { recursive: true });
-  const partPath = `${destination}.part`;
-  await (0, import_promises3.copyFile)(spoolPath, partPath);
-  await (0, import_promises3.rename)(partPath, destination);
-  return destination;
-}
-
-// src/zip-sink.ts
-var import_node_crypto5 = require("node:crypto");
-var import_node_fs5 = require("node:fs");
-var import_promises4 = require("node:fs/promises");
-var import_node_path4 = __toESM(require("node:path"), 1);
-var import_node_stream4 = require("node:stream");
-var LocalFileSink = class {
-  constructor(filePath) {
-    this.filePath = filePath;
-  }
-  filePath;
-  async open(options) {
-    await (0, import_promises4.mkdir)(import_node_path4.default.dirname(this.filePath), { recursive: true });
-    const partPath = `${this.filePath}.part`;
-    const spool = createSpool3(partPath, options);
-    const filePath = this.filePath;
-    return {
-      append: spool.append,
-      failed: spool.failed,
-      finish: async () => {
-        const result = await spool.finish();
-        await (0, import_promises4.rename)(partPath, filePath);
-        return { ...result, location: filePath };
-      },
-      abort: spool.abort
     };
   }
 };
@@ -18961,6 +19465,102 @@ function createCounter3(onBytes, maxBytes) {
   });
   return { transform, bytes: () => total, digest: () => hash.digest("hex") };
 }
+async function keepLocalCopy3(spoolPath, destination) {
+  if (destination === void 0 || destination.length === 0) return null;
+  await (0, import_promises4.mkdir)(import_node_path4.default.dirname(destination), { recursive: true });
+  const partPath = `${destination}.part`;
+  await (0, import_promises4.copyFile)(spoolPath, partPath);
+  await (0, import_promises4.rename)(partPath, destination);
+  return destination;
+}
+
+// src/zip-sink.ts
+var import_node_crypto6 = require("node:crypto");
+var import_node_fs6 = require("node:fs");
+var import_promises5 = require("node:fs/promises");
+var import_node_path5 = __toESM(require("node:path"), 1);
+var import_node_stream5 = require("node:stream");
+var LocalFileSink = class {
+  constructor(filePath) {
+    this.filePath = filePath;
+  }
+  filePath;
+  async open(options) {
+    await (0, import_promises5.mkdir)(import_node_path5.default.dirname(this.filePath), { recursive: true });
+    const partPath = `${this.filePath}.part`;
+    const spool = createSpool4(partPath, options);
+    const filePath = this.filePath;
+    return {
+      append: spool.append,
+      failed: spool.failed,
+      finish: async () => {
+        const result = await spool.finish();
+        await (0, import_promises5.rename)(partPath, filePath);
+        return { ...result, location: filePath };
+      },
+      abort: spool.abort
+    };
+  }
+};
+function createSpool4(target, options, maxBytes) {
+  const zip = new ZipArchive({ zlib: { level: options.zipLevel }, forceZip64: true });
+  const counter = createCounter4(options.onZipBytes, maxBytes);
+  const file = (0, import_node_fs6.createWriteStream)(target);
+  let source = null;
+  const flushed = new Promise((resolve2, reject) => {
+    file.once("close", () => resolve2());
+    file.once("error", reject);
+    counter.transform.once("error", reject);
+    zip.on("error", (zipError) => reject(new Error(`Zip failed: ${zipError.message}`)));
+    zip.on("warning", (warning) => {
+      if (warning.code !== "ENOENT") reject(new Error(`Zip warning: ${warning.message}`));
+    });
+  });
+  const failed = new Promise((_, reject) => {
+    flushed.catch((flushError) => {
+      source?.destroy(flushError);
+      reject(flushError);
+    });
+  });
+  void failed.catch(() => {
+  });
+  zip.pipe(counter.transform).pipe(file);
+  return {
+    append: (input) => {
+      source = input;
+      zip.append(input, { name: options.entryName });
+    },
+    finish: async () => {
+      await zip.finalize();
+      await flushed;
+      return { bytesZip: counter.bytes(), sha256: counter.digest() };
+    },
+    abort: async () => {
+      zip.abort();
+      counter.transform.destroy();
+      file.destroy();
+      await (0, import_promises5.rm)(target, { force: true });
+    },
+    failed
+  };
+}
+function createCounter4(onBytes, maxBytes) {
+  const hash = (0, import_node_crypto6.createHash)("sha256");
+  let total = 0;
+  const transform = new import_node_stream5.Transform({
+    transform(chunk, _encoding, callback) {
+      total += chunk.length;
+      hash.update(chunk);
+      onBytes?.(total);
+      if (maxBytes !== void 0 && total > maxBytes) {
+        callback(new Error(`Backup zip exceeded the ${maxBytes} byte limit for this job`));
+        return;
+      }
+      callback(null, chunk);
+    }
+  });
+  return { transform, bytes: () => total, digest: () => hash.digest("hex") };
+}
 
 // src/cli.ts
 var FLAG_BY_CONVAR = {
@@ -18986,20 +19586,29 @@ var FLAG_BY_CONVAR = {
   qbx_backup_gdrive_refresh_token: "gdrive-refresh-token",
   qbx_backup_gdrive_folder_id: "gdrive-folder-id",
   qbx_backup_gdrive_keep: "gdrive-keep",
-  qbx_backup_gdrive_max_age_days: "gdrive-max-age"
+  qbx_backup_gdrive_max_age_days: "gdrive-max-age",
+  qbx_db_backup_discord_webhook_url: "discord-webhook",
+  qbx_discord_webhook_url: "discord-webhook",
+  qbx_db_backup_discord_bot_token: "discord-token",
+  qbx_discord_bot_token: "discord-token",
+  qbx_db_backup_discord_channel_id: "discord-channel",
+  qbx_discord_channel_id: "discord-channel",
+  qbx_db_backup_discord_is_forum: "discord-forum",
+  qbx_discord_is_forum: "discord-forum"
 };
 var USAGE = `qbx_db_backup CLI v${RESOURCE_VERSION}
 
 usage:
   node dist/cli.js run  --connection "<string>" [--out ./backups] [--dump-bin path] [--zip-level 6]
-  node dist/cli.js test --connection "<string>" [--dump-bin path] [--s3-bucket b --s3-key k --s3-secret s] [--gdrive-client-id id --gdrive-client-secret sec --gdrive-refresh-token tok]
+  node dist/cli.js test --connection "<string>" [--dump-bin path] [--s3-bucket b --s3-key k --s3-secret s] [--gdrive-client-id id --gdrive-client-secret sec --gdrive-refresh-token tok] [--discord-webhook url] [--discord-token tok --discord-channel id]
 
 Flags fall back to environment variables: MYSQL_CONNECTION_STRING,
 QBX_DB_BACKUP_CONNECTION_STRING, QBX_DB_BACKUP_LOCAL_DIR, QBX_DB_BACKUP_DUMP_BIN,
 QBX_DB_BACKUP_ZIP_LEVEL, QBX_DB_BACKUP_TIMEOUT_MINUTES, QBX_DB_BACKUP_S3_BUCKET,
 QBX_DB_BACKUP_S3_KEY, QBX_DB_BACKUP_S3_SECRET, QBX_DB_BACKUP_S3_ENDPOINT,
 QBX_DB_BACKUP_S3_REGION, QBX_BACKUP_GDRIVE_CLIENT_ID, QBX_BACKUP_GDRIVE_CLIENT_SECRET,
-QBX_BACKUP_GDRIVE_REFRESH_TOKEN, QBX_BACKUP_GDRIVE_FOLDER_ID.`;
+QBX_BACKUP_GDRIVE_REFRESH_TOKEN, QBX_BACKUP_GDRIVE_FOLDER_ID, QBX_DB_BACKUP_DISCORD_WEBHOOK_URL,
+QBX_DB_BACKUP_DISCORD_BOT_TOKEN, QBX_DB_BACKUP_DISCORD_CHANNEL_ID.`;
 function parseFlags(argv) {
   const flags = {};
   for (let index2 = 0; index2 < argv.length; index2 += 1) {
@@ -19029,22 +19638,22 @@ function buildConfig(flags) {
     return process.env[name.toUpperCase()] ?? fallback;
   };
   return loadConfig(source, {
-    localDir: import_node_path5.default.resolve("backups"),
-    resourceDir: import_node_path5.default.resolve(__dirname, "..")
+    localDir: import_node_path6.default.resolve("backups"),
+    resourceDir: import_node_path6.default.resolve(__dirname, "..")
   });
 }
 async function commandRun(config) {
   const target = parseConnectionString(config.connectionString);
   const names = buildBackupNames(target.database, /* @__PURE__ */ new Date());
-  let sink = new LocalFileSink(import_node_path5.default.resolve(config.localDir, names.zipName));
+  let sink = new LocalFileSink(import_node_path6.default.resolve(config.localDir, names.zipName));
   if (config.mode === "s3" && isS3Configured(config.s3)) {
     const s3Client = new S3Client(config.s3);
     const key = config.s3.prefix ? `${config.s3.prefix.replace(/\/+$/, "")}/${names.zipName}` : names.zipName;
     sink = new S3Sink({
       client: s3Client,
       s3Key: key,
-      tmpDir: import_node_path5.default.resolve(config.localDir, ".tmp"),
-      keepLocalPath: config.keepLocal ? import_node_path5.default.resolve(config.localDir, names.zipName) : void 0
+      tmpDir: import_node_path6.default.resolve(config.localDir, ".tmp"),
+      keepLocalPath: config.keepLocal ? import_node_path6.default.resolve(config.localDir, names.zipName) : void 0
     });
   } else if (config.mode === "gdrive" && isGDriveConfigured(config.gdrive)) {
     const gdriveClient = new GDriveClient(config.gdrive);
@@ -19052,8 +19661,18 @@ async function commandRun(config) {
       client: gdriveClient,
       fileName: names.zipName,
       folderId: config.gdrive.folderId,
-      tmpDir: import_node_path5.default.resolve(config.localDir, ".tmp"),
-      keepLocalPath: config.keepLocal || config.gdrive.keepLocal ? import_node_path5.default.resolve(config.localDir, names.zipName) : void 0
+      tmpDir: import_node_path6.default.resolve(config.localDir, ".tmp"),
+      keepLocalPath: config.keepLocal || config.gdrive.keepLocal ? import_node_path6.default.resolve(config.localDir, names.zipName) : void 0
+    });
+  } else if (config.mode === "discord" && isDiscordConfigured(config.discord)) {
+    const discordClient = new DiscordClient(config.discord);
+    sink = new DiscordSink({
+      client: discordClient,
+      fileName: names.zipName,
+      database: target.database,
+      trigger: "cli",
+      tmpDir: import_node_path6.default.resolve(config.localDir, ".tmp"),
+      keepLocalPath: config.keepLocal || config.discord.keepLocal ? import_node_path6.default.resolve(config.localDir, names.zipName) : void 0
     });
   }
   const outcome = await runBackup({ config, sink, entryName: names.entryName });
@@ -19101,8 +19720,18 @@ async function commandTest(config) {
       gdriveStatus = { ok: false, error: errorMessage(gdriveErr) };
     }
   }
+  let discordStatus = null;
+  if (isDiscordConfigured(config.discord)) {
+    try {
+      const discordClient = new DiscordClient(config.discord);
+      const discRes = await discordClient.testConnection();
+      discordStatus = discRes;
+    } catch (discErr) {
+      discordStatus = { ok: false, error: errorMessage(discErr) };
+    }
+  }
   process.stdout.write(
-    `${JSON.stringify({ target: describeTarget(target), ssl: target.ssl, dumpBinary: binary, s3: s3Status, gdrive: gdriveStatus }, null, 2)}
+    `${JSON.stringify({ target: describeTarget(target), ssl: target.ssl, dumpBinary: binary, s3: s3Status, gdrive: gdriveStatus, discord: discordStatus }, null, 2)}
 `
   );
   return 0;
