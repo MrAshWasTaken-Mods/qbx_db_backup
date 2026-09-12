@@ -5,6 +5,7 @@ machine itself, so the database never has to be reachable from the internet and 
 never leave it.
 
 - **Standalone**: run a backup from the console and the zip lands next to the resource.
+- **Discord (Webhook or Bot)**: stream backup zips directly to Discord channels or forum channels (grouped into daily threads).
 - **Google Drive (100% Free)**: stream backups directly to your personal Google Drive (15 GB free) with zero API costs or credit cards.
 - **Universal S3 storage**: upload directly to Cloudflare R2, AWS S3, Wasabi, Backblaze B2, or MinIO.
 - **With the Qbox dashboard**: the same backups, sent off-site, with history and alerts.
@@ -32,9 +33,9 @@ From the server console:
 
 | Command | What it does |
 | --- | --- |
-| `qbx_db_backup run` | Back up now. Standalone: writes the zip to `resources/qbx_db_backup/backups/`. Connected: uploads to Google Drive, S3, or the dashboard. |
+| `qbx_db_backup run` | Back up now. Standalone: writes the zip to `resources/qbx_db_backup/backups/`. Connected: uploads to Discord, Google Drive, S3, or the dashboard. |
 | `qbx_db_backup status` | Shows the current mode, target database, schedule, and the last result. |
-| `qbx_db_backup test` | Checks the configuration and cloud connectivity without touching the database. |
+| `qbx_db_backup test` | Checks the configuration and cloud/discord connectivity without touching the database. |
 | `qbx_db_backup version` | Prints the version. |
 
 To connect the resource to the Qbox dashboard, paste the token from your organisation's backup
@@ -46,6 +47,26 @@ set qbx_db_backup_token "your-token"
 
 In all modes a backup runs automatically every `qbx_db_backup_interval_hours` hours (hourly by
 default), and `qbx_db_backup run` in the server console is how you start one by hand.
+
+## Discord Delivery (Webhook or Bot Token)
+
+To send backups directly to a Discord text channel or forum channel:
+
+```cfg
+set qbx_backup_destination "discord"
+set qbx_db_backup_discord_webhook_url "https://discord.com/api/webhooks/..."
+```
+
+For Forum Channels with automatic daily thread grouping (`Database Backup - 2026-09-12`):
+
+```cfg
+set qbx_backup_destination "discord"
+set qbx_db_backup_discord_bot_token "MTEyMjMzNDQ1NQ.YourBotToken"
+set qbx_db_backup_discord_channel_id "123456789012345678"
+set qbx_db_backup_discord_is_forum "1"
+```
+
+See [docs/DISCORD_EXAMPLES.md](docs/DISCORD_EXAMPLES.md) for full configuration examples and setup instructions.
 
 ## Google Drive Storage (100% Free)
 
@@ -81,14 +102,20 @@ Everything has a working default. The resource reads the database credentials fr
 
 | Convar | Default | Meaning |
 | --- | --- | --- |
-| `qbx_backup_destination` | (auto) | Explicit destination: `qbx`, `gdrive`, `s3`, or `local`. |
-| `qbx_db_backup_token` | (empty) | Dashboard token. Leave empty to run standalone, GDrive, or S3. |
+| `qbx_backup_destination` | (auto) | Explicit destination: `qbx`, `discord`, `gdrive`, `s3`, or `local`. |
+| `qbx_db_backup_token` | (empty) | Dashboard token. Leave empty to run standalone, Discord, GDrive, or S3. |
 | `qbx_db_backup_connection_string` | (empty) | Use different credentials than the server does. Same formats as oxmysql. |
 | `qbx_db_backup_interval_hours` | `1` | How often to back up, in hours. Minimum 1, 0 disables the schedule. Manual runs always work. |
 | `qbx_db_backup_local_keep` | `7` | How many zips to keep in the local folder (standalone, or connected with `keep_local`). |
 | `qbx_db_backup_local_max_age_days` | `0` | Delete local backups older than this many days (0 disables age pruning). |
 | `qbx_db_backup_min_free_disk_mb` | `0` | Minimum free disk space in MB. Prunes oldest local zips if drive space drops below this. |
 | `qbx_db_backup_keep_local` | `0` | When uploading to cloud storage, also keep a copy of each zip in the local folder. |
+| `qbx_db_backup_discord_webhook_url` | (empty) | Discord Webhook URL. |
+| `qbx_db_backup_discord_bot_token` | (empty) | Discord Bot Token. |
+| `qbx_db_backup_discord_channel_id` | (empty) | Discord Channel ID (Text Channel or Forum Channel). |
+| `qbx_db_backup_discord_is_forum` | `0` | Set to `1` to enable Forum Channel mode. |
+| `qbx_db_backup_discord_thread_title` | `Database Backup - {date}` | Title format for Forum threads. |
+| `qbx_db_backup_discord_keep_local` | `0` | Also retain local zip copy when sending to Discord. |
 | `qbx_backup_gdrive_client_id` | (empty) | Google Cloud OAuth 2.0 Client ID. |
 | `qbx_backup_gdrive_client_secret` | (empty) | Google Cloud OAuth 2.0 Client Secret. |
 | `qbx_backup_gdrive_refresh_token` | (empty) | Google OAuth 2.0 1-time Refresh Token. |
