@@ -9,6 +9,7 @@ import {
 } from "./backup";
 import {
   type Config,
+  isDiscordConfigured,
   isGDriveConfigured,
   isS3Configured,
   loadConfig,
@@ -17,9 +18,11 @@ import {
   redactSecret,
 } from "./config";
 import { describeTarget, parseConnectionString } from "./connection-string";
+import { DiscordClient } from "./discord/client";
+import { DiscordSink } from "./discord/sink";
 import { type DumpBinary, detectDumpBinary } from "./dump";
-import { GDriveClient } from "./gdrive/client";
 import { loadCredentialsFile } from "./gdrive/auth";
+import { GDriveClient } from "./gdrive/client";
 import { GDriveSink } from "./gdrive/sink";
 import { error, errorMessage, info, warn } from "./log";
 import { pruneGDriveFolder, pruneLocalDirectory, pruneS3Bucket } from "./retention";
@@ -36,6 +39,7 @@ let config: Config;
 let api: AgentApi | null = null;
 let s3Client: S3Client | null = null;
 let gdriveClient: GDriveClient | null = null;
+let discordClient: DiscordClient | null = null;
 let dumpBinary: DumpBinary | null = null;
 let pollTimer: NodeJS.Timeout | null = null;
 let scheduleTimer: NodeJS.Timeout | null = null;
@@ -191,7 +195,9 @@ async function pruneGDrive(): Promise<void> {
       );
     }
     if (res.errors.length > 0) {
-      warn(`Google Drive retention delete error: ${res.errors.map((e) => `${e.name}: ${e.error}`).join("; ")}`);
+      warn(
+        `Google Drive retention delete error: ${res.errors.map((e) => `${e.name}: ${e.error}`).join("; ")}`,
+      );
     }
   } catch (failure) {
     warn(`Google Drive retention pruning warning: ${errorMessage(failure)}`);
@@ -258,7 +264,9 @@ async function runGDriveBackup(): Promise<BackupOutcome> {
         : undefined,
   });
 
-  info(`starting Google Drive upload -> folder "${config.gdrive.folderId || "root"}" (${names.zipName})`);
+  info(
+    `starting Google Drive upload -> folder "${config.gdrive.folderId || "root"}" (${names.zipName})`,
+  );
   const outcome = await runBackup({
     config,
     sink,
@@ -272,6 +280,41 @@ async function runGDriveBackup(): Promise<BackupOutcome> {
   if (!outcome.busy) {
     await pruneGDrive();
     if (config.keepLocal || config.gdrive.keepLocal) await pruneLocal();
+  }
+  return outcome;
+}
+
+async function runDiscordBackup(trigger: JobTrigger): Promise<BackupOutcome> {
+  if (discordClient === null) throw new Error("Discord client is not configured");
+  const target = parseConnectionString(config.connectionString);
+  const names = buildBackupNames(target.database, new Date());
+
+  const sink = new DiscordSink({
+    client: discordClient,
+    fileName: names.zipName,
+    database: target.database,
+    trigger,
+    tmpDir: path.join(config.localDir, ".tmp"),
+    keepLocalPath:
+      config.keepLocal || config.discord.keepLocal
+        ? path.join(config.localDir, names.zipName)
+        : undefined,
+  });
+
+  const targetDesc = config.discord.isForum ? "forum thread" : "channel";
+  info(`starting Discord backup upload -> ${targetDesc} (${names.zipName})`);
+  const outcome = await runBackup({
+    config,
+    sink,
+    entryName: names.entryName,
+    timeoutMs: config.timeoutMinutes * 60_000,
+  });
+
+  lastOutcome = describeOutcome(outcome);
+  info(lastOutcome);
+
+  if (!outcome.busy) {
+    if (config.keepLocal || config.discord.keepLocal) await pruneLocal();
   }
   return outcome;
 }
@@ -320,7 +363,6 @@ async function runJob(job: BackupJob): Promise<void> {
       sha256: outcome.sha256,
       warnings: outcome.warnings,
     });
-    // CompleteResult uses status: "ready" | "failed", not ok: boolean
     if (result.status === "failed") {
       lastOutcome = `failed: ${result.error ?? "unknown"}`;
       error(result.error ?? "unknown error from dashboard");
@@ -383,7 +425,17 @@ async function executeBackupPipeline(trigger: JobTrigger): Promise<number | null
           return null;
         } catch (gdriveFailure) {
           warn(
-            `Google Drive upload fallback failed (${errorMessage(gdriveFailure)}); activating local storage fallback...`,
+            `Google Drive upload fallback failed (${errorMessage(gdriveFailure)}); activating tertiary fallback...`,
+          );
+        }
+      }
+      if (isDiscordConfigured(config.discord)) {
+        try {
+          await runDiscordBackup(trigger);
+          return null;
+        } catch (discFailure) {
+          warn(
+            `Discord upload fallback failed (${errorMessage(discFailure)}); activating local storage fallback...`,
           );
         }
       }
@@ -404,7 +456,17 @@ async function executeBackupPipeline(trigger: JobTrigger): Promise<number | null
           return null;
         } catch (gdriveFailure) {
           warn(
-            `Google Drive upload fallback failed (${errorMessage(gdriveFailure)}); activating local storage fallback...`,
+            `Google Drive upload fallback failed (${errorMessage(gdriveFailure)}); activating secondary fallback...`,
+          );
+        }
+      }
+      if (isDiscordConfigured(config.discord)) {
+        try {
+          await runDiscordBackup(trigger);
+          return null;
+        } catch (discFailure) {
+          warn(
+            `Discord upload fallback failed (${errorMessage(discFailure)}); activating local storage fallback...`,
           );
         }
       }
@@ -418,14 +480,59 @@ async function executeBackupPipeline(trigger: JobTrigger): Promise<number | null
       await runGDriveBackup();
       return null;
     } catch (gdriveFailure) {
-      warn(`Google Drive upload failed (${errorMessage(gdriveFailure)}); activating fallback pipeline...`);
+      warn(
+        `Google Drive upload failed (${errorMessage(gdriveFailure)}); activating fallback pipeline...`,
+      );
       if (isS3Configured(config.s3)) {
         try {
           await runS3Backup();
           return null;
         } catch (s3Failure) {
           warn(
-            `S3 upload fallback failed (${errorMessage(s3Failure)}); activating local storage fallback...`,
+            `S3 upload fallback failed (${errorMessage(s3Failure)}); activating secondary fallback...`,
+          );
+        }
+      }
+      if (isDiscordConfigured(config.discord)) {
+        try {
+          await runDiscordBackup(trigger);
+          return null;
+        } catch (discFailure) {
+          warn(
+            `Discord upload fallback failed (${errorMessage(discFailure)}); activating local storage fallback...`,
+          );
+        }
+      }
+      await runLocalBackup();
+      return null;
+    }
+  }
+
+  if (config.mode === "discord") {
+    try {
+      await runDiscordBackup(trigger);
+      return null;
+    } catch (discordFailure) {
+      warn(
+        `Discord upload failed (${errorMessage(discordFailure)}); activating fallback pipeline...`,
+      );
+      if (isS3Configured(config.s3)) {
+        try {
+          await runS3Backup();
+          return null;
+        } catch (s3Failure) {
+          warn(
+            `S3 upload fallback failed (${errorMessage(s3Failure)}); activating secondary fallback...`,
+          );
+        }
+      }
+      if (isGDriveConfigured(config.gdrive)) {
+        try {
+          await runGDriveBackup();
+          return null;
+        } catch (gdriveFailure) {
+          warn(
+            `Google Drive upload fallback failed (${errorMessage(gdriveFailure)}); activating local storage fallback...`,
           );
         }
       }
@@ -516,6 +623,14 @@ function commandStatus(): void {
     );
   }
 
+  if (isDiscordConfigured(config.discord)) {
+    const targetType = config.discord.isForum ? "forum" : "text channel";
+    const authType = config.discord.botToken ? "bot token" : "webhook";
+    info(
+      `discord delivery: type="${targetType}" auth="${authType}" channel="${config.discord.channelId || "webhook"}" max_size="${config.discord.maxFileSizeMb}MB"`,
+    );
+  }
+
   if (lastHeartbeat !== null) {
     info(
       `dashboard plan ${lastHeartbeat.plan}: ${formatBytes(lastHeartbeat.usedBytes)} / ${formatBytes(lastHeartbeat.poolBytes)} used`,
@@ -564,6 +679,14 @@ async function commandTest(): Promise<void> {
         );
       }
     }
+
+    if (isDiscordConfigured(config.discord) && discordClient !== null) {
+      info("testing Discord storage connection...");
+      const discTest = await discordClient.testConnection();
+      info(
+        `Discord connected successfully (type=${discTest.type}, name="${discTest.name ?? "unnamed"}", channelId="${discTest.channelId}", isForum=${discTest.isForum})`,
+      );
+    }
   } catch (failure) {
     error(errorMessage(failure));
   }
@@ -591,7 +714,6 @@ function start(): void {
 
   if (isGDriveConfigured(config.gdrive)) {
     if (config.gdrive.credentialsFile) {
-      // credentialsFile takes priority: load auth config from disk at startup
       void loadCredentialsFile(config.gdrive.credentialsFile)
         .then((fileAuth) => {
           gdriveClient = new GDriveClient(fileAuth);
@@ -603,6 +725,10 @@ function start(): void {
     } else {
       gdriveClient = new GDriveClient(config.gdrive);
     }
+  }
+
+  if (isDiscordConfigured(config.discord)) {
+    discordClient = new DiscordClient(config.discord);
   }
 
   info(
