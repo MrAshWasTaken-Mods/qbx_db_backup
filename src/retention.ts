@@ -282,7 +282,7 @@ export async function pruneGDriveFolder(
   // Pass '.zip' as a name hint so the Drive API pre-filters the result set.
   // isOwnBackupFile() still applies the full regex on every returned filename
   // to ensure only backup archives produced by this resource are considered.
-  const gdriveFiles = await client.listFiles(policy.folderId, '.zip');
+  const gdriveFiles = await client.listFiles(policy.folderId, ".zip");
 
   const entries: (BackupEntry & { id: string })[] = [];
   for (const file of gdriveFiles) {

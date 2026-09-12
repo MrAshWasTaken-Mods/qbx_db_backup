@@ -22,7 +22,7 @@
 ---
 
 ### Step 3: Configure the OAuth Consent Screen
-1. In the left navigation menu, go to **APIs & Services** ➔ **OAuth consent screen**.
+1. In the left navigation menu, go to **APIs & Services** -> **OAuth consent screen**.
 2. Choose **External** (or **Internal** if using Google Workspace) and click **Create**.
 3. Enter an **App name** (e.g. `Qbox DB Backup`) and your support email.
 4. Click **Save and Continue** through the Scopes and Test Users steps.
@@ -32,7 +32,7 @@
 ---
 
 ### Step 4: Create OAuth 2.0 Credentials
-1. In the left menu, click **Credentials** ➔ **Create Credentials** ➔ **OAuth client ID**.
+1. In the left menu, click **Credentials** -> **Create Credentials** -> **OAuth client ID**.
 2. Set **Application type** to **Desktop app** (or **Web application**).
 3. Name it (e.g. `FiveM Server`) and click **Create**.
 4. Copy your **Client ID** and **Client Secret**.
@@ -49,7 +49,7 @@ You can generate your non-expiring `refresh_token` in 30 seconds using the [Goog
    - Paste your **OAuth Client ID** and **OAuth Client Secret** from Step 4.
 3. On the left side, under **Step 1: Select & authorize APIs**:
    - Scroll down to **Drive API v3** and select `https://www.googleapis.com/auth/drive`.
-4. Click **Authorize APIs** and log in with your Google account (click *Advanced ➔ Go to Qbox DB Backup (unsafe)* if warned).
+4. Click **Authorize APIs** and log in with your Google account (click *Advanced -> Go to Qbox DB Backup (unsafe)* if warned).
 5. On the left side under **Step 2: Exchange authorization code for tokens**:
    - Click **Exchange authorization code for tokens**.
 6. Copy the resulting **Refresh token** (starts with `1//04...`).

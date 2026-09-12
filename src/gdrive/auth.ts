@@ -1,5 +1,5 @@
-﻿import crypto from 'node:crypto';
-import { readFile } from 'node:fs/promises';
+﻿import crypto from "node:crypto";
+import { readFile } from "node:fs/promises";
 import {
   type GDriveAuthConfig,
   GDriveError,
@@ -7,14 +7,14 @@ import {
   type GDriveServiceAccountConfig,
   type GDriveTokenResponse,
   isOAuthConfig,
-} from './types';
+} from "./types";
 
-const GOOGLE_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token';
-const DRIVE_FULL_SCOPE = 'https://www.googleapis.com/auth/drive';
+const GOOGLE_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
+const DRIVE_FULL_SCOPE = "https://www.googleapis.com/auth/drive";
 
 function base64UrlEncode(strOrBuffer: string | Buffer): string {
-  const buf = typeof strOrBuffer === 'string' ? Buffer.from(strOrBuffer, 'utf8') : strOrBuffer;
-  return buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const buf = typeof strOrBuffer === "string" ? Buffer.from(strOrBuffer, "utf8") : strOrBuffer;
+  return buf.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
 /**
@@ -22,20 +22,20 @@ function base64UrlEncode(strOrBuffer: string | Buffer): string {
  */
 export async function refreshOAuthToken(
   config: GDriveOAuthConfig,
-  fetchFn: typeof fetch = fetch
+  fetchFn: typeof fetch = fetch,
 ): Promise<GDriveTokenResponse> {
   const params = new URLSearchParams({
     client_id: config.clientId,
     client_secret: config.clientSecret,
     refresh_token: config.refreshToken,
-    grant_type: 'refresh_token',
+    grant_type: "refresh_token",
   });
 
   const response = await fetchFn(GOOGLE_TOKEN_ENDPOINT, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json',
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json",
     },
     body: params.toString(),
   });
@@ -63,10 +63,10 @@ export async function refreshOAuthToken(
  */
 export async function authenticateServiceAccount(
   config: GDriveServiceAccountConfig,
-  fetchFn: typeof fetch = fetch
+  fetchFn: typeof fetch = fetch,
 ): Promise<GDriveTokenResponse> {
   const now = Math.floor(Date.now() / 1000);
-  const header = { alg: 'RS256', typ: 'JWT' };
+  const header = { alg: "RS256", typ: "JWT" };
   const claims = {
     iss: config.clientEmail,
     scope: DRIVE_FULL_SCOPE,
@@ -79,22 +79,22 @@ export async function authenticateServiceAccount(
   const encodedClaims = base64UrlEncode(JSON.stringify(claims));
   const payloadToSign = `${encodedHeader}.${encodedClaims}`;
 
-  const signer = crypto.createSign('RSA-SHA256');
+  const signer = crypto.createSign("RSA-SHA256");
   signer.update(payloadToSign);
   signer.end();
   const signature = signer.sign(config.privateKey);
   const jwt = `${payloadToSign}.${base64UrlEncode(signature)}`;
 
   const params = new URLSearchParams({
-    grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+    grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
     assertion: jwt,
   });
 
   const response = await fetchFn(GOOGLE_TOKEN_ENDPOINT, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json',
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json",
     },
     body: params.toString(),
   });
@@ -126,15 +126,13 @@ export async function authenticateServiceAccount(
  *
  * Exported from Google Cloud Console -> APIs & Services -> Credentials -> Download JSON.
  */
-export async function loadCredentialsFile(
-  filePath: string
-): Promise<GDriveAuthConfig> {
+export async function loadCredentialsFile(filePath: string): Promise<GDriveAuthConfig> {
   let raw: string;
   try {
-    raw = await readFile(filePath, 'utf8');
+    raw = await readFile(filePath, "utf8");
   } catch (err) {
     throw new GDriveError(
-      `Cannot read credentials file at '${filePath}': ${err instanceof Error ? err.message : String(err)}`
+      `Cannot read credentials file at '${filePath}': ${err instanceof Error ? err.message : String(err)}`,
     );
   }
 
@@ -146,13 +144,13 @@ export async function loadCredentialsFile(
   }
 
   // Shape 1: Service Account key (Google Cloud Console -> Service Accounts -> JSON key)
-  if (parsed['type'] === 'service_account') {
-    const clientEmail = parsed['client_email'];
-    const privateKey = parsed['private_key'];
-    if (typeof clientEmail !== 'string' || !clientEmail) {
+  if (parsed.type === "service_account") {
+    const clientEmail = parsed.client_email;
+    const privateKey = parsed.private_key;
+    if (typeof clientEmail !== "string" || !clientEmail) {
       throw new GDriveError(`Service account credentials file missing 'client_email'.`);
     }
-    if (typeof privateKey !== 'string' || !privateKey) {
+    if (typeof privateKey !== "string" || !privateKey) {
       throw new GDriveError(`Service account credentials file missing 'private_key'.`);
     }
     return { clientEmail, privateKey };
@@ -161,28 +159,28 @@ export async function loadCredentialsFile(
   // Shape 2: OAuth 2.0 client (installed/web) + refresh_token
   // The refresh_token must also be present in the file (e.g. from a saved token exchange)
   const installedOrWeb =
-    (parsed['installed'] as Record<string, unknown> | undefined) ??
-    (parsed['web'] as Record<string, unknown> | undefined) ??
+    (parsed.installed as Record<string, unknown> | undefined) ??
+    (parsed.web as Record<string, unknown> | undefined) ??
     parsed;
 
-  const clientId = (installedOrWeb as Record<string, unknown>)['client_id'] ?? parsed['client_id'];
+  const clientId = (installedOrWeb as Record<string, unknown>).client_id ?? parsed.client_id;
   const clientSecret =
-    (installedOrWeb as Record<string, unknown>)['client_secret'] ?? parsed['client_secret'];
-  const refreshToken = parsed['refresh_token'];
+    (installedOrWeb as Record<string, unknown>).client_secret ?? parsed.client_secret;
+  const refreshToken = parsed.refresh_token;
 
-  if (typeof clientId !== 'string' || !clientId) {
+  if (typeof clientId !== "string" || !clientId) {
     throw new GDriveError(
       `Credentials file at '${filePath}' is missing 'client_id'. ` +
-        `For OAuth 2.0, include a 'refresh_token' field alongside the downloaded client JSON.`
+        `For OAuth 2.0, include a 'refresh_token' field alongside the downloaded client JSON.`,
     );
   }
-  if (typeof clientSecret !== 'string' || !clientSecret) {
+  if (typeof clientSecret !== "string" || !clientSecret) {
     throw new GDriveError(`Credentials file at '${filePath}' is missing 'client_secret'.`);
   }
-  if (typeof refreshToken !== 'string' || !refreshToken) {
+  if (typeof refreshToken !== "string" || !refreshToken) {
     throw new GDriveError(
       `Credentials file at '${filePath}' is missing 'refresh_token'. ` +
-        `Add the refresh_token obtained from the OAuth consent flow to the file.`
+        `Add the refresh_token obtained from the OAuth consent flow to the file.`,
     );
   }
 
@@ -198,7 +196,7 @@ export class GDriveAuthManager {
 
   constructor(
     private readonly config: GDriveAuthConfig,
-    private readonly fetchFn: typeof fetch = fetch
+    private readonly fetchFn: typeof fetch = fetch,
   ) {}
 
   /**

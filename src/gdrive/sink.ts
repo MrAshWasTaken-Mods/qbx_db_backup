@@ -1,11 +1,11 @@
-﻿import { createHash } from 'node:crypto';
-import { createWriteStream } from 'node:fs';
-import { copyFile, mkdir, mkdtemp, rename, rm } from 'node:fs/promises';
-import path from 'node:path';
-import { type Readable, Transform } from 'node:stream';
-import { ZipArchive } from 'archiver';
-import type { BackupSink, OpenSink, SinkOpenOptions, SinkResult } from '../zip-sink';
-import type { GDriveClient } from './client';
+﻿import { createHash } from "node:crypto";
+import { createWriteStream } from "node:fs";
+import { copyFile, mkdir, mkdtemp, rename, rm } from "node:fs/promises";
+import path from "node:path";
+import { type Readable, Transform } from "node:stream";
+import { ZipArchive } from "archiver";
+import type { BackupSink, OpenSink, SinkOpenOptions, SinkResult } from "../zip-sink";
+import type { GDriveClient } from "./client";
 
 export type GDriveSinkOptions = {
   client: GDriveClient;
@@ -22,8 +22,8 @@ export class GDriveSink implements BackupSink {
   async open(options: SinkOpenOptions): Promise<OpenSink> {
     const root = this.options.tmpDir;
     await mkdir(root, { recursive: true });
-    const dir = await mkdtemp(path.join(root, 'qbx-gdrive-sink-'));
-    const spoolPath = path.join(dir, 'backup.zip');
+    const dir = await mkdtemp(path.join(root, "qbx-gdrive-sink-"));
+    const spoolPath = path.join(dir, "backup.zip");
     const spool = createSpool(spoolPath, options, this.options.maxBytes);
     const opts = this.options;
 
@@ -35,7 +35,7 @@ export class GDriveSink implements BackupSink {
           const result = await spool.finish();
           if (opts.maxBytes !== undefined && result.bytesZip > opts.maxBytes) {
             throw new Error(
-              `Backup zip is ${result.bytesZip} bytes, exceeding the ${opts.maxBytes} byte limit`
+              `Backup zip is ${result.bytesZip} bytes, exceeding the ${opts.maxBytes} byte limit`,
             );
           }
 
@@ -43,12 +43,12 @@ export class GDriveSink implements BackupSink {
             name: opts.fileName,
             filePath: spoolPath,
             folderId: opts.folderId,
-            mimeType: 'application/zip',
+            mimeType: "application/zip",
             description: `Automated Qbox Database Backup (SHA256: ${result.sha256})`,
           });
 
           const localCopy = await keepLocalCopy(spoolPath, opts.keepLocalPath);
-          const gdriveLocation = `gdrive://${opts.folderId || 'root'}/${uploadedFile.id} (${uploadedFile.name})`;
+          const gdriveLocation = `gdrive://${opts.folderId || "root"}/${uploadedFile.id} (${uploadedFile.name})`;
           return localCopy === null
             ? { ...result, location: gdriveLocation }
             : { ...result, location: `${gdriveLocation} (+ local: ${localCopy})` };
@@ -78,12 +78,12 @@ function createSpool(target: string, options: SinkOpenOptions, maxBytes?: number
   let source: Readable | null = null;
 
   const flushed = new Promise<void>((resolve, reject) => {
-    file.once('close', () => resolve());
-    file.once('error', reject);
-    counter.transform.once('error', reject);
-    zip.on('error', (zipError: Error) => reject(new Error(`Zip failed: ${zipError.message}`)));
-    zip.on('warning', (warning: Error & { code?: string }) => {
-      if (warning.code !== 'ENOENT') reject(new Error(`Zip warning: ${warning.message}`));
+    file.once("close", () => resolve());
+    file.once("error", reject);
+    counter.transform.once("error", reject);
+    zip.on("error", (zipError: Error) => reject(new Error(`Zip failed: ${zipError.message}`)));
+    zip.on("warning", (warning: Error & { code?: string }) => {
+      if (warning.code !== "ENOENT") reject(new Error(`Zip warning: ${warning.message}`));
     });
   });
 
@@ -118,7 +118,7 @@ function createSpool(target: string, options: SinkOpenOptions, maxBytes?: number
 }
 
 function createCounter(onBytes: ((total: number) => void) | undefined, maxBytes?: number) {
-  const hash = createHash('sha256');
+  const hash = createHash("sha256");
   let total = 0;
   const transform = new Transform({
     transform(chunk: Buffer, _encoding, callback) {
@@ -132,7 +132,7 @@ function createCounter(onBytes: ((total: number) => void) | undefined, maxBytes?
       callback(null, chunk);
     },
   });
-  return { transform, bytes: () => total, digest: () => hash.digest('hex') };
+  return { transform, bytes: () => total, digest: () => hash.digest("hex") };
 }
 
 async function keepLocalCopy(spoolPath: string, destination?: string): Promise<string | null> {

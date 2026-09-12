@@ -14,7 +14,7 @@ export interface GDriveServiceAccountConfig {
 export type GDriveAuthConfig = GDriveOAuthConfig | GDriveServiceAccountConfig;
 
 export function isOAuthConfig(config: GDriveAuthConfig): config is GDriveOAuthConfig {
-  return 'refreshToken' in config && Boolean(config.refreshToken);
+  return "refreshToken" in config && Boolean(config.refreshToken);
 }
 
 export interface GDriveTokenResponse {
@@ -76,7 +76,7 @@ export class GDriveError extends Error {
 
   constructor(message: string, code?: number, status?: string, reason?: string) {
     super(`[GDrive] ${message}`);
-    this.name = 'GDriveError';
+    this.name = "GDriveError";
     this.code = code;
     this.status = status;
     this.reason = reason;
