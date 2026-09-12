@@ -4,6 +4,7 @@ import {
   DEFAULT_INTERVAL_HOURS,
   DEFAULT_LOCAL_KEEP,
   DEFAULT_POLL_SECONDS,
+  isDiscordConfigured,
   loadConfig,
   MIN_POLL_SECONDS,
   redactSecret,
@@ -110,6 +111,66 @@ describe("Google Drive convars", () => {
   });
 });
 
+describe("Discord convars", () => {
+  it("loads full Discord configuration", () => {
+    const config = configWith({
+      qbx_db_backup_discord_webhook_url: "https://discord.com/api/webhooks/1/tok",
+      qbx_db_backup_discord_bot_token: "BOT_TOKEN",
+      qbx_db_backup_discord_channel_id: "99887766",
+      qbx_db_backup_discord_is_forum: "1",
+      qbx_db_backup_discord_thread_title: "Backup - {date}",
+      qbx_db_backup_discord_username: "Backup Bot",
+      qbx_db_backup_discord_avatar_url: "https://example.com/icon.png",
+      qbx_db_backup_discord_keep_local: "1",
+      qbx_db_backup_discord_max_file_size_mb: "50",
+    });
+
+    expect(config.discord.webhookUrl).toBe("https://discord.com/api/webhooks/1/tok");
+    expect(config.discord.botToken).toBe("BOT_TOKEN");
+    expect(config.discord.channelId).toBe("99887766");
+    expect(config.discord.isForum).toBe(true);
+    expect(config.discord.threadTitle).toBe("Backup - {date}");
+    expect(config.discord.username).toBe("Backup Bot");
+    expect(config.discord.avatarUrl).toBe("https://example.com/icon.png");
+    expect(config.discord.keepLocal).toBe(true);
+    expect(config.discord.maxFileSizeMb).toBe(50);
+  });
+
+  it("checks isDiscordConfigured for webhook and bot token", () => {
+    expect(
+      isDiscordConfigured({
+        webhookUrl: "https://discord.com/api/webhooks/1/tok",
+        isForum: false,
+        keepLocal: false,
+        maxFileSizeMb: 25,
+      }),
+    ).toBe(true);
+    expect(
+      isDiscordConfigured({
+        botToken: "tok",
+        channelId: "chan",
+        isForum: false,
+        keepLocal: false,
+        maxFileSizeMb: 25,
+      }),
+    ).toBe(true);
+    expect(
+      isDiscordConfigured({ botToken: "tok", isForum: false, keepLocal: false, maxFileSizeMb: 25 }),
+    ).toBe(false);
+    expect(
+      isDiscordConfigured({
+        channelId: "chan",
+        isForum: false,
+        keepLocal: false,
+        maxFileSizeMb: 25,
+      }),
+    ).toBe(false);
+    expect(isDiscordConfigured({ isForum: false, keepLocal: false, maxFileSizeMb: 25 })).toBe(
+      false,
+    );
+  });
+});
+
 describe("heartbeat convars", () => {
   it("defaults to a five minute heartbeat", () => {
     expect(configWith({}).pollSeconds).toBe(DEFAULT_POLL_SECONDS);
@@ -131,7 +192,7 @@ describe("heartbeat convars", () => {
 });
 
 describe("mode resolution", () => {
-  it("stays local without token or s3 or gdrive", () => {
+  it("stays local without token, s3, gdrive, or discord", () => {
     expect(configWith({}).mode).toBe("local");
   });
 
@@ -157,20 +218,25 @@ describe("mode resolution", () => {
     expect(config.mode).toBe("gdrive");
   });
 
-  it("prioritizes explicit destination convar override", () => {
+  it("resolves to discord when discord webhook is configured", () => {
     const config = configWith({
-      qbx_backup_destination: "gdrive",
+      qbx_db_backup_discord_webhook_url: "https://discord.com/api/webhooks/1/tok",
+    });
+    expect(config.mode).toBe("discord");
+  });
+
+  it("prioritizes explicit destination convar override for discord", () => {
+    const config = configWith({
+      qbx_backup_destination: "discord",
       qbx_db_backup_s3_bucket: "my-bucket",
       qbx_db_backup_s3_access_key_id: "KEY",
       qbx_db_backup_s3_secret_access_key: "SECRET",
-      qbx_backup_gdrive_client_id: "cid",
-      qbx_backup_gdrive_client_secret: "csec",
-      qbx_backup_gdrive_refresh_token: "refr",
+      qbx_db_backup_discord_webhook_url: "https://discord.com/api/webhooks/1/tok",
     });
-    expect(config.mode).toBe("gdrive");
+    expect(config.mode).toBe("discord");
   });
 
-  it("prioritizes qbx over s3 and gdrive by default when both are configured without explicit override", () => {
+  it("prioritizes qbx over s3, gdrive, and discord by default when all are configured without explicit override", () => {
     const config = configWith({
       qbx_db_backup_token: "tok",
       qbx_db_backup_s3_bucket: "my-bucket",
@@ -179,6 +245,7 @@ describe("mode resolution", () => {
       qbx_backup_gdrive_client_id: "cid",
       qbx_backup_gdrive_client_secret: "csec",
       qbx_backup_gdrive_refresh_token: "refr",
+      qbx_db_backup_discord_webhook_url: "https://discord.com/api/webhooks/1/tok",
     });
     expect(config.mode).toBe("qbx");
   });

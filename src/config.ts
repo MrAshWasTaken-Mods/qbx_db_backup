@@ -1,16 +1,16 @@
-﻿import type { S3Config } from "./s3/types";
+﻿import type { DiscordConfig } from "./discord/types";
+import type { S3Config } from "./s3/types";
 
 export const RESOURCE_VERSION = "1.1.0";
 export const DEFAULT_API_BASE = "https://dashboard.qbox.re";
 export const MIN_POLL_SECONDS = 60;
 export const DEFAULT_POLL_SECONDS = 300;
 export const DEFAULT_INTERVAL_HOURS = 1;
-export const DEFAULT_LOCAL_KEEP = 7;
+export const DEFAULT_LOCAL_KEEP = 3;
 
-export type ConfigSource = (name: string, fallback: string) => string;
-export type BackupMode = "local" | "qbx" | "s3" | "gdrive";
+export type BackupMode = "qbx" | "s3" | "gdrive" | "discord" | "local";
 
-export type GDriveConfig = {
+export interface GDriveConfig {
   clientId: string;
   clientSecret: string;
   refreshToken: string;
@@ -19,7 +19,7 @@ export type GDriveConfig = {
   keepCount: number;
   maxAgeDays: number;
   keepLocal: boolean;
-};
+}
 
 export type Config = {
   connectionString: string;
@@ -40,22 +40,23 @@ export type Config = {
   mode: BackupMode;
   s3: S3Config;
   gdrive: GDriveConfig;
+  discord: DiscordConfig;
 };
 
-export function loadConfig(
-  source: ConfigSource,
-  defaults: { localDir: string; resourceDir: string },
-): Config {
+export type ConfigSource = (name: string, fallback: string) => string;
+
+export type ConfigDefaults = {
+  localDir: string;
+  resourceDir: string;
+};
+
+export function loadConfig(source: ConfigSource, defaults: ConfigDefaults): Config {
   const shared = source("mysql_connection_string", "").trim();
-  const override = (
-    source("qbx_db_backup_connection_string", "") || source("qbx_backup_connection_string", "")
-  ).trim();
+  const override = source("qbx_db_backup_connection_string", "").trim();
   const token = (source("qbx_db_backup_token", "") || source("qbx_backup_token", "")).trim();
-  const apiBase = (
-    source("qbx_db_backup_api", "") || source("qbx_backup_api", DEFAULT_API_BASE)
-  ).trim();
+  const apiBase = source("qbx_db_backup_api_base", DEFAULT_API_BASE).trim();
   const localDir = (
-    source("qbx_db_backup_local_dir", "") || source("qbx_backup_local_dir", defaults.localDir)
+    source("qbx_db_backup_local_dir", "") || source("qbx_backup_local_dir", "")
   ).trim();
   const interval = toInt(
     source(
@@ -74,7 +75,10 @@ export function loadConfig(
   ).trim();
   const s3Region = (
     source("qbx_db_backup_s3_region", "") ||
-    source("qbx_backup_s3_region", s3Endpoint.includes("r2.cloudflarestorage.com") ? "auto" : "us-east-1")
+    source(
+      "qbx_backup_s3_region",
+      s3Endpoint.includes("r2.cloudflarestorage.com") ? "auto" : "us-east-1",
+    )
   ).trim();
   const s3AccessKeyId = (
     source("qbx_db_backup_s3_access_key_id", "") ||
@@ -147,16 +151,19 @@ export function loadConfig(
     source("qbx_db_backup_gdrive_client_id", "") || source("qbx_backup_gdrive_client_id", "")
   ).trim();
   const gdriveClientSecret = (
-    source("qbx_db_backup_gdrive_client_secret", "") || source("qbx_backup_gdrive_client_secret", "")
+    source("qbx_db_backup_gdrive_client_secret", "") ||
+    source("qbx_backup_gdrive_client_secret", "")
   ).trim();
   const gdriveRefreshToken = (
-    source("qbx_db_backup_gdrive_refresh_token", "") || source("qbx_backup_gdrive_refresh_token", "")
+    source("qbx_db_backup_gdrive_refresh_token", "") ||
+    source("qbx_backup_gdrive_refresh_token", "")
   ).trim();
   const gdriveFolderId = (
     source("qbx_db_backup_gdrive_folder_id", "") || source("qbx_backup_gdrive_folder_id", "")
   ).trim();
   const gdriveCredsFile = (
-    source("qbx_db_backup_gdrive_credentials_file", "") || source("qbx_backup_gdrive_credentials_file", "")
+    source("qbx_db_backup_gdrive_credentials_file", "") ||
+    source("qbx_backup_gdrive_credentials_file", "")
   ).trim();
   const gdriveKeep = Math.max(
     0,
@@ -190,11 +197,11 @@ export function loadConfig(
       0,
     ),
   );
-  // Read once to avoid calling source() twice for the same convar (Fix #7)
   const gdriveKeepLocalRaw = (
-    source("qbx_db_backup_gdrive_keep_local", "") ||
-    source("qbx_backup_gdrive_keep_local", "0")
-  ).trim().toLowerCase();
+    source("qbx_db_backup_gdrive_keep_local", "") || source("qbx_backup_gdrive_keep_local", "0")
+  )
+    .trim()
+    .toLowerCase();
   const gdriveKeepLocal = gdriveKeepLocalRaw === "1" || gdriveKeepLocalRaw === "true";
 
   const gdrive: GDriveConfig = {
@@ -208,6 +215,73 @@ export function loadConfig(
     keepLocal: gdriveKeepLocal,
   };
 
+  // Discord convars
+  const discordWebhookUrl = (
+    source("qbx_db_backup_discord_webhook_url", "") ||
+    source("qbx_discord_webhook_url", "") ||
+    source("qbx_db_backup_discord_webhook", "") ||
+    source("qbx_discord_webhook", "")
+  ).trim();
+  const discordBotToken = (
+    source("qbx_db_backup_discord_bot_token", "") ||
+    source("qbx_discord_bot_token", "") ||
+    source("qbx_db_backup_discord_token", "") ||
+    source("qbx_discord_token", "")
+  ).trim();
+  const discordChannelId = (
+    source("qbx_db_backup_discord_channel_id", "") ||
+    source("qbx_discord_channel_id", "") ||
+    source("qbx_db_backup_discord_channel", "") ||
+    source("qbx_discord_channel", "")
+  ).trim();
+  const discordIsForumRaw = (
+    source("qbx_db_backup_discord_is_forum", "") || source("qbx_discord_is_forum", "0")
+  )
+    .trim()
+    .toLowerCase();
+  const discordIsForum =
+    discordIsForumRaw === "1" || discordIsForumRaw === "true" || discordIsForumRaw === "yes";
+  const discordThreadTitle = (
+    source("qbx_db_backup_discord_thread_title", "") ||
+    source("qbx_discord_thread_title", "") ||
+    source("qbx_db_backup_discord_thread_name", "") ||
+    source("qbx_discord_thread_name", "")
+  ).trim();
+  const discordUsername = (
+    source("qbx_db_backup_discord_username", "") || source("qbx_discord_username", "")
+  ).trim();
+  const discordAvatarUrl = (
+    source("qbx_db_backup_discord_avatar_url", "") || source("qbx_discord_avatar_url", "")
+  ).trim();
+  const discordKeepLocalRaw = (
+    source("qbx_db_backup_discord_keep_local", "") || source("qbx_discord_keep_local", "0")
+  )
+    .trim()
+    .toLowerCase();
+  const discordKeepLocal = discordKeepLocalRaw === "1" || discordKeepLocalRaw === "true";
+  const discordMaxFileSizeMb = Math.max(
+    1,
+    toInt(
+      source(
+        "qbx_db_backup_discord_max_file_size_mb",
+        source("qbx_discord_max_file_size_mb", "25"),
+      ),
+      25,
+    ),
+  );
+
+  const discord: DiscordConfig = {
+    webhookUrl: discordWebhookUrl.length > 0 ? discordWebhookUrl : undefined,
+    botToken: discordBotToken.length > 0 ? discordBotToken : undefined,
+    channelId: discordChannelId.length > 0 ? discordChannelId : undefined,
+    isForum: discordIsForum,
+    threadTitle: discordThreadTitle.length > 0 ? discordThreadTitle : undefined,
+    username: discordUsername.length > 0 ? discordUsername : undefined,
+    avatarUrl: discordAvatarUrl.length > 0 ? discordAvatarUrl : undefined,
+    keepLocal: discordKeepLocal,
+    maxFileSizeMb: discordMaxFileSizeMb,
+  };
+
   const localMaxAgeDays = Math.max(
     0,
     toInt(source("qbx_db_backup_local_max_age_days", source("qbx_db_backup_max_age_days", "0")), 0),
@@ -216,7 +290,9 @@ export function loadConfig(
 
   const explicitDestination = (
     source("qbx_backup_destination", "") || source("qbx_db_backup_destination", "")
-  ).trim().toLowerCase();
+  )
+    .trim()
+    .toLowerCase();
 
   let mode: BackupMode = "local";
   if (explicitDestination === "qbx" && token.length > 0) {
@@ -225,12 +301,16 @@ export function loadConfig(
     mode = "s3";
   } else if (explicitDestination === "gdrive" && isGDriveConfigured(gdrive)) {
     mode = "gdrive";
+  } else if (explicitDestination === "discord" && isDiscordConfigured(discord)) {
+    mode = "discord";
   } else if (token.length > 0) {
     mode = "qbx";
   } else if (isS3Configured(s3)) {
     mode = "s3";
   } else if (isGDriveConfigured(gdrive)) {
     mode = "gdrive";
+  } else if (isDiscordConfigured(discord)) {
+    mode = "discord";
   }
 
   return {
@@ -261,6 +341,7 @@ export function loadConfig(
     mode,
     s3,
     gdrive,
+    discord,
   };
 }
 
@@ -270,8 +351,20 @@ export function isS3Configured(s3: S3Config): boolean {
 
 export function isGDriveConfigured(gdrive: GDriveConfig): boolean {
   return (
-    (gdrive.clientId.length > 0 && gdrive.clientSecret.length > 0 && gdrive.refreshToken.length > 0) ||
+    (gdrive.clientId.length > 0 &&
+      gdrive.clientSecret.length > 0 &&
+      gdrive.refreshToken.length > 0) ||
     Boolean(gdrive.credentialsFile && gdrive.credentialsFile.length > 0)
+  );
+}
+
+export function isDiscordConfigured(discord: DiscordConfig): boolean {
+  return Boolean(
+    (discord.webhookUrl && discord.webhookUrl.trim().length > 0) ||
+      (discord.botToken &&
+        discord.botToken.trim().length > 0 &&
+        discord.channelId &&
+        discord.channelId.trim().length > 0),
   );
 }
 
